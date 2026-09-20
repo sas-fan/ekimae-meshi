@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="駅前ビル飯">
+  <rect width="512" height="512" rx="96" fill="#161a1d"/>
+  <g fill="#ffb454">
+    <rect x="96" y="120" width="120" height="272" rx="10"/>
+    <rect x="240" y="176" width="96" height="216" rx="10"/>
+    <rect x="360" y="232" width="72" height="160" rx="10"/>
+  </g>
+  <g fill="#161a1d">
+    <rect x="118" y="148" width="32" height="30" rx="5"/><rect x="162" y="148" width="32" height="30" rx="5"/>
+    <rect x="118" y="204" width="32" height="30" rx="5"/><rect x="162" y="204" width="32" height="30" rx="5"/>
+    <rect x="262" y="208" width="26" height="26" rx="5"/><rect x="298" y="208" width="26" height="26" rx="5"/>
+  </g>
+  <path d="M104 392h304c0 44-68 72-152 72s-152-28-152-72z" fill="#e8edf2"/>
+  <rect x="88" y="376" width="336" height="20" rx="10" fill="#e8edf2"/>
+</svg>

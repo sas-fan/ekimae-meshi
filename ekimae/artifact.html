@@ -1,0 +1,77 @@
+<title>駅前ビル飯</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* Artifact の骨組みが :root に safe-area 分の余白を入れるため、
+     ヘッダ側の env() 指定と二重にならないようにする */
+  .topbar { padding-top: 8px; }
+  html, body { height: auto; }
+</style>
+<header class="topbar">
+  <div class="topbar-row">
+    <h1 class="brand">駅前ビル飯</h1>
+    <div class="topbar-actions">
+      <button id="btn-add" class="icon-btn" title="店を追加">＋</button>
+      <button id="btn-menu" class="icon-btn" title="メニュー">≡</button>
+    </div>
+  </div>
+  <div class="searchwrap">
+    <input id="q" type="search" inputmode="search" placeholder="店名・カテゴリ・タグ・メモで検索" autocomplete="off">
+    <button id="q-clear" class="q-clear" hidden>×</button>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab is-active" data-view="list" role="tab">リスト</button>
+    <button class="tab" data-view="map" role="tab">マップ</button>
+  </nav>
+</header>
+
+<div class="filterbar">
+  <button id="btn-filters" class="filtertoggle" type="button" aria-expanded="false" aria-controls="filters">
+    絞り込み<span id="f-count" class="fcount" hidden></span><span class="caret">▾</span>
+  </button>
+  <label class="sortwrap">並び
+    <select id="sort">
+      <option value="default">ビル・フロア順</option>
+      <option value="rating">星が高い順</option>
+      <option value="name">名前順</option>
+      <option value="recent">最近見た順</option>
+    </select>
+  </label>
+  <button id="btn-reset" class="linkbtn">クリア</button>
+</div>
+
+<section id="filters" class="filters" hidden>
+  <div class="filter-row">
+    <span class="filter-label">ビル</span>
+    <div class="chips" id="f-building"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">フロア</span>
+    <div class="chips" id="f-floor"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">種類</span>
+    <div class="chips" id="f-category"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">タグ</span>
+    <div class="chips" id="f-tag"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">条件</span>
+    <div class="chips" id="f-misc"></div>
+  </div>
+</section>
+
+<main>
+  <p id="count" class="count"></p>
+  <div id="view-list" class="view"></div>
+  <div id="view-map" class="view" hidden></div>
+</main>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-backdrop" data-close></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true"></div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<script src="app.js"></script>

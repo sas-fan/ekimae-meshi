@@ -88,7 +88,12 @@ function rebuild() {
   for (const s of base.stores) byId.set(s.id, s);
   for (const c of custom) {
     const prev = byId.get(c.id);
-    byId.set(c.id, prev ? Object.assign({}, prev, c) : c);
+    if (prev) { byId.set(c.id, Object.assign({}, prev, c)); continue; }
+    // 元の店が stores.json から消えた場合。
+    // アプリで追加・編集した店は name を持つので店として残す。
+    // 星やお気に入りだけを付けた「部分的な変更」は name を持たないので、
+    // そのまま店にすると名前の無い幽霊行（未確認バッジ付き）になる。捨てる。
+    if (c.name) byId.set(c.id, c);
   }
   for (const id of deleted) byId.delete(id);
   stores = [...byId.values()].map(normalizeStore);

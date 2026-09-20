@@ -284,7 +284,25 @@ function renderChips() {
   };
 
   mk($('#f-building'), BUILDINGS.map((b) => ({ value: String(b), label: '第' + b })), ui.buildings, (v) => toggle(ui.buildings, v));
-  mk($('#f-floor'), FLOOR_ORDER.map((f) => ({ value: f, label: f })), ui.floors, (v) => toggle(ui.floors, v));
+
+  // フロアは「店が1件でもある階」だけ出す。駅前ビルの 1F / 2F は飲食がほとんど無く、
+  // 押しても0件のチップが並ぶだけなので固定リストにはしない。
+  // 後で 1F の店を入れれば、その階のチップは自動で現れる。
+  const floorCounts = new Map();
+  for (const s of stores) {
+    if (s.floor) floorCounts.set(s.floor, (floorCounts.get(s.floor) || 0) + 1);
+  }
+  const floorList = [...floorCounts.entries()]
+    .sort((a, b) => FLOOR_ORDER.indexOf(a[0]) - FLOOR_ORDER.indexOf(b[0]))
+    .map(([f, n]) => ({ value: f, label: f + ' ' + n }));
+  // 消えた階が選ばれたままだと、外すチップが無いのに0件になって詰む
+  const pruned = ui.floors.filter((f) => floorCounts.has(f));
+  if (pruned.length !== ui.floors.length) {
+    ui.floors.length = 0;
+    ui.floors.push(...pruned);
+    saveUI();
+  }
+  mk($('#f-floor'), floorList, ui.floors, (v) => toggle(ui.floors, v));
 
   const catCounts = new Map();
   for (const s of stores) {

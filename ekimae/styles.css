@@ -475,3 +475,23 @@ main { padding: 0 12px calc(40px + env(safe-area-inset-bottom)); }
   font-weight: 600;
   z-index: 100;
 }
+
+/* 星のまとめ入力 */
+.star-row { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.star-row-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.star-row-name { font-weight: 600; font-size: 14px; }
+.star-row-loc { font-size: 11px; color: var(--fg-dim); white-space: nowrap; }
+.star-row-ctl { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.star-row-ctl .btn {
+  flex: 0 0 auto; padding: 0 12px; min-height: 40px; font-size: 12px;
+  white-space: nowrap; text-decoration: none; color: var(--fg);
+  display: inline-flex; align-items: center;
+}
+.star-row-ctl .star-in { flex: 1 1 auto; min-width: 0; }
+.star-in {
+  width: 62px; padding: 8px; font-size: 16px; /* 16px 未満だと iOS が勝手に拡大する */
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg-elev); color: var(--fg);
+}
+.star-in--cnt { width: 72px; }
+.star-mark { color: var(--ok); font-weight: 700; width: 14px; }

@@ -425,23 +425,41 @@ function renderMap(hits) {
     return;
   }
 
+  // マップは1マスが小さいので、お気に入り・訪問済みは色の面で出す。
+  // 枠線は「絞り込みに該当」で既に使っているため、そこには重ねない。
   const cell = (s, provisional) => {
     const ud = user[s.id] || {};
     const hit = hitIds.has(s.id);
+    const visited = !!(ud.visits && ud.visits.length);
+    const marks = [];
+    if (ud.fav) marks.push(el('span', { class: 'm-fav', text: '★' }));
+    if (visited) marks.push(el('span', { class: 'm-visit', text: '✓' }));
     return el('button', {
-      class: 'gridcell' + (hit ? ' is-hit' : ' is-dim') + (provisional ? ' is-provisional' : ''),
+      class: 'gridcell' + (hit ? ' is-hit' : ' is-dim') + (provisional ? ' is-provisional' : '')
+        + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : ''),
       type: 'button',
       style: provisional ? null
         : 'grid-column:' + s.pos.x + ' / span ' + (s.w || 1) + ';grid-row:' + s.pos.y + ' / span ' + (s.h || 1) + ';',
       onclick: () => openDetail(s.id),
     }, [
-      el('span', { class: 'gridcell-name', text: (ud.fav ? '★' : '') + s.name }),
+      marks.length ? el('span', { class: 'gridcell-marks' }, marks) : null,
+      el('span', { class: 'gridcell-name' + (marks.length ? ' has-mark' : ''), text: s.name }),
       el('span', { class: 'gridcell-sub' }, [
         el('span', { text: s.block || s.category || '' }),
         s.rating ? el('span', { text: s.rating.toFixed(1) }) : null,
       ]),
     ]);
   };
+
+  // 凡例は、実際に印が付く店があるときだけ出す
+  const anyFav = inScope.some((s) => user[s.id] && user[s.id].fav);
+  const anyVisited = inScope.some((s) => user[s.id] && user[s.id].visits && user[s.id].visits.length);
+  if (anyFav || anyVisited) {
+    box.appendChild(el('p', { class: 'maplegend' }, [
+      anyFav ? el('span', {}, [el('span', { class: 'legend-swatch legend-swatch--fav' }), 'お気に入り']) : null,
+      anyVisited ? el('span', {}, [el('span', { class: 'legend-swatch legend-swatch--visit', text: '✓' }), '行った']) : null,
+    ]));
+  }
 
   for (const k of visible) {
     const [b, f] = k.split('/');
@@ -688,12 +706,20 @@ function updateRating(s) {
   openDetail(s.id);
 }
 
-function applyPatch(patch) {
+function applyPatch(patch, defer) {
   const i = custom.findIndex((c) => c.id === patch.id);
   if (i < 0) custom.push(patch); else custom[i] = Object.assign({}, custom[i], patch);
   saveCustom();
+  if (defer) { scheduleRefresh(); return; }
   rebuild();
   render();
+}
+
+// 星のまとめ入力では1件ごとに363件を描き直すと重い。まとめて1回にする
+let refreshTimer = null;
+function scheduleRefresh() {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(() => { rebuild(); render(); }, 400);
 }
 
 function removeStore(s) {
@@ -854,6 +880,103 @@ function mergedDataFile() {
   }, null, 2);
 }
 
+function openStarEntry() {
+  // Google のフロア案内と違い、星は API では取れない（後述の理由）。
+  // 手で入れる前提なので、1件ずつ詳細を開かずに済む一覧を用意する。
+  const target = sorted(stores.filter(matches));
+  const onlyEmpty = { v: true };
+  const listBox = el('div', {});
+  const progress = el('p', { class: 'sheet-sub', text: '' });
+
+  const countDone = () => target.filter((s) => s.rating != null).length;
+
+  const refreshProgress = () => {
+    progress.textContent = '入力済み ' + countDone() + ' / ' + target.length + ' 件'
+      + (target.length < stores.length ? '（いまの絞り込みの中だけ）' : '');
+  };
+
+  const draw = () => {
+    listBox.textContent = '';
+    const rows = onlyEmpty.v ? target.filter((s) => s.rating == null) : target;
+    if (!rows.length) {
+      listBox.appendChild(el('p', { class: 'sheet-sub', text: '対象がありません。' }));
+      return;
+    }
+    for (const s of rows) {
+      const id = s.id;
+      const star = el('input', {
+        type: 'text', inputmode: 'decimal', class: 'star-in',
+        placeholder: '3.8', value: s.rating != null ? String(s.rating) : '',
+      });
+      const cnt = el('input', {
+        type: 'text', inputmode: 'numeric', class: 'star-in star-in--cnt',
+        placeholder: '件数', value: s.ratingCount != null ? String(s.ratingCount) : '',
+      });
+      const mark = el('span', { class: 'star-mark', text: s.rating != null ? '✓' : '' });
+
+      const save = () => {
+        const raw = star.value.trim();
+        const patch = { id: id };
+        if (raw === '') {
+          patch.rating = null;
+          patch.ratingCount = null;
+        } else {
+          const v = Number(raw);
+          if (!(v >= 0 && v <= 5)) { toast('0〜5の数値を入れてください'); star.focus(); return; }
+          patch.rating = Math.round(v * 10) / 10;
+          const c = cnt.value.trim();
+          patch.ratingCount = c === '' ? null : (Number(c) || null);
+          patch.ratingSource = 'google';
+          patch.ratingCheckedAt = todayStr();
+        }
+        applyPatch(patch, true);
+        // 描画を後回しにしているぶん stores はまだ古い。
+        // 進捗の数え直しはこの一覧の控えを見ているので、ここも合わせて更新する
+        s.rating = patch.rating;
+        s.ratingCount = patch.ratingCount !== undefined ? patch.ratingCount : s.ratingCount;
+        mark.textContent = patch.rating != null ? '✓' : '';
+        refreshProgress();
+      };
+      star.addEventListener('change', save);
+      cnt.addEventListener('change', save);
+
+      listBox.appendChild(el('div', { class: 'star-row' }, [
+        el('div', { class: 'star-row-head' }, [
+          el('span', { class: 'star-row-name', text: s.name }),
+          el('span', { class: 'star-row-loc', text: '第' + s.building + ' ' + s.floor + (s.block ? ' / ' + s.block : '') }),
+        ]),
+        el('div', { class: 'star-row-ctl' }, [
+          el('a', { class: 'btn btn--ghost', href: gmapsLink(s), target: '_blank', rel: 'noopener', text: 'Googleマップ' }),
+          star, cnt, mark,
+        ]),
+      ]));
+    }
+  };
+
+  const toggle = el('button', {
+    class: 'btn btn--ghost', type: 'button', text: '未入力だけ ✓',
+    onclick: () => {
+      onlyEmpty.v = !onlyEmpty.v;
+      toggle.textContent = onlyEmpty.v ? '未入力だけ ✓' : '未入力だけ';
+      draw();
+    },
+  });
+
+  refreshProgress();
+  draw();
+
+  openSheet([
+    el('h2', { text: '星をまとめて入れる' }),
+    el('p', { class: 'sheet-sub', text: 'Googleマップで見た星を手で入れます。「Googleマップ」を押して星を見て、戻って数字を入れる、の繰り返しです。確認した日付は自動で残ります。' }),
+    progress,
+    el('div', { class: 'btnrow' }, [
+      toggle,
+      el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: () => { rebuild(); render(); closeSheet(); } }),
+    ]),
+    listBox,
+  ]);
+}
+
 function openMenu() {
   const fileInput = el('input', { type: 'file', accept: '.json,application/json', style: 'display:none' });
   fileInput.addEventListener('change', () => {
@@ -888,6 +1011,12 @@ function openMenu() {
         },
       })]),
     ]) : null,
+    el('div', { class: 'btnrow' }, [
+      el('button', {
+        class: 'btn btn--primary', type: 'button', text: '星をまとめて入れる',
+        onclick: () => openStarEntry(),
+      }),
+    ]),
     el('div', { class: 'btnrow' }, [
       el('button', {
         class: 'btn', type: 'button', text: 'バックアップを書き出す',

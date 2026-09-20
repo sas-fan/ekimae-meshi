@@ -12,6 +12,8 @@
   --ok: #1e8f62;
   --radius: 12px;
   --cell: 92px;
+  --fav-bg: #fdf0dc;
+  --fav-line: #e0a13d;
 }
 
 /* 端末が暗いテーマ、かつ明るいテーマが明示指定されていないとき */
@@ -27,6 +29,8 @@
     --accent-ink: #2a1d07;
     --danger: #ff6b6b;
     --ok: #5cd6a0;
+    --fav-bg: #3b2a12;
+    --fav-line: #ffb454;
   }
 }
 
@@ -42,6 +46,8 @@
   --accent-ink: #2a1d07;
   --danger: #ff6b6b;
   --ok: #5cd6a0;
+  --fav-bg: #3b2a12;
+  --fav-line: #ffb454;
 }
 
 * { box-sizing: border-box; }
@@ -342,6 +348,7 @@ main { padding: 0 12px calc(40px + env(safe-area-inset-bottom)); }
 }
 
 .gridcell {
+  position: relative;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: var(--bg-elev);
@@ -357,6 +364,35 @@ main { padding: 0 12px calc(40px + env(safe-area-inset-bottom)); }
 
 .gridcell.is-dim { opacity: .28; }
 .gridcell.is-hit { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+/* お気に入りはマス全体を塗る。枠線は「絞り込みに該当」が使っているので重ねない */
+.gridcell.is-fav { background: var(--fav-bg); }
+/* 行った店は左に緑の帯。お気に入りと同時に付いても互いを潰さない。
+   座標未設定のマスは枠が破線なので、帯だけは実線に戻す */
+.gridcell.is-visited { border-left: 4px solid var(--ok); padding-left: 4px; }
+.gridcell.is-visited.is-provisional { border-left-style: solid; }
+
+.gridcell-marks {
+  position: absolute; top: 4px; right: 5px;
+  display: flex; gap: 2px; font-size: 11px; line-height: 1;
+}
+.gridcell-marks .m-fav { color: var(--fav-line); }
+.gridcell-marks .m-visit { color: var(--ok); font-weight: 700; }
+/* 印と店名が重ならないよう、印があるときだけ逃がす */
+.gridcell-name.has-mark { padding-right: 20px; }
+
+.maplegend {
+  display: flex; gap: 14px; align-items: center;
+  font-size: 11px; color: var(--fg-dim); margin: 0 0 10px;
+}
+.maplegend > span { display: inline-flex; align-items: center; gap: 5px; }
+.legend-swatch {
+  width: 14px; height: 14px; border-radius: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; line-height: 1;
+}
+.legend-swatch--fav { background: var(--fav-bg); border: 1px solid var(--fav-line); }
+.legend-swatch--visit { border-left: 4px solid var(--ok); color: var(--ok); font-weight: 700; }
 
 .gridcell-name {
   font-size: 12px;

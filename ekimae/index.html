@@ -36,7 +36,8 @@
   <button id="btn-filters" class="filtertoggle" type="button" aria-expanded="false" aria-controls="filters">
     絞り込み<span id="f-count" class="fcount" hidden></span><span class="caret">▾</span>
   </button>
-  <label class="sortwrap">並び
+  <button id="btn-here" class="filtertoggle" type="button">いまここ</button>
+  <label class="sortwrap"><span class="sortwrap-label">並び</span>
     <select id="sort">
       <option value="default">ビル・フロア順</option>
       <option value="rating">星が高い順</option>
@@ -46,6 +47,9 @@
   </label>
   <button id="btn-reset" class="linkbtn">クリア</button>
 </div>
+
+<!-- いま何で絞っているかは、パネルを閉じても見えていないと分からない -->
+<div id="active-filters" class="activefilters" hidden></div>
 
 <section id="filters" class="filters" hidden>
   <div class="filter-row">
@@ -58,15 +62,25 @@
   </div>
   <div class="filter-row">
     <span class="filter-label">種類</span>
-    <div class="chips" id="f-category"></div>
+    <div class="chipswrap">
+      <div class="chips chips--wrap is-collapsed" id="f-category"></div>
+      <button class="chips-more" id="more-category" type="button" hidden>もっと見る</button>
+    </div>
   </div>
   <div class="filter-row">
     <span class="filter-label">タグ</span>
-    <div class="chips" id="f-tag"></div>
+    <div class="chipswrap">
+      <div class="chips chips--wrap is-collapsed" id="f-tag"></div>
+      <button class="chips-more" id="more-tag" type="button" hidden>もっと見る</button>
+    </div>
   </div>
   <div class="filter-row">
     <span class="filter-label">条件</span>
     <div class="chips" id="f-misc"></div>
+  </div>
+  <!-- 条件を変えた結果は、パネルに隠れてリストが見えない。ここで件数を返す -->
+  <div class="filters-foot">
+    <button id="btn-apply" class="btn btn--primary" type="button">結果を見る</button>
   </div>
 </section>
 

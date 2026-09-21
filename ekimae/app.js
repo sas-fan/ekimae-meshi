@@ -45,11 +45,15 @@ let user = readJSON(KEY.user, {});
 let custom = readJSON(KEY.custom, []);
 let deleted = readJSON(KEY.deleted, []);
 let ui = Object.assign(
-  { view: 'list', sort: 'default', q: '', buildings: [], floors: [], cats: [], tags: [], misc: [], filtersOpen: false },
+  { view: 'list', sort: 'default', q: '', buildings: [], floors: [], cats: [], tags: [], misc: [], filtersOpen: false, here: null },
   readJSON(KEY.ui, {})
 );
 
 let stores = [];
+
+// 「マップで見る」で飛んだ直後だけ、そのマスを光らせてスクロールする。
+// 保存はしない。次に開いたときまで光り続けると邪魔なため。
+let focusId = null;
 
 function readJSON(k, fallback) {
   try {
@@ -79,6 +83,94 @@ function u(id) {
   if (!Array.isArray(o.tags)) o.tags = [];
   if (!Array.isArray(o.visits)) o.visits = [];
   return o;
+}
+
+/* ---------------- フロア平面図（端末内に保存） ----------------
+
+公式の平面図は、区画番号と実際の位置を結びつける唯一の資料。
+ただしアプリに同梱すると公式サイトの図を再配布することになるので、
+利用者が自分の端末に取り込む方式にしている。保存先は IndexedDB。
+（画像は localStorage には大きすぎる）
+------------------------------------------------------------------- */
+
+const DB_NAME = 'ekimae';
+const DB_STORE = 'plans';
+let dbPromise = null;
+
+function openDB() {
+  if (dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject) => {
+    if (!self.indexedDB) { reject(new Error('この端末では画像を保存できません')); return; }
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains(DB_STORE)) req.result.createObjectStore(DB_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error('保存領域を開けませんでした'));
+  });
+  return dbPromise;
+}
+
+function planKey(building, floor) { return 'b' + building + '-' + floor; }
+
+async function planGet(key) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const r = db.transaction(DB_STORE, 'readonly').objectStore(DB_STORE).get(key);
+    r.onsuccess = () => resolve(r.result || null);
+    r.onerror = () => reject(r.error);
+  });
+}
+
+async function planPut(key, dataUrl) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const r = db.transaction(DB_STORE, 'readwrite').objectStore(DB_STORE).put(dataUrl, key);
+    r.onsuccess = () => resolve();
+    r.onerror = () => reject(r.error);
+  });
+}
+
+async function planDel(key) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const r = db.transaction(DB_STORE, 'readwrite').objectStore(DB_STORE).delete(key);
+    r.onsuccess = () => resolve();
+    r.onerror = () => reject(r.error);
+  });
+}
+
+async function planKeys() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const r = db.transaction(DB_STORE, 'readonly').objectStore(DB_STORE).getAllKeys();
+    r.onsuccess = () => resolve(r.result || []);
+    r.onerror = () => reject(r.error);
+  });
+}
+
+// 端末の保存量を抑えるため、長辺 1600px / JPEG 品質 0.82 に落とす。
+// 区画番号が読める程度は十分に残る。
+function shrinkImage(file, maxSide = 1600) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onerror = () => reject(new Error('ファイルを読めませんでした'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('画像として読めませんでした'));
+      img.onload = () => {
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(cv.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
 }
 
 /* ---------------- data assembly ---------------- */
@@ -185,9 +277,15 @@ function matches(s) {
   return true;
 }
 
+// 「いまここ」のフロアかどうか。地下街は GPS が効かないので手で指定する
+function isHere(s) {
+  return !!ui.here && s.building === ui.here.building && s.floor === ui.here.floor;
+}
+
 function sortKey(s) {
   const fi = FLOOR_ORDER.indexOf(s.floor);
-  return [s.building, fi < 0 ? 99 : fi, ...blockKey(s.block), s.name];
+  // いまいるフロアを先頭へ。絞り込みではないので他のフロアも消えない
+  return [isHere(s) ? 0 : 1, s.building, fi < 0 ? 99 : fi, ...blockKey(s.block), s.name];
 }
 
 function sorted(list) {
@@ -259,6 +357,24 @@ function gmapsLink(s) {
   if (s.gmapsUrl) return s.gmapsUrl;
   const q = s.name + ' 大阪駅前第' + s.building + 'ビル';
   return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+}
+
+// 公式フロア案内。区画番号つきの平面図が載っている唯一の一次情報なので、
+// 「この店は図のどこか」を確かめる出口として詳細画面から開けるようにする。
+const OFFICIAL_FLOOR_PAGES = {
+  1: { B2: 'https://www.1bld.com/floor/floor_b2.html', B1: 'https://www.1bld.com/floor/floor_b1.html',
+       '1F': 'https://www.1bld.com/floor/floor_01.html', '2F': 'https://www.1bld.com/floor/floor_02.html' },
+  2: { B2: 'https://ekimae2.jp/flg-b2/', B1: 'https://ekimae2.jp/flg-b1/',
+       '1F': 'https://ekimae2.jp/flg-1f/', '2F': 'https://ekimae2.jp/flg-2f/' },
+  3: { B2: 'https://ekimae3.jp/b2f.html', B1: 'https://ekimae3.jp/b1f.html',
+       '1F': 'https://ekimae3.jp/1f.html', '2F': 'https://ekimae3.jp/2f.html' },
+  4: { B2: 'https://www.ekimae4.jp/b2.html', B1: 'https://www.ekimae4.jp/b1.html',
+       '1F': 'https://www.ekimae4.jp/1f.html', '2F': 'https://www.ekimae4.jp/2f.html' },
+};
+
+function floorPlanLink(s) {
+  const byFloor = OFFICIAL_FLOOR_PAGES[s.building];
+  return (byFloor && byFloor[s.floor]) || null;
 }
 
 function tabelogLink(s) {
@@ -333,13 +449,54 @@ function renderChips() {
     toggle(ui.tags, v);
   });
 
-  mk($('#f-misc'), MISC_FILTERS.map((m) => ({ value: m.id, label: m.label })), ui.misc, (v) => {
+  // 押しても必ず0件になる条件は出さない。営業時間や星が未入力のうちは
+  // 「営業中」「星3.5+」を押しても何も起きず、壊れているように見えるため。
+  // データが入れば自動で現れる。
+  const miscCount = (id) => stores.filter((s) => {
+    const ud = user[s.id];
+    if (id === 'fav') return ud && ud.fav;
+    if (id === 'open') return isOpenNow(s) === true;
+    if (id === 'memo') return ud && ud.memo && ud.memo.trim();
+    if (id === 'visited') return ud && ud.visits && ud.visits.length;
+    if (id === 'unvisited') return !(ud && ud.visits && ud.visits.length);
+    if (id === 'r35') return s.rating >= 3.5;
+    if (id === 'r40') return s.rating >= 4.0;
+    if (id === 'unverified') return !s.verified;
+    return false;
+  }).length;
+  const miscList = MISC_FILTERS
+    .map((m) => ({ id: m.id, label: m.label, n: miscCount(m.id) }))
+    .filter((m) => m.n > 0 || ui.misc.includes(m.id));
+  // 選べなくなった条件が選ばれたままだと、外すチップが無いのに0件になって詰む
+  const okMisc = new Set(miscList.map((m) => m.id));
+  if (ui.misc.some((v) => !okMisc.has(v))) {
+    const keep = ui.misc.filter((v) => okMisc.has(v));
+    ui.misc.length = 0; ui.misc.push(...keep); saveUI();
+  }
+
+  mk($('#f-misc'), miscList.map((m) => ({ value: m.id, label: m.label + ' ' + m.n })), ui.misc, (v) => {
     if ((v === 'visited' && ui.misc.includes('unvisited'))) ui.misc.splice(ui.misc.indexOf('unvisited'), 1);
     if ((v === 'unvisited' && ui.misc.includes('visited'))) ui.misc.splice(ui.misc.indexOf('visited'), 1);
     if (v === 'r35' && ui.misc.includes('r40')) ui.misc.splice(ui.misc.indexOf('r40'), 1);
     if (v === 'r40' && ui.misc.includes('r35')) ui.misc.splice(ui.misc.indexOf('r35'), 1);
     toggle(ui.misc, v);
   });
+
+  syncChipsMore('category');
+  syncChipsMore('tag');
+}
+
+// 折り返した行が2行に収まらないときだけ「もっと見る」を出す。
+// 横スクロールだと「まだ先がある」ことが伝わらず、19種類のうち3つしか
+// 見えていないのに気づけなかった。
+function syncChipsMore(key) {
+  const box = $('#f-' + key);
+  const btn = $('#more-' + key);
+  if (!box || !btn) return;
+  const collapsed = box.classList.contains('is-collapsed');
+  const overflows = box.scrollHeight > box.clientHeight + 2;
+  btn.hidden = collapsed ? !overflows : false;
+  btn.textContent = collapsed ? 'もっと見る' : '閉じる';
 }
 
 /* ---------------- list view ---------------- */
@@ -419,7 +576,11 @@ function renderMap(hits) {
     groups.get(k).push(s);
   }
 
+  const hereKey = ui.here ? ui.here.building + '/' + ui.here.floor : null;
   const keys = [...groups.keys()].sort((a, b) => {
+    // いまいるフロアを一番上に。歩きながら開いたとき、自分の周りがすぐ出る
+    if (a === hereKey) return -1;
+    if (b === hereKey) return 1;
     const [ab, af] = a.split('/'), [bb, bf] = b.split('/');
     return Number(ab) - Number(bb) || FLOOR_ORDER.indexOf(af) - FLOOR_ORDER.indexOf(bf);
   });
@@ -441,7 +602,9 @@ function renderMap(hits) {
     if (visited) marks.push(el('span', { class: 'm-visit', text: '✓' }));
     return el('button', {
       class: 'gridcell' + (hit ? ' is-hit' : ' is-dim') + (provisional ? ' is-provisional' : '')
-        + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : ''),
+        + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : '')
+        + (s.id === focusId ? ' is-focus' : ''),
+      'data-id': s.id,
       type: 'button',
       style: provisional ? null
         : 'grid-column:' + s.pos.x + ' / span ' + (s.w || 1) + ';grid-row:' + s.pos.y + ' / span ' + (s.h || 1) + ';',
@@ -474,7 +637,10 @@ function renderMap(hits) {
     const hitCount = list.filter((s) => hitIds.has(s.id)).length;
 
     const group = el('div', { class: 'floorgroup' }, [
-      el('h2', { text: '第' + b + 'ビル ' + f + '　該当 ' + hitCount + ' / ' + list.length + '件' }),
+      el('h2', {}, [
+        k === hereKey ? el('span', { class: 'herebadge', text: 'いまここ' }) : null,
+        el('span', { text: '第' + b + 'ビル ' + f + '　該当 ' + hitCount + ' / ' + list.length + '件' }),
+      ]),
     ]);
 
     if (placed.length) {
@@ -494,6 +660,24 @@ function renderMap(hits) {
 
     box.appendChild(group);
   }
+
+  if (focusId) {
+    const cellEl = box.querySelector('.gridcell.is-focus');
+    const target = focusId;
+    focusId = null;
+    if (cellEl) {
+      // レイアウト確定後でないと位置がずれる
+      requestAnimationFrame(() => {
+        cellEl.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+        const wrap = cellEl.closest('.gridwrap');
+        if (wrap) wrap.scrollLeft = Math.max(0, cellEl.offsetLeft - wrap.clientWidth / 2 + cellEl.offsetWidth / 2);
+      });
+      setTimeout(() => cellEl.classList.remove('is-focus'), 2400);
+    } else {
+      const s = stores.find((x) => x.id === target);
+      toast(s ? s.name + ' はいまの絞り込みの外です' : '見つかりませんでした');
+    }
+  }
 }
 
 /* ---------------- render ---------------- */
@@ -509,6 +693,43 @@ function syncFilterBar() {
   badge.hidden = !n;
   $('#filters').hidden = !ui.filtersOpen;
   $('#btn-filters').setAttribute('aria-expanded', String(ui.filtersOpen));
+  // パネルが閉じている間は高さが 0 なので、はみ出しを測れない。開いた直後に測り直す
+  if (ui.filtersOpen) { syncChipsMore('category'); syncChipsMore('tag'); }
+  $('#btn-reset').hidden = !(n || ui.q || ui.here);
+  const here = $('#btn-here');
+  here.textContent = ui.here ? '第' + ui.here.building + ' ' + ui.here.floor : 'いまここ';
+  here.classList.toggle('is-on', !!ui.here);
+  renderActiveFilters();
+}
+
+// パネルを閉じると「絞り込み ①」としか出ず、何で絞ったのか分からなかった。
+// 選択中の条件を常に並べ、その場で外せるようにする。
+function renderActiveFilters() {
+  const box = $('#active-filters');
+  box.textContent = '';
+  const items = []
+    .concat(ui.buildings.map((v) => ({ label: '第' + v, drop: () => remove(ui.buildings, v) })))
+    .concat(ui.floors.map((v) => ({ label: v, drop: () => remove(ui.floors, v) })))
+    .concat(ui.cats.map((v) => ({ label: v, drop: () => remove(ui.cats, v) })))
+    // 種類とタグは同じ名前がある（立ち飲みなど）ので、タグ側に # を付けて区別する
+    .concat(ui.tags.map((v) => ({ label: '#' + v, drop: () => remove(ui.tags, v) })))
+    .concat(ui.misc.map((v) => {
+      const m = MISC_FILTERS.find((x) => x.id === v);
+      return { label: (m ? m.label : v), drop: () => remove(ui.misc, v) };
+    }));
+  box.hidden = !items.length;
+  for (const it of items) {
+    box.appendChild(el('button', {
+      class: 'activechip', type: 'button',
+      title: it.label + ' を外す',
+      onclick: () => { it.drop(); saveUI(); render(); },
+    }, [el('span', { text: it.label }), el('span', { class: 'activechip-x', text: '×' })]));
+  }
+}
+
+function remove(arr, v) {
+  const i = arr.indexOf(v);
+  if (i >= 0) arr.splice(i, 1);
 }
 
 function render() {
@@ -516,6 +737,14 @@ function render() {
   syncFilterBar();
   const hits = sorted(stores.filter(matches));
   $('#count').textContent = hits.length + ' 件 / 登録 ' + stores.length + ' 件';
+  $('#btn-apply').textContent = hits.length ? hits.length + ' 件を見る' : '該当なし';
+  $('#btn-apply').disabled = !hits.length;
+
+  // 星が1件も入っていないうちは「星が高い順」が何も起こさないので隠す
+  const hasRating = stores.some((s) => s.rating != null);
+  const opt = $('#sort').querySelector('option[value="rating"]');
+  if (opt) opt.hidden = !hasRating;
+  if (!hasRating && ui.sort === 'rating') { ui.sort = 'default'; $('#sort').value = 'default'; saveUI(); }
   const isList = ui.view === 'list';
   $('#view-list').hidden = !isList;
   $('#view-map').hidden = isList;
@@ -654,6 +883,25 @@ function openDetail(id) {
     ]),
     dl,
     el('div', { class: 'btnrow' }, [
+      el('button', {
+        class: 'btn', type: 'button', text: 'マップで見る',
+        onclick: () => {
+          focusId = s.id;
+          ui.view = 'map';
+          saveUI();
+          closeSheet();
+          render();
+        },
+      }),
+      el('button', { class: 'btn', type: 'button', text: '平面図で見る', onclick: () => openPlanViewer(s) }),
+    ]),
+    el('div', { class: 'btnrow' }, [
+      floorPlanLink(s) ? el('a', {
+        class: 'btn btn--ghost', href: floorPlanLink(s), target: '_blank', rel: 'noopener',
+        text: '公式の平面図を開く',
+      }) : null,
+    ]),
+    el('div', { class: 'btnrow' }, [
       el('a', { class: 'btn', href: gmapsLink(s), target: '_blank', rel: 'noopener', text: 'Googleマップ' }),
       el('a', { class: 'btn', href: tabelogLink(s), target: '_blank', rel: 'noopener', text: '食べログ検索' }),
     ]),
@@ -679,9 +927,9 @@ function openDetail(id) {
       el('button', { class: 'btn btn--ghost', type: 'button', text: '外部評価を更新', onclick: () => updateRating(s) }),
       el('button', { class: 'btn btn--ghost', type: 'button', text: '店情報を編集', onclick: () => openEditor(s) }),
     ]),
+    // 削除は「閉じる」の隣に置かない。誤爆する位置なので編集画面の末尾へ移した
     el('div', { class: 'btnrow' }, [
       el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: closeSheet }),
-      el('button', { class: 'btn btn--ghost btn--danger', type: 'button', text: 'この店を削除', onclick: () => removeStore(s) }),
     ]),
   ]);
 
@@ -859,6 +1107,9 @@ function openEditor(s) {
       el('button', { class: 'btn btn--primary', type: 'button', text: '保存', onclick: save }),
       el('button', { class: 'btn btn--ghost', type: 'button', text: 'キャンセル', onclick: closeSheet }),
     ]),
+    isNew ? null : el('div', { class: 'dangerzone' }, [
+      el('button', { class: 'btn btn--ghost btn--danger', type: 'button', text: 'この店を一覧から消す', onclick: () => removeStore(s) }),
+    ]),
   ]);
 }
 
@@ -982,6 +1233,184 @@ function openStarEntry() {
   ]);
 }
 
+function openHerePicker() {
+  const floors = [...new Set(stores.map((s) => s.floor))]
+    .sort((a, b) => FLOOR_ORDER.indexOf(a) - FLOOR_ORDER.indexOf(b));
+  const grid = el('div', { class: 'heregrid' });
+  for (const b of BUILDINGS) {
+    for (const f of floors) {
+      const on = ui.here && ui.here.building === b && ui.here.floor === f;
+      const n = stores.filter((s) => s.building === b && s.floor === f).length;
+      grid.appendChild(el('button', {
+        class: 'herecell' + (on ? ' is-on' : '') + (n ? '' : ' is-empty'),
+        type: 'button',
+        onclick: () => {
+          ui.here = on ? null : { building: b, floor: f };
+          saveUI();
+          render();
+          closeSheet();
+          toast(ui.here ? '第' + b + 'ビル ' + f + ' を先頭に出します' : 'いまここを解除しました');
+        },
+      }, [
+        el('span', { class: 'herecell-b', text: '第' + b + 'ビル' }),
+        el('span', { class: 'herecell-f', text: f }),
+        el('span', { class: 'herecell-n', text: n + '件' }),
+      ]));
+    }
+  }
+
+  openSheet([
+    el('h2', { text: 'いまここ' }),
+    el('p', { class: 'sheet-sub', text: '地下は電波が届かず現在地が取れないので、いる場所を手で選びます。選んだフロアがリストとマップの先頭に来ます。絞り込みではないので、他のフロアも消えません。' }),
+    grid,
+    el('div', { class: 'btnrow' }, [
+      ui.here ? el('button', {
+        class: 'btn btn--ghost', type: 'button', text: '解除する',
+        onclick: () => { ui.here = null; saveUI(); render(); closeSheet(); },
+      }) : null,
+      el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: closeSheet }),
+    ]),
+  ]);
+}
+
+async function openPlanManager() {
+  const floors = [...new Set(stores.map((x) => x.floor))]
+    .sort((a, b) => FLOOR_ORDER.indexOf(a) - FLOOR_ORDER.indexOf(b));
+  let have = [];
+  try { have = await planKeys(); } catch (e) { toast(e.message); }
+
+  const file = el('input', { type: 'file', accept: 'image/*', hidden: 'hidden' });
+  let pending = null;
+  file.addEventListener('change', async () => {
+    const f = file.files[0];
+    file.value = '';
+    if (!f || !pending) return;
+    try {
+      toast('取り込んでいます…');
+      await planPut(planKey(pending.b, pending.f), await shrinkImage(f));
+      toast('第' + pending.b + 'ビル ' + pending.f + ' の平面図を保存しました');
+      openPlanManager();
+    } catch (e) {
+      toast('保存できませんでした: ' + e.message);
+    }
+  });
+
+  const rows = el('div', {});
+  for (const b of BUILDINGS) {
+    for (const f of floors) {
+      const key = planKey(b, f);
+      const has = have.includes(key);
+      rows.appendChild(el('div', { class: 'planrow' }, [
+        el('span', { class: 'planrow-name', text: '第' + b + 'ビル ' + f }),
+        el('span', { class: 'planrow-state' + (has ? ' is-on' : ''), text: has ? '取り込み済み' : '未取り込み' }),
+        el('button', {
+          class: 'btn btn--ghost', type: 'button', text: has ? '差し替え' : '取り込む',
+          onclick: () => { pending = { b: b, f: f }; file.click(); },
+        }),
+        has ? el('button', {
+          class: 'btn btn--ghost btn--danger', type: 'button', text: '消す',
+          onclick: async () => { await planDel(key); openPlanManager(); },
+        }) : null,
+      ]));
+    }
+  }
+
+  openSheet([
+    el('h2', { text: 'フロアの平面図' }),
+    el('p', { class: 'sheet-sub', text: '公式サイトの平面図を保存しておくと、店の詳細から開いて「区画番号がどこか」をその場で確かめられます。地下で電波が届かなくても見られます。画像はこの端末の中だけに保存され、どこにも送られません。' }),
+    el('p', { class: 'sheet-sub', text: '取り込み方: 店の詳細にある「公式の平面図」を開き、平面図の画像を長押しして保存 → ここで選ぶ。' }),
+    file,
+    rows,
+    el('div', { class: 'btnrow' }, [
+      el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: closeSheet }),
+    ]),
+  ]);
+}
+
+// 平面図を開いて、その店の場所にピンを置けるようにする。
+// 350件ぶんの座標を machine で当てるのは無理なので、歩きながら1件ずつ
+// 置いてもらう。置いた位置は端末内（user[id].pin）に残る。
+async function openPlanViewer(store) {
+  let url = null;
+  try { url = await planGet(planKey(store.building, store.floor)); } catch (e) { /* 後で案内 */ }
+  if (!url) {
+    toast('第' + store.building + 'ビル ' + store.floor + ' の平面図がまだありません');
+    openPlanManager();
+    return;
+  }
+
+  const ud = u(store.id);
+  let placing = false;
+  const img = el('img', { class: 'planimg', src: url, alt: '平面図' });
+  const pin = el('div', { class: 'planpin', hidden: 'hidden' }, [el('span', { text: '▼' })]);
+  const stage = el('div', { class: 'planstage' }, [img, pin]);
+  const scroller = el('div', { class: 'planscroll' }, [stage]);
+
+  const drawPin = () => {
+    if (ud.pin) {
+      pin.hidden = false;
+      pin.style.left = (ud.pin.x * 100) + '%';
+      pin.style.top = (ud.pin.y * 100) + '%';
+    } else {
+      pin.hidden = true;
+    }
+  };
+
+  stage.addEventListener('click', (e) => {
+    if (!placing) return;
+    const r = img.getBoundingClientRect();
+    ud.pin = {
+      x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)),
+      y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)),
+    };
+    saveUser();
+    placing = false;
+    stage.classList.remove('is-placing');
+    placeBtn.textContent = 'ピンを置き直す';
+    drawPin();
+    toast('位置を覚えました');
+  });
+
+  const placeBtn = el('button', {
+    class: 'btn btn--primary', type: 'button', text: ud.pin ? 'ピンを置き直す' : 'ここだ！とピンを置く',
+    onclick: () => {
+      placing = !placing;
+      stage.classList.toggle('is-placing', placing);
+      placeBtn.textContent = placing ? '図の上をタップ（やめる）' : (ud.pin ? 'ピンを置き直す' : 'ここだ！とピンを置く');
+    },
+  });
+
+  let zoomed = false;
+  const zoomBtn = el('button', {
+    class: 'btn btn--ghost', type: 'button', text: '拡大',
+    onclick: () => {
+      zoomed = !zoomed;
+      stage.classList.toggle('is-zoom', zoomed);
+      zoomBtn.textContent = zoomed ? '縮小' : '拡大';
+    },
+  });
+
+  drawPin();
+
+  openSheet([
+    el('h2', { text: store.name }),
+    el('p', { class: 'sheet-sub' }, [
+      el('strong', { text: '第' + store.building + 'ビル ' + store.floor }),
+      store.block ? el('strong', { class: 'planblock', text: '区画 ' + store.block }) : null,
+      el('span', { text: store.block ? '　この番号を図の中から探してください' : '　区画番号が未登録です' }),
+    ]),
+    scroller,
+    el('div', { class: 'btnrow' }, [placeBtn, zoomBtn]),
+    el('div', { class: 'btnrow' }, [
+      ud.pin ? el('button', {
+        class: 'btn btn--ghost btn--danger', type: 'button', text: 'ピンを消す',
+        onclick: () => { delete ud.pin; saveUser(); drawPin(); placeBtn.textContent = 'ここだ！とピンを置く'; },
+      }) : null,
+      el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: () => openDetail(store.id) }),
+    ]),
+  ]);
+}
+
 function openMenu() {
   const fileInput = el('input', { type: 'file', accept: '.json,application/json', style: 'display:none' });
   fileInput.addEventListener('change', () => {
@@ -1020,6 +1449,12 @@ function openMenu() {
       el('button', {
         class: 'btn btn--primary', type: 'button', text: '星をまとめて入れる',
         onclick: () => openStarEntry(),
+      }),
+    ]),
+    el('div', { class: 'btnrow' }, [
+      el('button', {
+        class: 'btn', type: 'button', text: 'フロアの平面図',
+        onclick: () => openPlanManager(),
       }),
     ]),
     el('div', { class: 'btnrow' }, [
@@ -1175,8 +1610,26 @@ function bind() {
     syncFilterBar();
   });
 
+  $('#btn-here').addEventListener('click', openHerePicker);
+
+  // 条件を変えるたびに閉じて確かめる往復が要らないよう、ここで件数を返す
+  $('#btn-apply').addEventListener('click', () => {
+    ui.filtersOpen = false;
+    saveUI();
+    syncFilterBar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  for (const key of ['category', 'tag']) {
+    $('#more-' + key).addEventListener('click', () => {
+      $('#f-' + key).classList.toggle('is-collapsed');
+      syncChipsMore(key);
+    });
+  }
+
   $('#btn-reset').addEventListener('click', () => {
     ui.buildings = []; ui.floors = []; ui.cats = []; ui.tags = []; ui.misc = []; ui.q = '';
+    ui.here = null;
     q.value = ''; $('#q-clear').hidden = true;
     saveUI(); render();
   });

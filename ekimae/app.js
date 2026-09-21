@@ -44,10 +44,35 @@ let base = { floors: {}, stores: [] };
 let user = readJSON(KEY.user, {});
 let custom = readJSON(KEY.custom, []);
 let deleted = readJSON(KEY.deleted, []);
-let ui = Object.assign(
-  { view: 'list', sort: 'default', q: '', buildings: [], floors: [], cats: [], tags: [], misc: [], filtersOpen: false, here: null },
-  readJSON(KEY.ui, {})
-);
+const UI_DEFAULTS = {
+  view: 'list', sort: 'default', q: '',
+  buildings: [], floors: [], cats: [], tags: [], misc: [],
+  filtersOpen: false, here: null,
+};
+
+// 保存されている値をそのまま信じると、型が違うだけで画面が真っ白になる。
+// 既定値と同じ型のものだけ受け取る
+function sanitizeUI(saved) {
+  const out = Object.assign({}, UI_DEFAULTS);
+  if (!saved || typeof saved !== 'object') return out;
+  for (const k in UI_DEFAULTS) {
+    const def = UI_DEFAULTS[k], v = saved[k];
+    if (Array.isArray(def)) {
+      if (Array.isArray(v)) out[k] = v.filter((x) => typeof x === 'string');
+    } else if (typeof def === 'string') {
+      if (typeof v === 'string') out[k] = v;
+    } else if (typeof def === 'boolean') {
+      if (typeof v === 'boolean') out[k] = v;
+    } else if (k === 'here') {
+      if (v && typeof v === 'object' && BUILDINGS.includes(Number(v.building)) && typeof v.floor === 'string') {
+        out.here = { building: Number(v.building), floor: v.floor };
+      }
+    }
+  }
+  return out;
+}
+
+let ui = sanitizeUI(readJSON(KEY.ui, {}));
 
 let stores = [];
 
@@ -107,7 +132,10 @@ function openDB() {
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error || new Error('保存領域を開けませんでした'));
+    req.onblocked = () => reject(new Error('保存領域が使用中です'));
   });
+  // 一度失敗したまま覚えておくと、以後ずっと同じ失敗を返して再試行できない
+  dbPromise.catch(() => { dbPromise = null; });
   return dbPromise;
 }
 
@@ -155,20 +183,31 @@ function shrinkImage(file, maxSide = 1600) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
     fr.onerror = () => reject(new Error('ファイルを読めませんでした'));
+    // onload の中で投げても Promise には届かないので、自分で reject する。
+    // ここを握りつぶすと「取り込んでいます…」のまま永久に止まる
+    fr.onabort = () => reject(new Error('取り込みが中断されました'));
     fr.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('画像として読めませんでした'));
-      img.onload = () => {
-        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-        const w = Math.round(img.width * scale);
-        const h = Math.round(img.height * scale);
-        const cv = document.createElement('canvas');
-        cv.width = w; cv.height = h;
-        cv.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(cv.toDataURL('image/jpeg', 0.82));
-      };
-      img.src = fr.result;
+      try {
+        const img = new Image();
+        img.onerror = () => reject(new Error('画像として読めませんでした'));
+        img.onload = () => {
+          try {
+            const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+            const w = Math.max(1, Math.round(img.width * scale));
+            const h = Math.max(1, Math.round(img.height * scale));
+            const cv = document.createElement('canvas');
+            cv.width = w; cv.height = h;
+            const ctx = cv.getContext('2d');
+            if (!ctx) throw new Error('この端末では画像を加工できません');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(cv.toDataURL('image/jpeg', 0.82));
+          } catch (e) { reject(e); }
+        };
+        img.src = fr.result;
+      } catch (e) { reject(e); }
     };
+    // 端末によっては onload も onerror も来ないことがある
+    setTimeout(() => reject(new Error('時間内に読み込めませんでした')), 20000);
     fr.readAsDataURL(file);
   });
 }
@@ -192,18 +231,69 @@ function rebuild() {
 }
 
 function normalizeStore(s) {
+  // 整えたあとの値で検索用の文字列を作る。生の s.tags を使うと、
+  // tags が配列でないデータを読んだときにここで落ちる（せっかくの防御が無駄になる）
+  const tags = Array.isArray(s.tags) ? s.tags : [];
+  const aliases = Array.isArray(s.aliases) ? s.aliases : [];
   return Object.assign({}, s, {
+    name: typeof s.name === 'string' ? s.name : String(s.name || ''),
     building: Number(s.building) || 1,
     floor: s.floor || 'B1',
-    tags: Array.isArray(s.tags) ? s.tags : [],
+    tags: tags,
     closedDays: Array.isArray(s.closedDays) ? s.closedDays : [],
     rating: typeof s.rating === 'number' ? s.rating : null,
-    aliases: Array.isArray(s.aliases) ? s.aliases : [],
+    aliases: aliases,
     verified: s.verified === true,
     source: s.source || 'manual',
-    _n: norm([s.name, s.kana, s.category, s.block,
-      (s.tags || []).join(' '), (s.aliases || []).join(' ')].join(' ')),
+    _n: norm([s.name, s.kana, s.category, s.block, tags.join(' '), aliases.join(' ')].join(' ')),
   });
+}
+
+// tools/ingest.py と同じ ID を作るための SHA-1。
+// crypto.subtle は非同期で、安全でない接続では使えないこともあるので自前で持つ。
+function sha1hex(str) {
+  const bytes = new TextEncoder().encode(str);
+  const len = bytes.length;
+  const withPad = new Uint8Array((((len + 8) >> 6) + 1) * 64);
+  withPad.set(bytes);
+  withPad[len] = 0x80;
+  const view = new DataView(withPad.buffer);
+  view.setUint32(withPad.length - 4, len * 8, false);
+
+  let h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE, h3 = 0x10325476, h4 = 0xC3D2E1F0;
+  const w = new Int32Array(80);
+  const rot = (n, b) => (n << b) | (n >>> (32 - b));
+
+  for (let i = 0; i < withPad.length; i += 64) {
+    for (let j = 0; j < 16; j++) w[j] = view.getInt32(i + j * 4, false);
+    for (let j = 16; j < 80; j++) w[j] = rot(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
+    let a = h0, b = h1, c = h2, d = h3, e = h4;
+    for (let j = 0; j < 80; j++) {
+      let f, k;
+      if (j < 20) { f = (b & c) | (~b & d); k = 0x5A827999; }
+      else if (j < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+      else if (j < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+      else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+      const t = (rot(a, 5) + f + e + k + w[j]) | 0;
+      e = d; d = c; c = rot(b, 30); b = a; a = t;
+    }
+    h0 = (h0 + a) | 0; h1 = (h1 + b) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0; h4 = (h4 + e) | 0;
+  }
+  return [h0, h1, h2, h3, h4].map((n) => (n >>> 0).toString(16).padStart(8, '0')).join('');
+}
+
+// ID 用の正規化。tools/ekimae_data.py の norm と一字一句そろえること。
+// ここがずれると、同じ店がアプリ側と取り込み側で別IDになって二重に出る。
+function idNorm(str) {
+  return String(str || '')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
+    .replace(/[\s\u3000ー・･\-_/()（）「」【】]/g, '');
+}
+
+function makeId(building, floor, name) {
+  return 'b' + building + '-' + floor + '-' + sha1hex(idNorm(name)).slice(0, 6);
 }
 
 function norm(str) {
@@ -221,7 +311,8 @@ function parseRanges(hours) {
   return String(hours)
     .split(/[,、]/)
     .map((part) => {
-      const m = part.trim().match(/^(\d{1,2}):(\d{2})\s*[-–~〜]\s*(\d{1,2}):(\d{2})$/);
+      // 全角で打たれても読めるようにしてから照合する（スマホのIMEでは普通に起きる）
+      const m = part.trim().normalize('NFKC').match(/^(\d{1,2}):(\d{2})\s*[-–—ー－~〜]\s*(\d{1,2}):(\d{2})$/);
       if (!m) return null;
       const from = Number(m[1]) * 60 + Number(m[2]);
       let to = Number(m[3]) * 60 + Number(m[4]);
@@ -282,14 +373,26 @@ function isHere(s) {
   return !!ui.here && s.building === ui.here.building && s.floor === ui.here.floor;
 }
 
+// 並べ替えの鍵。区画番号は「28」と「28-1」で長さが変わるので、
+// 数値の並びと店名を分けて持つ。混ぜると数値と文字列を突き合わせることになり、
+// 比較が非対称になって Array.sort の結果が壊れる。
 function sortKey(s) {
   const fi = FLOOR_ORDER.indexOf(s.floor);
-  // いまいるフロアを先頭へ。絞り込みではないので他のフロアも消えない
-  return [isHere(s) ? 0 : 1, s.building, fi < 0 ? 99 : fi, ...blockKey(s.block), s.name];
+  return {
+    nums: [isHere(s) ? 0 : 1, s.building, fi < 0 ? 99 : fi, ...blockKey(s.block)],
+    name: s.name || '',
+  };
 }
 
 function sorted(list) {
   const arr = list.slice();
+  // 「いまここ」はどの並びでも先頭に来る。マップだけ効いてリストは効かない、
+  // という食い違いを避けるため、並べ替えたあとに前へ出す
+  const hoistHere = (a) => {
+    if (!ui.here) return a;
+    const here = a.filter(isHere), rest = a.filter((x) => !isHere(x));
+    return here.concat(rest);
+  };
   if (ui.sort === 'rating') {
     arr.sort((a, b) => (b.rating || 0) - (a.rating || 0) || a.name.localeCompare(b.name, 'ja'));
   } else if (ui.sort === 'name') {
@@ -299,16 +402,16 @@ function sorted(list) {
   } else {
     arr.sort((a, b) => {
       const ka = sortKey(a), kb = sortKey(b);
-      for (let i = 0; i < Math.max(ka.length, kb.length); i++) {
-        const x = ka[i] === undefined ? -1 : ka[i];
-        const y = kb[i] === undefined ? -1 : kb[i];
-        if (x === y) continue;
-        return x < y ? -1 : 1;
+      for (let i = 0; i < Math.max(ka.nums.length, kb.nums.length); i++) {
+        const x = ka.nums[i] === undefined ? -1 : ka.nums[i];
+        const y = kb.nums[i] === undefined ? -1 : kb.nums[i];
+        if (x !== y) return x - y;
       }
-      return 0;
+      return ka.name.localeCompare(kb.name, 'ja');
     });
+    return arr; // 既定の並びは sortKey の中で「いまここ」を見ている
   }
-  return arr;
+  return hoistHere(arr);
 }
 
 /* ---------------- DOM helpers ---------------- */
@@ -335,6 +438,8 @@ let toastTimer;
 function toast(msg) {
   const t = $('#toast');
   t.textContent = msg;
+  if (isEmbedded()) t.style.top = Math.max(12, lastPointY - 70) + 'px';
+  else t.style.top = '';
   t.hidden = false;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { t.hidden = true; }, 2000);
@@ -416,8 +521,9 @@ function renderChips() {
   const floorList = [...floorCounts.entries()]
     .sort((a, b) => FLOOR_ORDER.indexOf(a[0]) - FLOOR_ORDER.indexOf(b[0]))
     .map(([f, n]) => ({ value: f, label: f + ' ' + n }));
-  // 消えた階が選ばれたままだと、外すチップが無いのに0件になって詰む
-  const pruned = ui.floors.filter((f) => floorCounts.has(f));
+  // 消えた階が選ばれたままだと、外すチップが無いのに0件になって詰む。
+  // ただし読み込み失敗で0件のときは、選択を消さない（通信が戻れば使えるため）
+  const pruned = stores.length ? ui.floors.filter((f) => floorCounts.has(f)) : ui.floors;
   if (pruned.length !== ui.floors.length) {
     ui.floors.length = 0;
     ui.floors.push(...pruned);
@@ -429,8 +535,10 @@ function renderChips() {
   for (const s of stores) {
     if (s.category) catCounts.set(s.category, (catCounts.get(s.category) || 0) + 1);
   }
+  // 選んだものを先頭へ。畳んだ2行の中に必ず入るようにするため
   const catList = [...catCounts.entries()]
-    .sort((a, b) => CATEGORIES.indexOf(a[0]) - CATEGORIES.indexOf(b[0]))
+    .sort((a, b) => (ui.cats.includes(b[0]) ? 1 : 0) - (ui.cats.includes(a[0]) ? 1 : 0)
+      || CATEGORIES.indexOf(a[0]) - CATEGORIES.indexOf(b[0]))
     .map(([c, n]) => ({ value: c, label: c + ' ' + n }));
   mk($('#f-category'), catList, ui.cats, (v) => toggle(ui.cats, v));
 
@@ -442,7 +550,8 @@ function renderChips() {
     }
   }
   const tagList = [...tagCounts.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ja'))
+    .sort((a, b) => (ui.tags.includes(b[0]) ? 1 : 0) - (ui.tags.includes(a[0]) ? 1 : 0)
+      || b[1] - a[1] || a[0].localeCompare(b[0], 'ja'))
     .map(([t, c]) => ({ value: t, label: t + ' ' + c }));
   mk($('#f-tag'), tagList.length ? tagList : [{ value: '__none', label: 'タグ未登録' }], ui.tags, (v) => {
     if (v === '__none') return;
@@ -493,6 +602,9 @@ function syncChipsMore(key) {
   const box = $('#f-' + key);
   const btn = $('#more-' + key);
   if (!box || !btn) return;
+  // 畳んだときに選択中のチップが2行目より下に隠れると、パネル上では
+  // 何も選んでいないように見える。キーボード操作で勝手にずれた分も戻す
+  box.scrollTop = 0;
   const collapsed = box.classList.contains('is-collapsed');
   const overflows = box.scrollHeight > box.clientHeight + 2;
   btn.hidden = collapsed ? !overflows : false;
@@ -587,6 +699,13 @@ function renderMap(hits) {
 
   const visible = keys.filter((k) => groups.get(k).some((s) => hitIds.has(s.id)));
   if (!visible.length) {
+    // ここで捨てておかないと、あとで絞り込みを緩めた拍子に
+    // 押した覚えのないマスが光る
+    if (focusId) {
+      const s = stores.find((x) => x.id === focusId);
+      if (s) toast(s.name + ' はいまの絞り込みの外です');
+    }
+    focusId = null;
     box.appendChild(el('p', { class: 'empty', text: '該当する店がありません。' }));
     return;
   }
@@ -733,12 +852,16 @@ function remove(arr, v) {
 }
 
 function render() {
+  detectEmbedded();
   renderChips();
   syncFilterBar();
   const hits = sorted(stores.filter(matches));
   $('#count').textContent = hits.length + ' 件 / 登録 ' + stores.length + ' 件';
-  $('#btn-apply').textContent = hits.length ? hits.length + ' 件を見る' : '該当なし';
-  $('#btn-apply').disabled = !hits.length;
+  // 0件でも押せるようにする。ここを押せなくすると、条件を戻す導線が
+  // パネルの中から消えて行き止まりに見える
+  $('#btn-apply').textContent = hits.length ? hits.length + ' 件を見る' : '0件 — 条件を外す';
+  $('#btn-apply').disabled = false;
+  $('#btn-apply').dataset.zero = hits.length ? '' : '1';
 
   // 星が1件も入っていないうちは「星が高い順」が何も起こさないので隠す
   const hasRating = stores.some((s) => s.rating != null);
@@ -754,6 +877,39 @@ function render() {
 
 /* ---------------- sheet ---------------- */
 
+/* 埋め込み表示（Artifact など）の検出。
+
+親ページが枠を中身の高さぶんに伸ばして自分でスクロールする形だと、
+枠の中では「画面の高さ = ページ全体の高さ」になる。すると
+position: fixed が画面ではなくページ全体を基準にしてしまい、
+画面下に出したはずのシートやトーストが数万px下に置かれて見えなくなる。
+position: sticky も、枠の中がスクロールしないので効かない。
+
+そういう場合は、固定をやめて「いま触った場所の近く」に出す。 */
+function isEmbedded() {
+  return document.documentElement.classList.contains('is-embedded');
+}
+
+function detectEmbedded() {
+  let framed = false;
+  try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  const noInnerScroll = document.documentElement.scrollHeight <= window.innerHeight + 1;
+  document.documentElement.classList.toggle('is-embedded', framed && noInnerScroll);
+}
+
+// 最後に触った場所。埋め込み時に、シートやトーストをそこへ出すために使う
+let lastPointY = 0;
+function trackPoint(e) {
+  const y = e.pageY || (e.touches && e.touches[0] && e.touches[0].pageY);
+  if (y) lastPointY = y;
+}
+
+function anchorTop(height) {
+  const margin = 12;
+  const max = Math.max(margin, document.documentElement.scrollHeight - height - margin);
+  return Math.min(max, Math.max(margin, lastPointY - 40));
+}
+
 function openSheet(nodes) {
   const sheet = $('#sheet');
   const panel = sheet.querySelector('.sheet-panel');
@@ -762,10 +918,26 @@ function openSheet(nodes) {
   for (const n of [].concat(nodes)) if (n) panel.appendChild(n);
   panel.scrollTop = 0;
   sheet.hidden = false;
-  document.body.style.overflow = 'hidden';
+
+  if (isEmbedded()) {
+    // 先に表示してから測らないと高さが取れない
+    panel.style.top = anchorTop(0) + 'px';
+    requestAnimationFrame(() => {
+      panel.style.top = anchorTop(panel.getBoundingClientRect().height) + 'px';
+    });
+  } else {
+    panel.style.top = '';
+    // 背後のページが動くと、シートを閉じたときに元の場所を見失う
+    document.body.style.overflow = 'hidden';
+  }
 }
 
+// 非同期でシートを組み立てている最中に閉じられたかを見分ける番号。
+// 見ないと、閉じたはずのシートが読み込み完了後に開き直る
+let sheetSeq = 0;
+
 function closeSheet() {
+  sheetSeq++;
   $('#sheet').hidden = true;
   document.body.style.overflow = '';
 }
@@ -939,8 +1111,9 @@ function openDetail(id) {
 }
 
 function updateRating(s) {
-  const raw = prompt('Googleマップなどの星（例: 3.8）。空で消去。', s.rating != null ? String(s.rating) : '');
-  if (raw === null) return;
+  const input = prompt('Googleマップなどの星（例: 3.8）。空で消去。', s.rating != null ? String(s.rating) : '');
+  if (input === null) return;
+  const raw = input.normalize('NFKC');  // 全角で打たれても読めるように
   const patch = { id: s.id };
   if (raw.trim() === '') {
     patch.rating = null;
@@ -949,8 +1122,12 @@ function updateRating(s) {
     const v = Number(raw);
     if (!(v >= 0 && v <= 5)) { toast('0〜5の数値を入れてください'); return; }
     patch.rating = Math.round(v * 10) / 10;
-    const cnt = prompt('レビュー件数（任意）', s.ratingCount != null ? String(s.ratingCount) : '');
-    if (cnt !== null && cnt.trim() !== '') patch.ratingCount = Number(cnt) || null;
+    const cnt = prompt('レビュー件数（任意・空で消す）', s.ratingCount != null ? String(s.ratingCount) : '');
+    // 空にしたのに前の件数が残ると、星は今日の値・件数は前回という嘘になる
+    if (cnt !== null) {
+      const v = Number(cnt.trim());
+      patch.ratingCount = cnt.trim() === '' || !Number.isFinite(v) ? null : v;
+    }
     patch.ratingSource = s.ratingSource || 'google';
     patch.ratingCheckedAt = todayStr();
   }
@@ -1073,7 +1250,18 @@ function openEditor(s) {
     }
     applyPatch(patch);
     closeSheet();
-    toast(isNew ? '登録しました' : '更新しました');
+    // 絞り込みの外に入ると「登録しました」と出るのに一覧に出てこない。
+    // 歩きながら登録する使い方と正面から衝突するので、見えるようにする
+    const saved = stores.find((x) => x.id === patch.id);
+    if (saved && !matches(saved)) {
+      ui.buildings = []; ui.floors = []; ui.cats = []; ui.tags = []; ui.misc = [];
+      ui.q = ''; $('#q').value = ''; $('#q-clear').hidden = true;
+      saveUI();
+      render();
+      toast((isNew ? '登録しました' : '更新しました') + '（一覧に出すため絞り込みを解除しました）');
+    } else {
+      toast(isNew ? '登録しました' : '更新しました');
+    }
   };
 
   openSheet([
@@ -1120,7 +1308,8 @@ function download(filename, text) {
   const a = el('a', { href: URL.createObjectURL(blob), download: filename });
   document.body.appendChild(a);
   a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  // 0ms で捨てると、保存が始まる前に無効化されて何も保存されない端末がある
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 60000);
 }
 
 function mergedDataFile() {
@@ -1171,8 +1360,15 @@ function openStarEntry() {
       const mark = el('span', { class: 'star-mark', text: s.rating != null ? '✓' : '' });
 
       const save = () => {
-        const raw = star.value.trim();
+        const raw = star.value.trim().normalize('NFKC');
         const patch = { id: id };
+        // 星が空のまま件数だけ打たれたときに消しにいくと、
+        // 欄には数字が残るのに保存されない、という食い違いになる
+        if (raw === '' && cnt.value.trim() !== '' && s.rating == null) {
+          toast('先に星（例 3.8）を入れてください');
+          star.focus();
+          return;
+        }
         if (raw === '') {
           patch.rating = null;
           patch.ratingCount = null;
@@ -1181,7 +1377,8 @@ function openStarEntry() {
           if (!(v >= 0 && v <= 5)) { toast('0〜5の数値を入れてください'); star.focus(); return; }
           patch.rating = Math.round(v * 10) / 10;
           const c = cnt.value.trim();
-          patch.ratingCount = c === '' ? null : (Number(c) || null);
+          const cv = Number(c);
+          patch.ratingCount = c === '' || !Number.isFinite(cv) ? null : cv;
           patch.ratingSource = 'google';
           patch.ratingCheckedAt = todayStr();
         }
@@ -1274,10 +1471,17 @@ function openHerePicker() {
 }
 
 async function openPlanManager() {
+  const seq = sheetSeq;
   const floors = [...new Set(stores.map((x) => x.floor))]
     .sort((a, b) => FLOOR_ORDER.indexOf(a) - FLOOR_ORDER.indexOf(b));
   let have = [];
-  try { have = await planKeys(); } catch (e) { toast(e.message); }
+  let storeBroken = false;
+  try {
+    have = await planKeys();
+  } catch (e) {
+    storeBroken = true;
+    toast('この端末では平面図を保存できません（' + e.message + '）');
+  }
 
   const file = el('input', { type: 'file', accept: 'image/*', hidden: 'hidden' });
   let pending = null;
@@ -1309,16 +1513,21 @@ async function openPlanManager() {
         }),
         has ? el('button', {
           class: 'btn btn--ghost btn--danger', type: 'button', text: '消す',
-          onclick: async () => { await planDel(key); openPlanManager(); },
+          onclick: async () => {
+            try { await planDel(key); } catch (e) { toast('消せませんでした: ' + e.message); }
+            openPlanManager();
+          },
         }) : null,
       ]));
     }
   }
 
+  if (seq !== sheetSeq) return; // 読み込み中に閉じられた
   openSheet([
     el('h2', { text: 'フロアの平面図' }),
     el('p', { class: 'sheet-sub', text: '公式サイトの平面図を保存しておくと、店の詳細から開いて「区画番号がどこか」をその場で確かめられます。地下で電波が届かなくても見られます。画像はこの端末の中だけに保存され、どこにも送られません。' }),
-    el('p', { class: 'sheet-sub', text: '取り込み方: 店の詳細にある「公式の平面図」を開き、平面図の画像を長押しして保存 → ここで選ぶ。' }),
+    el('p', { class: 'sheet-sub', text: '取り込み方: 店の詳細にある「公式の平面図を開く」から平面図の画像を長押しして保存 → ここで選ぶ。' }),
+    storeBroken ? el('div', { class: 'banner', text: 'この端末では画像を保存できません。プライベートブラウズを使っていると保存領域が使えないことがあります。' }) : null,
     file,
     rows,
     el('div', { class: 'btnrow' }, [
@@ -1331,8 +1540,16 @@ async function openPlanManager() {
 // 350件ぶんの座標を machine で当てるのは無理なので、歩きながら1件ずつ
 // 置いてもらう。置いた位置は端末内（user[id].pin）に残る。
 async function openPlanViewer(store) {
+  const seq = sheetSeq;
   let url = null;
-  try { url = await planGet(planKey(store.building, store.floor)); } catch (e) { /* 後で案内 */ }
+  try {
+    url = await planGet(planKey(store.building, store.floor));
+  } catch (e) {
+    // 「まだありません」で取り込み画面に送ると、保存できない端末では往復し続ける
+    toast('この端末では平面図を保存できません（' + e.message + '）');
+    return;
+  }
+  if (seq !== sheetSeq) return; // 読み込み中に閉じられた
   if (!url) {
     toast('第' + store.building + 'ビル ' + store.floor + ' の平面図がまだありません');
     openPlanManager();
@@ -1346,6 +1563,21 @@ async function openPlanViewer(store) {
   const stage = el('div', { class: 'planstage' }, [img, pin]);
   const scroller = el('div', { class: 'planscroll' }, [stage]);
 
+  // 削除ボタンは常に作って出し入れする。開いた瞬間の状態で作ると、
+  // その場で初めて置いたピンを消せない
+  const delBtn = el('button', {
+    class: 'btn btn--ghost btn--danger', type: 'button', text: 'ピンを消す',
+    onclick: () => {
+      delete ud.pin;
+      saveUser();
+      placing = false;
+      stage.classList.remove('is-placing');
+      placeBtn.textContent = 'ここだ！とピンを置く';
+      drawPin();
+      toast('ピンを消しました');
+    },
+  });
+
   const drawPin = () => {
     if (ud.pin) {
       pin.hidden = false;
@@ -1354,6 +1586,7 @@ async function openPlanViewer(store) {
     } else {
       pin.hidden = true;
     }
+    delBtn.hidden = !ud.pin;
   };
 
   stage.addEventListener('click', (e) => {
@@ -1402,10 +1635,7 @@ async function openPlanViewer(store) {
     scroller,
     el('div', { class: 'btnrow' }, [placeBtn, zoomBtn]),
     el('div', { class: 'btnrow' }, [
-      ud.pin ? el('button', {
-        class: 'btn btn--ghost btn--danger', type: 'button', text: 'ピンを消す',
-        onclick: () => { delete ud.pin; saveUser(); drawPin(); placeBtn.textContent = 'ここだ！とピンを置く'; },
-      }) : null,
+      delBtn,
       el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: () => openDetail(store.id) }),
     ]),
   ]);
@@ -1431,7 +1661,7 @@ function openMenu() {
 
   openSheet([
     el('h2', { text: 'メニュー' }),
-    el('p', { class: 'sheet-sub', text: 'お気に入り・メモ・追加した店は、この端末のブラウザに保存されています。' }),
+    el('p', { class: 'sheet-sub', text: 'お気に入り・メモ・追加した店は、この端末のブラウザに保存されています。バックアップには取り込んだ平面図は含まれません（画像が大きいため）。' }),
     unverified ? el('div', { class: 'banner' }, [
       '未確認の店が ' + unverified + ' 件あります。階や区画の裏が取れていないので、現地で確認したら詳細画面のボタンを押してください。',
       el('div', {}, [el('button', {
@@ -1475,7 +1705,7 @@ function openMenu() {
     ]),
     el('p', { class: 'sheet-sub', text: '書き出した stores.json を ekimae/data/stores.json に置いて公開すると、全員がその店リストを見られます。' }),
     el('div', { class: 'field' }, [
-      el('label', { text: 'CSVで一括登録（name,building,floor,block,category,tags,budget,hours,closedDays）' }),
+      el('label', { text: 'CSVで一括登録（1行目の見出しから列を判別します。店名・区画・業種・タグ・予算・営業時間・定休日・よみ・電話・URL に対応）' }),
       csvBox(),
     ]),
     el('div', { class: 'btnrow' }, [
@@ -1483,11 +1713,15 @@ function openMenu() {
       el('button', {
         class: 'btn btn--ghost btn--danger', type: 'button', text: 'この端末の記録を全消去',
         onclick: () => {
-          if (!confirm('お気に入り・メモ・追加した店をすべて消します。元に戻せません。')) return;
+          if (!confirm('お気に入り・メモ・追加した店・取り込んだ平面図をすべて消します。元に戻せません。')) return;
           localStorage.removeItem(KEY.user);
           localStorage.removeItem(KEY.custom);
           localStorage.removeItem(KEY.deleted);
+          localStorage.removeItem(KEY.ui);
           user = {}; custom = []; deleted = [];
+          ui = sanitizeUI({});
+          // 取り込んだ平面図も端末内の記録。残すと数MBが居座り続ける
+          planKeys().then((ks) => Promise.all(ks.map(planDel))).catch(() => {});
           rebuild();
           render();
           closeSheet();
@@ -1500,56 +1734,210 @@ function openMenu() {
 }
 
 function csvBox() {
-  const ta = el('textarea', { placeholder: '立ち飲み○○,3,B2,B2-31,立ち飲み,立ち飲み|現金のみ,~2000,11:00-21:00,日|祝' });
-  const wrap = el('div', {}, [
+  const ta = el('textarea', {
+    placeholder: '区画,店名,業種\n68,立呑パーラー 西澤商店,立ち飲み\n\n1行目に見出しがあれば、並び順は問いません。',
+  });
+
+  // 見出しに ビル / フロア が無いCSV（data/stores.template.csv がそう）を
+  // 貼ったときに、どこの階として入れるかを決める
+  const selB = el('select', {}, BUILDINGS.map((b) => el('option', { value: String(b), text: '第' + b + 'ビル' })));
+  const selF = el('select', {}, ['B2', 'B1', '1F', '2F'].map((f) => el('option', { value: f, text: f })));
+
+  const run = () => {
+    const b = Number(selB.value), f = selF.value;
+    let read;
+    try {
+      read = readCSV(ta.value, b, f);
+    } catch (e) {
+      toast('読み取れませんでした: ' + e.message);
+      return;
+    }
+    if (!read.items.length) {
+      toast(read.skipped.length ? '取り込める行がありませんでした（' + read.skipped[0].why + '）' : '中身が空です');
+      return;
+    }
+    // 列の取り違えに気づけないまま登録されるのが一番困るので、必ず一度見せる
+    const first = read.items[0];
+    const sample = '1行目はこう読みました:\n'
+      + '  店名: ' + first.name + '\n'
+      + '  場所: 第' + first.building + 'ビル ' + first.floor + (first.block ? ' / ' + first.block : '') + '\n'
+      + '  業種: ' + (first.category || '—') + '\n'
+      + '  タグ: ' + (first.tags.join('、') || '—') + '\n\n';
+    const skipNote = read.skipped.length
+      ? read.skipped.length + '行は飛ばします（' + read.skipped.slice(0, 3).map((x) => x.why).join('、') + '）\n'
+      : '';
+    const noteText = read.notes.length ? read.notes.join('\n') + '\n' : '';
+    if (!confirm(read.items.length + '件を取り込みます（' + read.mode + '）。\n\n' + sample + noteText + skipNote + '続けますか？')) return;
+
+    const r = applyCSV(read.items);
+    ta.value = '';
+    toast('新規 ' + r.added + '件 / 更新 ' + r.updated + '件');
+  };
+
+  return el('div', {}, [
     ta,
+    el('div', { class: 'csvwhere' }, [
+      el('span', { text: '見出しに ビル / フロア が無いとき:' }),
+      selB, selF,
+    ]),
     el('div', { class: 'btnrow' }, [
-      el('button', {
-        class: 'btn btn--ghost', type: 'button', text: 'CSVを取り込む',
-        onclick: () => {
-          const added = importCSV(ta.value);
-          if (added) { ta.value = ''; toast(added + '件を登録しました'); }
-        },
-      }),
+      el('button', { class: 'btn btn--ghost', type: 'button', text: 'CSVを取り込む', onclick: run }),
     ]),
   ]);
-  return wrap;
 }
 
-function importCSV(text) {
-  const lines = String(text).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  let n = 0;
-  for (const line of lines) {
-    const c = line.split(',').map((x) => x.trim());
-    if (!c[0] || /^name$/i.test(c[0])) continue;
-    custom.push({
-      id: 'c-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6) + '-' + n,
-      name: c[0],
-      building: Number(c[1]) || 1,
-      floor: c[2] || 'B1',
-      block: c[3] || '',
-      category: c[4] || '',
-      tags: (c[5] || '').split('|').map((t) => t.trim()).filter(Boolean),
-      budget: c[6] || '',
-      hours: c[7] || '',
-      closedDays: (c[8] || '').split('|').map((t) => t.trim()).filter(Boolean),
-      pos: null,
-      source: 'manual',
-      verified: false,
-    });
-    n++;
+// 列の見出しの揺れ。tools/ingest.py の ALIASES と合わせてある
+const CSV_ALIASES = {
+  name: ['name', '店名', '店舗名', '名称'],
+  kana: ['kana', 'よみ', 'ヨミ', 'かな', '読み'],
+  building: ['building', 'ビル', '建物', '号館'],
+  floor: ['floor', 'フロア', '階'],
+  block: ['block', '区画', '区画番号', '号', '室'],
+  category: ['category', '業種', 'カテゴリ', 'ジャンル', '種別'],
+  tags: ['tags', 'タグ'],
+  budget: ['budget', '予算'],
+  hours: ['hours', '営業時間', '時間'],
+  closedDays: ['closeddays', '定休日', '休み', '休'],
+  phone: ['phone', 'tel', '電話', '電話番号'],
+  url: ['url', 'サイト', 'ホームページ', 'hp'],
+};
+
+// 見出しが無いときの並び。CSV欄のラベルと揃えること
+const CSV_POSITIONS = ['name', 'building', 'floor', 'block', 'category', 'tags', 'budget', 'hours', 'closedDays'];
+
+// 引用符に対応した CSV/TSV の読み取り。
+// 単純な split(',') だと "11:00-14:30,17:00-22:00" のような値が割れる
+function parseCSV(text) {
+  const src = String(text).replace(/\r\n?/g, '\n');
+  const rows = [];
+  let row = [], cell = '', quoted = false;
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i];
+    if (quoted) {
+      if (ch === '"') {
+        if (src[i + 1] === '"') { cell += '"'; i++; } else quoted = false;
+      } else cell += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === ',' || ch === '\t') { row.push(cell); cell = ''; }
+    else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += ch;
   }
-  if (n) { saveCustom(); rebuild(); render(); }
-  else toast('取り込める行がありませんでした');
-  return n;
+  row.push(cell); rows.push(row);
+  return rows.map((r) => r.map((c) => c.trim())).filter((r) => r.some((c) => c !== ''));
+}
+
+function headerField(raw) {
+  const k = String(raw || '').normalize('NFKC').trim().toLowerCase();
+  if (!k) return null;
+  for (const field in CSV_ALIASES) {
+    if (CSV_ALIASES[field].some((a) => a.toLowerCase() === k)) return field;
+  }
+  return null;
+}
+
+const splitList = (v) => String(v || '').split(/[|,、]/).map((x) => x.trim()).filter(Boolean);
+
+/* CSV を読み取って、取り込む内容を組み立てる（まだ保存はしない）。
+
+   以前は列の位置で決め打ちしていたため、README が案内している
+   data/stores.template.csv（見出しが 区画,店名,よみ,… で並びも違う）を
+   貼ると、見出し行まで店として登録され、店名の欄に「区画」が入るなど
+   デタラメな行が端末に残っていた。見出しから列を判別する。 */
+function readCSV(text, fallbackBuilding, fallbackFloor) {
+  const rows = parseCSV(text);
+  if (!rows.length) return { items: [], skipped: [], mode: '' };
+
+  const mapped = rows[0].map(headerField);
+  const hasHeader = mapped.some(Boolean);
+  const map = hasHeader ? mapped : CSV_POSITIONS;
+  const body = hasHeader ? rows.slice(1) : rows;
+
+  // 読めなかった見出しは、その列が丸ごと捨てられる。黙って捨てると
+  // 「ビルディング」と書いただけで全部が第1ビルに化ける
+  const unknown = hasHeader
+    ? rows[0].filter((h, i) => h !== '' && !mapped[i])
+    : [];
+
+  const items = [], skipped = [], notes = [];
+  if (unknown.length) notes.push('読めない見出し: ' + unknown.join('、'));
+  for (const r of body) {
+    const rec = {};
+    r.forEach((cell, i) => { if (map[i] && cell !== '') rec[map[i]] = cell; });
+    if (!rec.name) { skipped.push({ row: r.join(','), why: '店名が空' }); continue; }
+
+    // フロアと同じく全角を直してから読む。ここを抜かすと「３」が読めず
+    // 既定のビルに化けたまま、不正としても弾かれない
+    const rawB = String(rec.building || '').normalize('NFKC').replace(/[^0-9]/g, '');
+    if (rec.building && !rawB) { skipped.push({ row: rec.name, why: 'ビルが読めない（' + rec.building + '）' }); continue; }
+    const building = Number(rawB) || fallbackBuilding;
+    const floor = String(rec.floor || fallbackFloor).normalize('NFKC').toUpperCase();
+    if (!BUILDINGS.includes(building)) { skipped.push({ row: rec.name, why: 'ビルが不正' }); continue; }
+    if (!FLOOR_ORDER.includes(floor)) { skipped.push({ row: rec.name, why: 'フロアが不正（' + floor + '）' }); continue; }
+
+    if (rec.category && !CATEGORIES.includes(rec.category)) notes.push('業種「' + rec.category + '」は一覧に無いので空にします');
+    const closed = splitList(rec.closedDays);
+    const closedOk = closed.filter((d) => DOW.includes(d) || d === '祝');
+    if (closed.length !== closedOk.length) notes.push('定休日は 日月火水木金土祝 のみ（' + closed.filter((d) => !closedOk.includes(d)).join('、') + ' を無視）');
+
+    items.push({
+      id: makeId(building, floor, rec.name),
+      name: rec.name,
+      kana: rec.kana || '',
+      building: building,
+      floor: floor,
+      block: rec.block || '',
+      category: CATEGORIES.includes(rec.category) ? rec.category : '',
+      tags: splitList(rec.tags),
+      budget: rec.budget || '',
+      hours: rec.hours || '',
+      closedDays: closedOk,
+      phone: rec.phone || '',
+      url: rec.url || '',
+    });
+  }
+  // 同じビル・フロア・店名は同じ ID になるので1件にまとまる。
+  // 「2件を取り込みます」と言って1件しかできないと混乱する
+  const uniq = new Map();
+  for (const it of items) uniq.set(it.id, it);
+  if (uniq.size !== items.length) notes.push((items.length - uniq.size) + '行は同じ店なのでまとめます');
+  return {
+    items: [...uniq.values()], skipped: skipped,
+    notes: [...new Set(notes)],
+    mode: hasHeader ? '見出しあり' : '位置で判別',
+  };
+}
+
+function applyCSV(items) {
+  const baseIds = new Set(base.stores.map((x) => x.id));
+  let added = 0, updated = 0;
+  for (const it of items) {
+    const i = custom.findIndex((c) => c.id === it.id);
+    // 配布データに同じ店があるなら、全部を上書きせず、書いてある項目だけ足す
+    const payload = baseIds.has(it.id)
+      ? Object.keys(it).reduce((o, k) => {
+        const v = it[k];
+        if (k === 'id' || (Array.isArray(v) ? v.length : v !== '')) o[k] = v;
+        return o;
+      }, {})
+      : Object.assign({}, it, { pos: null, source: 'manual', verified: false });
+    if (i < 0) { custom.push(payload); added++; } else { custom[i] = Object.assign({}, custom[i], payload); updated++; }
+  }
+  if (added || updated) { saveCustom(); rebuild(); render(); }
+  return { added: added, updated: updated };
 }
 
 function importPayload(data) {
   if (data && data.kind === 'ekimae-backup') {
     if (!confirm('バックアップを読み込みます。現在の記録は置き換わります。')) return;
+    // 中身を検めずに保存すると、壊れた値が端末に残って次回起動から開けなくなる
+    if ((data.user && typeof data.user !== 'object') || (data.custom && !Array.isArray(data.custom))
+        || (data.deleted && !Array.isArray(data.deleted))) {
+      toast('バックアップの中身が壊れています');
+      return;
+    }
     user = data.user || {};
-    custom = data.custom || [];
-    deleted = data.deleted || [];
+    custom = (data.custom || []).filter((c) => c && c.id);
+    deleted = (data.deleted || []).filter((x) => typeof x === 'string');
     saveUser(); saveCustom(); saveDeleted();
     rebuild();
     render();
@@ -1558,15 +1946,32 @@ function importPayload(data) {
     return;
   }
   if (data && Array.isArray(data.stores)) {
-    if (!confirm(data.stores.length + '件の店データを取り込みます（既存IDは上書き）。')) return;
+    if (!confirm(data.stores.length + '件の店データを、この端末の中にまるごと取り込みます。\n'
+        + '以後この端末では、取り込んだ内容が優先され、配布側の店リストを直しても反映されなくなります。\n'
+        + '続けますか？')) return;
+    // 形を検めてから入れる。壊れた行をそのまま保存すると、
+    // この場は失敗に見えるのに次回起動で開けなくなり、記録ごと失う
+    const ok = [], bad = [];
     for (const s of data.stores) {
-      if (!s || !s.id) continue;
+      if (!s || typeof s !== 'object' || !s.id || !s.name) { bad.push(s); continue; }
+      if (!BUILDINGS.includes(Number(s.building))) { bad.push(s); continue; }
+      if (!FLOOR_ORDER.includes(String(s.floor))) { bad.push(s); continue; }
+      ok.push(Object.assign({}, s, {
+        building: Number(s.building),
+        tags: Array.isArray(s.tags) ? s.tags : [],
+        aliases: Array.isArray(s.aliases) ? s.aliases : [],
+        closedDays: Array.isArray(s.closedDays) ? s.closedDays : [],
+      }));
+    }
+    if (!ok.length) { toast('取り込める店がありませんでした（' + bad.length + '件が不正）'); return; }
+    for (const s of ok) {
       const i = custom.findIndex((c) => c.id === s.id);
       if (i < 0) custom.push(s); else custom[i] = s;
       const di = deleted.indexOf(s.id);
       if (di >= 0) deleted.splice(di, 1);
     }
     saveCustom(); saveDeleted();
+    if (bad.length) toast(bad.length + '件は形が違うので飛ばしました');
     rebuild();
     render();
     closeSheet();
@@ -1613,7 +2018,13 @@ function bind() {
   $('#btn-here').addEventListener('click', openHerePicker);
 
   // 条件を変えるたびに閉じて確かめる往復が要らないよう、ここで件数を返す
-  $('#btn-apply').addEventListener('click', () => {
+  $('#btn-apply').addEventListener('click', (e) => {
+    if (e.currentTarget.dataset.zero === '1') {
+      ui.buildings = []; ui.floors = []; ui.cats = []; ui.tags = []; ui.misc = [];
+      saveUI();
+      render();
+      return;
+    }
     ui.filtersOpen = false;
     saveUI();
     syncFilterBar();
@@ -1637,6 +2048,10 @@ function bind() {
   $('#btn-add').addEventListener('click', () => openEditor(null));
   $('#btn-menu').addEventListener('click', openMenu);
 
+  document.addEventListener('click', trackPoint, true);
+  document.addEventListener('touchstart', trackPoint, { capture: true, passive: true });
+  window.addEventListener('resize', detectEmbedded);
+
   $('#sheet').addEventListener('click', (e) => { if (e.target.hasAttribute('data-close')) closeSheet(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
 }
@@ -1652,8 +2067,28 @@ async function boot() {
     base = { floors: {}, stores: [] };
     toast('初期データを読めませんでした（' + e.message + '）');
   }
-  rebuild();
-  render();
+  // 端末内の記録が壊れていると、ここで落ちて画面が空のままになる。
+  // そうなるとブラウザのデータ削除以外に戻す手段が無くなるので、拾って案内する
+  try {
+    rebuild();
+    render();
+  } catch (e) {
+    if (confirm('端末内に保存した記録が壊れていて、開けませんでした。\n'
+        + '記録（お気に入り・メモ・追加した店）を消して開き直しますか？\n\n' + e.message)) {
+      // 画面の状態（ui）が壊れている場合もここに来る。消し忘れると
+      // 記録だけ消えて画面は空のまま、という最悪の結果になる
+      localStorage.removeItem(KEY.user);
+      localStorage.removeItem(KEY.custom);
+      localStorage.removeItem(KEY.deleted);
+      localStorage.removeItem(KEY.ui);
+      user = {}; custom = []; deleted = [];
+      ui = sanitizeUI({});
+      rebuild();
+      render();
+    } else {
+      throw e;
+    }
+  }
 
   // manifest を宣言しているページ（=デプロイ版）でだけ Service Worker を使う。
   // 埋め込み表示などでは古いキャッシュが残って更新が届かなくなるため登録しない。

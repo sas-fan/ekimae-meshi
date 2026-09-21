@@ -232,7 +232,10 @@ button, input, select, textarea {
   z-index: 15;
   display: flex;
   align-items: center;
-  /* 「いまここ」が増えて 390px では折り返していた。詰めて1行に収める */
+  /* 「いまここ」が増えて 390px では折り返していた。詰めて1行に収める。
+     ただし 320px で「いまここ」に階名が入ると入りきらないので、
+     はみ出す前に折り返させる（横スクロールが出るよりはよい） */
+  flex-wrap: wrap;
   gap: 6px;
   padding: 7px 10px;
   background: var(--bg-elev);
@@ -478,7 +481,17 @@ main { padding: 0 12px calc(40px + env(safe-area-inset-bottom)); }
 
 .btnrow { display: flex; gap: 8px; margin: 12px 0 4px; flex-wrap: wrap; }
 
+.btn[hidden] { display: none; }
+
 .btn {
+  /* <a> にも付けるので、リンクの既定（青い下線）を打ち消して
+     文字を中央に置く。button と見た目を揃えるため */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
   flex: 1 1 auto;
   min-height: 42px;
   padding: 0 14px;
@@ -571,13 +584,18 @@ main { padding: 0 12px calc(40px + env(safe-area-inset-bottom)); }
   top: 44px;
   z-index: 14;
   display: flex;
+  /* 条件が増えたとき横スクロールだと「まだ先がある」ことが伝わらない。
+     チップ一覧と同じく折り返す */
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
   padding: 7px 12px;
   background: var(--bg-elev);
   border-bottom: 1px solid var(--line);
 }
+
+/* display を指定すると hidden 属性が効かなくなる。空のときに
+   15px の帯と境界線だけ残っていた */
+.activefilters[hidden] { display: none; }
 .activefilters::-webkit-scrollbar { display: none; }
 
 .activechip {
@@ -745,4 +763,51 @@ main { padding: 0 12px calc(40px + env(safe-area-inset-bottom)); }
   color: var(--accent);
   text-shadow: 0 0 3px var(--bg-elev), 0 0 6px var(--bg-elev);
   pointer-events: none;
+}
+
+
+/* ---------- 埋め込み表示（Artifact など）への対応 ----------
+   親がスクロールする枠の中では position: fixed が画面ではなく
+   ページ全体を基準にしてしまう。固定をやめて、触った場所の近くに出す。 */
+/* absolute + inset:0 は「ページ先頭の1画面ぶん」しか覆わないため、
+   下のほうでシートを開くと背景が敷かれず、外側を押しても閉じられなかった。
+   ページ全体を覆わせる */
+html.is-embedded .sheet {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: auto;
+  height: auto;
+  min-height: 100%;
+}
+
+html.is-embedded .sheet-panel {
+  position: absolute;
+  left: 8px; right: 8px; bottom: auto;
+  max-height: none;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 12px 44px rgba(0, 0, 0, .35);
+  animation: none;
+}
+
+html.is-embedded .toast {
+  position: absolute;
+  bottom: auto;
+}
+
+/* 枠の中はスクロールしないので sticky は効かない。
+   効かないものが中途半端に重なるより、素直に流したほうが崩れない。 */
+html.is-embedded .filterbar,
+html.is-embedded .activefilters,
+html.is-embedded .filters-foot,
+html.is-embedded .floorgroup h2 {
+  position: static;
+}
+
+.csvwhere {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin-top: 6px; font-size: 11px; color: var(--fg-dim);
+}
+.csvwhere select {
+  padding: 6px 8px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg-elev2); color: var(--fg); font-size: 13px;
 }

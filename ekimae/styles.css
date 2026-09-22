@@ -811,3 +811,149 @@ html.is-embedded .floorgroup h2 {
   padding: 6px 8px; border-radius: 8px;
   border: 1px solid var(--line); background: var(--bg-elev2); color: var(--fg); font-size: 13px;
 }
+
+/* 同期しているかどうかは、信用に関わるので必ず見せる */
+.syncline {
+  display: flex; align-items: center; gap: 7px;
+  margin: 10px 0 2px; font-size: 12px; color: var(--fg-dim);
+}
+.syncdot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--fg-dim); flex: 0 0 auto;
+}
+.syncline.is-on { color: var(--ok); }
+.syncline.is-on .syncdot { background: var(--ok); }
+
+/* 行ったことがある店は、一覧でも分かるようにする */
+.card-visit { color: var(--ok); font-weight: 700; font-size: 13px; flex: 0 0 auto; }
+.btn--done { background: var(--bg-elev); color: var(--fg-dim); }
+
+/* 長いシートでも、いつでも閉じられるように上に置く */
+.sheet-x {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 2;
+  width: 36px; height: 36px;
+  margin: -6px -4px 0 0;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg-elev2);
+  color: var(--fg);
+  font-size: 20px; line-height: 1;
+  cursor: pointer;
+}
+
+/* 埋め込みでは高さを端末の画面に合わせ、中で送る（先頭の店名が見える） */
+html.is-embedded .sheet-panel { overflow-y: auto; }
+
+/* 区画番号から割り出した目安の位置。自分で置いたピン（▼）とは別の印 */
+.planauto { position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 1; }
+.planauto-dot {
+  display: block; width: 20px; height: 20px; margin: 0 auto;
+  border: 3px solid var(--accent); border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .9);
+}
+.planauto-tag {
+  display: block; margin-top: 3px; padding: 1px 5px; border-radius: 6px;
+  background: var(--accent); color: #fff; font-size: 11px; font-weight: 700;
+  white-space: nowrap; box-shadow: 0 0 0 2px rgba(255, 255, 255, .9);
+}
+
+/* マップのマスに出す、探すとき効くタグ（立ち飲み／未確認） */
+.gridcell-tags { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 2px; }
+.gridtag {
+  font-size: 9px; line-height: 1.5; padding: 0 4px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--bg-elev2);
+  color: var(--fg-dim); white-space: nowrap;
+}
+.gridtag--warn { border-color: var(--danger); color: var(--danger); background: transparent; }
+
+/* ---- マップ表示：公式の平面図の上に店を置く ---- */
+.planmap { margin: 6px 0 10px; }
+.planmap-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.planmap-stage { position: relative; width: 100%; line-height: 0; }
+.planmap-stage.is-zoom { width: 230%; }
+.planmap-img { width: 100%; display: block; }
+
+.planmark {
+  position: absolute; transform: translate(-50%, -50%);
+  padding: 0; border: 0; background: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.planmark-dot {
+  display: block; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--accent); border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .35);
+}
+.planmark.is-dim { z-index: 0; }
+.planmark.is-dim .planmark-dot {
+  width: 8px; height: 8px; background: #9aa5b1; border-width: 1px;
+  opacity: .5; box-shadow: none;
+}
+.planmark.is-hit { z-index: 2; }
+.planmark.is-fav .planmark-dot { background: var(--fav-line); }
+.planmark.is-visited .planmark-dot { box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--ok); }
+/* 区画がぴったり一致しなかった店は、位置が目安であることを見せる */
+.planmark.is-near.is-hit .planmark-dot { background: transparent; border-color: var(--accent); box-shadow: 0 0 0 1px #fff inset, 0 0 0 1px rgba(0,0,0,.35); }
+.planmark-name {
+  max-width: 96px; padding: 1px 5px; border-radius: 6px;
+  background: var(--accent); color: var(--accent-ink);
+  font-size: 10px; font-weight: 700; line-height: 1.4;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+}
+.planmark.is-focus .planmark-dot { animation: pinpulse 1.2s ease-out 2; }
+@keyframes pinpulse {
+  0% { box-shadow: 0 0 0 0 var(--accent); }
+  100% { box-shadow: 0 0 0 14px rgba(210, 118, 11, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .planmark.is-focus .planmark-dot { animation: none; } }
+
+.planmap-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.planmap-foot .btn { flex: 0 0 auto; width: auto; }
+.planmap-note { font-size: 11px; color: var(--fg-dim); }
+.btn--sm { padding: 4px 10px; font-size: 12px; }
+
+/* ---- 入口（合言葉） ---- */
+html.is-gated body > *:not(.gate) { visibility: hidden; }
+.gate {
+  position: fixed; inset: 0; z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px; background: var(--bg);
+}
+.gate[hidden] { display: none !important; }
+.gate-card {
+  width: 100%; max-width: 340px; text-align: center;
+  background: var(--bg-elev); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 24px 20px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .12);
+}
+.gate-title { margin: 0 0 10px; font-size: 22px; }
+.gate-note { margin: 0 0 16px; font-size: 13px; line-height: 1.7; color: var(--fg-dim); text-align: left; }
+.gate-form { display: flex; flex-direction: column; gap: 10px; }
+.gate-input {
+  width: 100%; padding: 11px 12px; font-size: 16px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--bg); color: var(--fg);
+}
+.gate-err { margin: 0; font-size: 13px; color: var(--danger); }
+.gate-err[hidden] { display: none; }
+
+/* ---- みんなの記録 ---- */
+.card-crowd {
+  margin-left: 6px; padding: 1px 6px; border-radius: 8px;
+  background: var(--bg-elev2); color: var(--fg-dim);
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.crowd { list-style: none; margin: 0; padding: 0; }
+.crowd-row {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13px;
+}
+.crowd-row:last-child { border-bottom: 0; }
+.crowd-row.is-me .crowd-name { font-weight: 700; }
+.crowd-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crowd-stars { color: var(--fav-line); letter-spacing: 1px; }
+.crowd-visits { color: var(--fg-dim); font-size: 12px; min-width: 4em; text-align: right; }
+.crowd-empty { margin: 0; font-size: 13px; color: var(--fg-dim); }

@@ -7,6 +7,7 @@ const KEY = {
   custom: NS + '.custom',
   deleted: NS + '.deleted',
   ui: NS + '.ui',
+  me: NS + '.me',       // 自分が誰か（名前と、合言葉を通ったかどうか）
 };
 
 const BUILDINGS = [1, 2, 3, 4];
@@ -31,6 +32,7 @@ const MISC_FILTERS = [
   { id: 'memo', label: 'メモあり' },
   { id: 'visited', label: '訪問済み' },
   { id: 'unvisited', label: '未訪問' },
+  { id: 'crowd', label: '仲間の記録あり' },
   { id: 'r35', label: '星3.5+' },
   { id: 'r40', label: '星4.0+' },
   { id: 'unverified', label: '未確認' },
@@ -44,6 +46,14 @@ let base = { floors: {}, stores: [] };
 let user = readJSON(KEY.user, {});
 let custom = readJSON(KEY.custom, []);
 let deleted = readJSON(KEY.deleted, []);
+
+// みんなの記録。mates[店のID][メンバーID] = { rating, visits, t }
+// 自分のぶんは user[] に入っているので、ここには入れない。
+let mates = {};
+// メンバーID → 表示名
+let memberNames = {};
+// 自分が誰か。id はメンバーID、name は表示名、ok は通した合言葉の指紋
+let me = readJSON(KEY.me, null);
 const UI_DEFAULTS = {
   view: 'list', sort: 'default', q: '',
   buildings: [], floors: [], cats: [], tags: [], misc: [],
@@ -97,10 +107,34 @@ function writeJSON(k, v) {
   }
 }
 
-const saveUser = () => writeJSON(KEY.user, user);
-const saveCustom = () => writeJSON(KEY.custom, custom);
-const saveDeleted = () => writeJSON(KEY.deleted, deleted);
-const saveUI = () => writeJSON(KEY.ui, ui);
+const saveUser = () => { writeJSON(KEY.user, user); cloudPush(); };
+const saveCustom = () => { writeJSON(KEY.custom, custom); cloudPush(); };
+const saveDeleted = () => { writeJSON(KEY.deleted, deleted); cloudPush(); };
+const saveUI = () => writeJSON(KEY.ui, ui);  // 画面の状態は端末ごと。同期しない
+
+// その店に記録を残した人を、自分も含めて並べて返す
+function crowd(storeId) {
+  const out = [];
+  const mine = user[storeId];
+  if (mine && (mine.rating || (mine.visits && mine.visits.length))) {
+    out.push({ by: myId() || 'me', me: true, rating: mine.rating || 0,
+      visits: (mine.visits || []).length });
+  }
+  const others = mates[storeId] || {};
+  for (const id in others) {
+    const o = others[id];
+    if (!o.rating && !(o.visits && o.visits.length)) continue;
+    out.push({ by: id, me: false, rating: o.rating || 0, visits: (o.visits || []).length });
+  }
+  return out;
+}
+
+// みんなの星の平均。1人も付けていなければ null
+function crowdRating(storeId) {
+  const rs = crowd(storeId).filter((c) => c.rating).map((c) => c.rating);
+  if (!rs.length) return null;
+  return rs.reduce((a, b) => a + b, 0) / rs.length;
+}
 
 function u(id) {
   if (!user[id]) user[id] = { fav: false, memo: '', tags: [], rating: 0, visits: [] };
@@ -168,6 +202,30 @@ async function planDel(key) {
   });
 }
 
+// アプリに同梱してある公式の平面図。個人用なので手元に置いてある。
+// 取り込み済みの画像があればそちらを優先する（差し替えできるように）。
+const BUNDLED_PLANS = ['b1-B1', 'b1-B2', 'b2-B1', 'b2-B2', 'b3-B1', 'b3-B2', 'b4-B1', 'b4-B2'];
+
+function bundledPlanUrl(key) {
+  return BUNDLED_PLANS.includes(key) ? 'plans/' + key + '.jpg' : null;
+}
+
+// 取り込み済み → 同梱 の順に探す。IndexedDB が使えない端末でも
+// 同梱ぶんだけは見られるように、失敗しても投げない。
+async function planResolve(key) {
+  let saved = null;
+  let broken = null;
+  try {
+    saved = await planGet(key);
+  } catch (e) {
+    broken = e;
+  }
+  if (saved) return { url: saved, kind: 'saved', error: null };
+  const b = bundledPlanUrl(key);
+  if (b) return { url: b, kind: 'bundled', error: null };
+  return { url: null, kind: null, error: broken };
+}
+
 async function planKeys() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -210,6 +268,435 @@ function shrinkImage(file, maxSide = 1600) {
     setTimeout(() => reject(new Error('時間内に読み込めませんでした')), 20000);
     fr.readAsDataURL(file);
   });
+}
+
+/* ---------------- 端末間の同期 ----------------
+
+claude.ai の Artifact として開いたときだけ、記録をクラウドに置いて
+PC とスマホで同じものを見られるようにする。ログインは claude.ai の
+ログインをそのまま使うので、新しい ID もパスワードも作らない。
+
+保存先は「自分だけが読み書きできる領域」で、他の人からは見えない。
+GitHub Pages やローカルで開いたときは claude.use が無いので、
+これまでどおり端末の中だけで動く（何も壊れない）。
+
+店ごとに1件ずつ持つので、片方の端末で別の店を触っても取り合いにならない。
+同じ店を同時に触ったときは、あとから書いたほうが残る。
+--------------------------------------------------------------- */
+
+const cloud = {
+  on: false,        // 同期が生きているか
+  shared: false,    // 友だちとの共有が生きているか
+  status: '',       // メニューに出す文言
+  notes: null,      // 店ごとの自分の記録（自分の端末だけ）
+  meta: null,       // 消した店の一覧（みんなで共有）
+  edits: null,      // 店ごとの追加・編集（みんなで共有）
+  reviews: null,    // 店ごと・人ごとの星と訪問（みんなで共有）
+  members: null,    // メンバーの表示名（みんなで共有）
+  config: null,     // 合言葉の指紋（みんなで共有）
+  shadowUser: {},   // 送信済みの中身（差分だけ送るため）
+  shadowCustom: {},
+  shadowMine: {},
+  applying: false,  // 受信を反映している最中は送り返さない
+  timer: null,
+  subs: [],
+};
+
+/* ---------------- 自分が誰か ----------------
+
+友だちと共有すると「誰が行ったか」「誰の星か」が要る。claude.ai の
+ログインは、招待の仕方によっては相手が「不在」として見えることがあるので、
+それだけには頼らない。端末の中に自分のメンバーIDと表示名を持ち、
+それを記録に添える。claude.ai 側の ID が取れるときはそれを種に使うので、
+同じ人が PC とスマホで開いても1人として扱われる。
+--------------------------------------------------------------- */
+
+function randomId() {
+  const a = new Uint8Array(8);
+  (window.crypto || {}).getRandomValues ? window.crypto.getRandomValues(a)
+    : a.forEach((_, i) => { a[i] = Math.floor(Math.random() * 256); });
+  return [...a].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function sha256hex(text) {
+  const subtle = (window.crypto || {}).subtle;
+  if (!subtle) return 'plain:' + text;  // 古い端末では素通し（のれん程度の役目なので）
+  const buf = await subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function saveMe() { writeJSON(KEY.me, me); }
+
+function myId() { return (me && me.id) || ''; }
+
+function memberLabel(id) {
+  if (!id) return '';
+  if (id === myId()) return (me && me.name) || '自分';
+  return memberNames[id] || '（名前未設定）';
+}
+
+function cloudPush() {
+  if (!cloud.on || cloud.applying) return;
+  clearTimeout(cloud.timer);
+  cloud.timer = setTimeout(() => { pushChanges().catch(() => {}); }, 700);
+}
+
+function stripMeta(o) {
+  const c = Object.assign({}, o);
+  delete c.t;
+  return c;
+}
+
+// 共有に出すのは「星」と「訪問」だけ。お気に入り・メモ・自分タグは
+// 自分の備忘なので、友だちには見せず自分の端末間だけで同期する。
+function sharePart(o) {
+  return {
+    rating: Number(o.rating) || 0,
+    visits: Array.isArray(o.visits) ? o.visits.slice() : [],
+  };
+}
+
+function hasShare(p) { return !!(p.rating || p.visits.length); }
+
+async function pushChanges() {
+  if (!cloud.on) return;
+  const now = Date.now();
+
+  for (const id in user) {
+    const body = JSON.stringify(stripMeta(user[id]));
+    if (cloud.shadowUser[id] !== body) {
+      cloud.shadowUser[id] = body;
+      user[id].t = now;
+      try { await cloud.notes.doc(id).set(Object.assign({}, user[id])); } catch (e) { cloudTrouble(e); return; }
+    }
+    // 星と訪問は、みんなが読める場所にも置く
+    if (cloud.shared && myId()) {
+      const part = sharePart(user[id]);
+      const key = id + '~' + myId();
+      const mine = JSON.stringify(part);
+      if (cloud.shadowMine[key] !== mine) {
+        cloud.shadowMine[key] = mine;
+        try {
+          if (hasShare(part)) {
+            await cloud.reviews.doc(key).set(Object.assign({ storeId: id, by: myId(), t: now }, part));
+          } else {
+            await cloud.reviews.doc(key).delete();
+          }
+        } catch (e) { cloudTrouble(e); return; }
+      }
+    }
+  }
+
+  const seen = new Set();
+  for (const c of custom) {
+    if (!c || !c.id) continue;
+    seen.add(c.id);
+    const body = JSON.stringify(stripMeta(c));
+    if (cloud.shadowCustom[c.id] === body) continue;
+    cloud.shadowCustom[c.id] = body;
+    c.t = now;
+    try { await cloud.edits.doc(c.id).set(Object.assign({}, c)); } catch (e) { cloudTrouble(e); return; }
+  }
+  // 端末側で消えた編集は、クラウドからも消す
+  for (const id in cloud.shadowCustom) {
+    if (seen.has(id)) continue;
+    delete cloud.shadowCustom[id];
+    try { await cloud.edits.doc(id).delete(); } catch (e) { /* 消せなくても致命ではない */ }
+  }
+
+  try { await cloud.meta.set({ deleted: deleted, t: now }); } catch (e) { cloudTrouble(e); }
+}
+
+function cloudTrouble(e) {
+  const code = e && e.code;
+  if (code === 'revoked' || code === 'not_granted') {
+    cloud.on = false;
+    cloud.status = '同期は止まっています（権限がありません）';
+  } else if (code === 'quota_exceeded') {
+    cloud.status = '同期先がいっぱいです';
+  } else {
+    cloud.status = '同期でつまずきました（' + (e && e.message || '不明') + '）';
+  }
+}
+
+// 受け取った側が新しければ取り込む。取り込み中は送り返さない
+function applyRemote(fn) {
+  cloud.applying = true;
+  try { fn(); } finally { cloud.applying = false; }
+}
+
+/* ---------------- 入口（合言葉） ----------------
+
+友だちに URL を渡して使うので、リンクを拾っただけの人が
+そのまま入ってこないように、入口で合言葉を聞く。
+
+これは鍵ではなく「のれん」。ページの中身は誰でも読めるので、
+本当の保護は Artifact 側の共有設定（誰に開くか）のほう。
+合言葉は平文では持たず、指紋（SHA-256）だけを共有領域に置く。
+一度通れば端末に覚えるので、次からは聞かない。
+--------------------------------------------------------------- */
+
+let gateEl = null;
+
+function showGate(nodes) {
+  if (!gateEl) {
+    gateEl = el('div', { class: 'gate' }, [el('div', { class: 'gate-card' })]);
+    document.body.appendChild(gateEl);
+  }
+  document.documentElement.classList.add('is-gated');
+  const card = gateEl.querySelector('.gate-card');
+  card.textContent = '';
+  for (const n of [].concat(nodes)) if (n) card.appendChild(n);
+  gateEl.hidden = false;
+}
+
+function hideGate() {
+  document.documentElement.classList.remove('is-gated');
+  if (gateEl) gateEl.hidden = true;
+}
+
+function gateWaiting() {
+  showGate([
+    el('h2', { class: 'gate-title', text: '駅前ビル飯' }),
+    el('p', { class: 'gate-note', text: '確認しています…' }),
+  ]);
+}
+
+// 合言葉を決める／聞く画面を出して、通ったら true を返す
+function askGate(opts) {
+  return new Promise((resolve) => {
+    const pass = el('input', {
+      type: 'password', class: 'gate-input', autocomplete: 'current-password',
+      placeholder: '合言葉',
+    });
+    const name = el('input', {
+      type: 'text', class: 'gate-input', maxlength: '20',
+      placeholder: 'ニックネーム（みんなに見えます）',
+      value: (me && me.name) || '',
+    });
+    const err = el('p', { class: 'gate-err', hidden: 'hidden' });
+    const go = el('button', {
+      class: 'btn btn--primary', type: 'submit',
+      text: opts.setup ? 'この合言葉にする' : '入る',
+    });
+
+    const form = el('form', { class: 'gate-form' }, [
+      pass, opts.needName ? name : null, err, go,
+    ]);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const v = pass.value.trim();
+      if (v.length < 4) {
+        err.hidden = false;
+        err.textContent = '合言葉は4文字以上にしてください';
+        return;
+      }
+      go.disabled = true;
+      const hash = await sha256hex(v);
+      if (!opts.setup && hash !== opts.hash) {
+        go.disabled = false;
+        err.hidden = false;
+        err.textContent = '合言葉が違います';
+        pass.value = '';
+        pass.focus();
+        return;
+      }
+      resolve({ hash: hash, name: name.value.trim() });
+    });
+
+    showGate([
+      el('h2', { class: 'gate-title', text: '駅前ビル飯' }),
+      el('p', { class: 'gate-note', text: opts.setup
+        ? 'まだ合言葉が決まっていません。仲間に伝える合言葉を決めてください。'
+        : '合言葉を入れてください。一度入れたら、この端末では次から聞きません。' }),
+      form,
+    ]);
+    setTimeout(() => pass.focus(), 50);
+  });
+}
+
+// 共有領域が開けたときだけ呼ばれる。通らないかぎり先へ進まない
+async function runGate(seedId) {
+  let conf = null;
+  try {
+    const snap = await cloud.config.get();
+    conf = snap.exists ? snap.data() : null;
+  } catch (e) {
+    // 共有領域が読めない端末。自分の端末の中だけで使う
+    cloud.shared = false;
+    cloud.status = 'この画面では仲間との共有はできません（記録はこの端末に残ります）';
+    hideGate();
+    return false;
+  }
+
+  const hash = conf && typeof conf.passHash === 'string' ? conf.passHash : '';
+  if (!me || !me.id) me = { id: seedId || randomId(), name: '', ok: '' };
+  if (!me.id) me.id = seedId || randomId();
+
+  if (hash && me.ok === hash && me.name) { saveMe(); return true; }
+
+  const got = await askGate({
+    setup: !hash,
+    hash: hash,
+    needName: !me.name,
+  });
+
+  me.ok = got.hash;
+  if (got.name) me.name = got.name;
+  if (!me.name) me.name = 'ユーザー' + (Object.keys(memberNames).length + 1);
+  saveMe();
+
+  if (!hash) {
+    try { await cloud.config.set({ passHash: got.hash, t: Date.now() }); }
+    catch (e) { toast('合言葉を共有できませんでした（この端末には覚えました）'); }
+  }
+  hideGate();
+  return true;
+}
+
+async function publishMe() {
+  if (!cloud.shared || !myId() || !me.name) return;
+  try { await cloud.members.doc(myId()).set({ name: me.name, t: Date.now() }); }
+  catch (e) { /* 名前が出ないだけなので致命ではない */ }
+}
+
+async function initCloud() {
+  // どこで転んでも、のれんが上がったままにならないようにする。
+  // 上がったままだと「真っ白で何も出ない」という一番困る状態になる。
+  // 合言葉の入力を出している最中だけは、下ろさない。
+  const dropCurtain = () => {
+    if (gateEl && gateEl.querySelector('.gate-form')) return;
+    hideGate();
+  };
+  const safety = setTimeout(dropCurtain, 15000);
+  try {
+    await connectCloud();
+  } finally {
+    clearTimeout(safety);
+    dropCurtain();
+  }
+}
+
+async function connectCloud() {
+  if (typeof window.claude === 'undefined' || !window.claude.use) { hideGate(); return; }
+  let usr = null, db = null;
+  try {
+    usr = await window.claude.use('user');
+    db = await window.claude.use('db');
+  } catch (e) { return; }
+  if (!usr || !db) return;
+
+  let uid = null;
+  try { uid = await usr.id(); } catch (e) { uid = null; }
+  if (!uid) { cloud.status = 'この画面では同期できません'; return; }
+
+  const home = 'data/users/' + uid;
+  try {
+    // 自分だけの領域。お気に入り・メモ・自分タグはここ止まり
+    cloud.notes = db.doc(home + '/notes').collection('s');
+  } catch (e) { cloud.status = '同期先を開けませんでした'; return; }
+
+  try {
+    // みんなで見る領域。店のデータと、誰の星・誰が行ったか
+    cloud.edits = db.doc('shared/stores').collection('s');
+    cloud.meta = db.doc('shared/meta');
+    cloud.reviews = db.doc('shared/reviews').collection('r');
+    cloud.members = db.doc('shared/members').collection('m');
+    cloud.config = db.doc('shared/config');
+    cloud.shared = true;
+  } catch (e) {
+    cloud.shared = false;
+  }
+
+  cloud.on = true;
+  cloud.status = cloud.shared ? '同期中（端末間 ＋ 仲間と共有）'
+    : '同期中（この端末と他の端末で同じ記録）';
+
+  const onErr = (e) => cloudTrouble(e);
+
+  cloud.subs.push(cloud.notes.onSnapshot((snap) => {
+    let changed = false;
+    applyRemote(() => {
+      for (const d of snap.docs) {
+        const body = d.data();
+        if (!body) continue;
+        const mine = user[d.id];
+        if (mine && (mine.t || 0) >= (body.t || 0)) continue;
+        user[d.id] = Object.assign({}, body);
+        cloud.shadowUser[d.id] = JSON.stringify(stripMeta(user[d.id]));
+        changed = true;
+      }
+      if (changed) writeJSON(KEY.user, user);
+    });
+    if (changed) { rebuild(); render(); }
+  }, onErr));
+
+  cloud.subs.push(cloud.edits.onSnapshot((snap) => {
+    let changed = false;
+    applyRemote(() => {
+      for (const d of snap.docs) {
+        const body = d.data();
+        if (!body || !body.id) continue;
+        const i = custom.findIndex((c) => c.id === body.id);
+        if (i >= 0 && (custom[i].t || 0) >= (body.t || 0)) continue;
+        const rec = Object.assign({}, body);
+        if (i < 0) custom.push(rec); else custom[i] = rec;
+        cloud.shadowCustom[body.id] = JSON.stringify(stripMeta(rec));
+        changed = true;
+      }
+      if (changed) writeJSON(KEY.custom, custom);
+    });
+    if (changed) { rebuild(); render(); }
+  }, onErr));
+
+  cloud.subs.push(cloud.meta.onSnapshot((snap) => {
+    const body = snap.data();
+    if (!body || !Array.isArray(body.deleted)) return;
+    if (String(body.deleted) === String(deleted)) return;
+    applyRemote(() => {
+      deleted = body.deleted.filter((x) => typeof x === 'string');
+      writeJSON(KEY.deleted, deleted);
+    });
+    rebuild();
+    render();
+  }, onErr));
+
+  if (cloud.shared) {
+    // 合言葉を通るまで、みんなの記録には触らない
+    const through = await runGate(uid);
+    if (!through) { cloudPush(); return; }
+    await publishMe();
+
+    cloud.subs.push(cloud.reviews.onSnapshot((snap) => {
+      const next = {};
+      for (const d of snap.docs) {
+        const body = d.data();
+        if (!body || !body.storeId || !body.by) continue;
+        if (body.by === myId()) continue;  // 自分のぶんは user[] が正
+        if (!next[body.storeId]) next[body.storeId] = {};
+        next[body.storeId][body.by] = {
+          rating: Number(body.rating) || 0,
+          visits: Array.isArray(body.visits) ? body.visits : [],
+        };
+      }
+      mates = next;
+      rebuild();
+      render();
+    }, onErr));
+
+    cloud.subs.push(cloud.members.onSnapshot((snap) => {
+      const next = {};
+      for (const d of snap.docs) {
+        const body = d.data();
+        if (body && typeof body.name === 'string') next[d.id] = body.name;
+      }
+      memberNames = next;
+      render();
+    }, onErr));
+  }
+
+  // 端末にしか無い記録を最初に押し上げる
+  cloudPush();
 }
 
 /* ---------------- data assembly ---------------- */
@@ -355,6 +842,7 @@ function matches(s) {
     if (m === 'memo' && !(ud && ud.memo && ud.memo.trim())) return false;
     if (m === 'visited' && !(ud && ud.visits && ud.visits.length)) return false;
     if (m === 'unvisited' && ud && ud.visits && ud.visits.length) return false;
+    if (m === 'crowd' && !crowd(s.id).some((c) => !c.me)) return false;
     if (m === 'r35' && !(s.rating >= 3.5)) return false;
     if (m === 'r40' && !(s.rating >= 4.0)) return false;
     if (m === 'unverified' && s.verified) return false;
@@ -393,7 +881,10 @@ function sorted(list) {
     const here = a.filter(isHere), rest = a.filter((x) => !isHere(x));
     return here.concat(rest);
   };
-  if (ui.sort === 'rating') {
+  if (ui.sort === 'mates') {
+    arr.sort((a, b) => (crowdRating(b.id) || 0) - (crowdRating(a.id) || 0)
+      || a.name.localeCompare(b.name, 'ja'));
+  } else if (ui.sort === 'rating') {
     arr.sort((a, b) => (b.rating || 0) - (a.rating || 0) || a.name.localeCompare(b.name, 'ja'));
   } else if (ui.sort === 'name') {
     arr.sort((a, b) => (a.kana || a.name).localeCompare(b.kana || b.name, 'ja'));
@@ -568,6 +1059,7 @@ function renderChips() {
     if (id === 'memo') return ud && ud.memo && ud.memo.trim();
     if (id === 'visited') return ud && ud.visits && ud.visits.length;
     if (id === 'unvisited') return !(ud && ud.visits && ud.visits.length);
+    if (id === 'crowd') return crowd(s.id).some((c) => !c.me);
     if (id === 'r35') return s.rating >= 3.5;
     if (id === 'r40') return s.rating >= 4.0;
     if (id === 'unverified') return !s.verified;
@@ -613,6 +1105,18 @@ function syncChipsMore(key) {
 
 /* ---------------- list view ---------------- */
 
+// 自分以外にも記録がある店は、一覧でそれと分かるようにする
+function crowdBadge(storeId) {
+  const others = crowd(storeId).filter((c) => !c.me);
+  if (!others.length) return null;
+  const avg = crowdRating(storeId);
+  return el('span', {
+    class: 'card-crowd',
+    title: others.map((c) => memberLabel(c.by)).join('・') + ' の記録あり',
+    text: '👥' + others.length + (avg ? ' ★' + avg.toFixed(1) : ''),
+  });
+}
+
 function storeCard(s) {
   const ud = user[s.id] || {};
   const open = isOpenNow(s);
@@ -632,7 +1136,12 @@ function storeCard(s) {
     el('div', { class: 'card-head' }, [
       el('span', { class: 'card-name', text: s.name }),
       ud.fav ? el('span', { class: 'card-fav', text: '★' }) : null,
+      // 「今日行った」を押しても一覧が何も変わらず、効いていないように見えていた
+      ud.visits && ud.visits.length
+        ? el('span', { class: 'card-visit', title: '行ったことがある', text: '✓' + (ud.visits.length > 1 ? ud.visits.length : '') })
+        : null,
       ud.rating ? el('span', { class: 'card-fav', text: '自' + ud.rating }) : null,
+      crowdBadge(s.id),
     ]),
     el('div', { class: 'card-meta' }, meta),
     tags.length ? el('div', { class: 'card-tags' }, tags) : null,
@@ -667,6 +1176,64 @@ function cmpBlock(a, b) {
     if (x !== y) return x - y;
   }
   return a.name.localeCompare(b.name, 'ja');
+}
+
+// 1フロアぶんの平面図。区画の位置に点を打ち、絞り込みに該当する店だけ
+// 色を付ける。「いまいるフロアの、どこに、条件に合う店があるか」を
+// リストでは出せない形で見せるのが狙い。
+function planFloor(key, planned, hitIds) {
+  const img = el('img', {
+    class: 'planmap-img', src: bundledPlanUrl(key), alt: '平面図', loading: 'lazy',
+  });
+  const stage = el('div', { class: 'planmap-stage' }, [img]);
+
+  // 同じ区画に複数の店があると点が重なる。少しずつずらして両方押せるようにする
+  const seen = new Map();
+  const hitCount = planned.filter((p) => hitIds.has(p.store.id)).length;
+  // 該当が少ないうちは店名も出す。多いと重なって読めないので点だけにする
+  const withName = hitCount > 0 && hitCount <= 8;
+
+  for (const p of planned) {
+    const s = p.store;
+    const ud = user[s.id] || {};
+    const hit = hitIds.has(s.id);
+    const visited = !!(ud.visits && ud.visits.length);
+    const at = p.spot.pos.join(',');
+    const n = seen.get(at) || 0;
+    seen.set(at, n + 1);
+
+    const dot = el('button', {
+      class: 'planmark' + (hit ? ' is-hit' : ' is-dim')
+        + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : '')
+        + (p.spot.exact ? '' : ' is-near') + (s.id === focusId ? ' is-focus' : ''),
+      type: 'button',
+      'data-id': s.id,
+      title: s.name + '（区画' + (s.block || '?') + '）',
+      style: 'left:' + (p.spot.pos[0] * 100) + '%;top:' + (p.spot.pos[1] * 100) + '%;'
+        + (n ? 'margin-left:' + (n * 9) + 'px;margin-top:' + (n * 9) + 'px;' : ''),
+      onclick: () => openDetail(s.id),
+    }, [
+      el('span', { class: 'planmark-dot' }),
+      hit && withName ? el('span', { class: 'planmark-name', text: s.name }) : null,
+    ]);
+    stage.appendChild(dot);
+  }
+
+  const scroller = el('div', { class: 'planmap-scroll' }, [stage]);
+  const zoom = el('button', {
+    class: 'btn btn--ghost btn--sm', type: 'button', text: '拡大',
+    onclick: () => {
+      const on = stage.classList.toggle('is-zoom');
+      zoom.textContent = on ? '縮小' : '拡大';
+    },
+  });
+  return el('div', { class: 'planmap' }, [
+    scroller,
+    el('div', { class: 'planmap-foot' }, [
+      el('span', { class: 'planmap-note', text: '点をタップすると店が開きます' }),
+      zoom,
+    ]),
+  ]);
 }
 
 function renderMap(hits) {
@@ -711,6 +1278,17 @@ function renderMap(hits) {
   }
 
   // マップは1マスが小さいので、お気に入り・訪問済みは色の面で出す。
+  // それとは別に、「立ち飲みかどうか」だけはマスの上で分かるようにしたい
+  // （席があるかどうかで行く／行かないが変わるので、種類より先に知りたい）。
+  // 立ち飲みは category と tags の両方に入っていることがあるので両方見る。
+  const HIGHLIGHT_TAGS = ['立ち飲み'];
+  const cellTags = (s) => {
+    const own = [].concat(s.tags || [], s.category ? [s.category] : []);
+    const out = HIGHLIGHT_TAGS.filter((t) => own.includes(t));
+    if (!s.verified) out.push('未確認');
+    return out;
+  };
+
   // 枠線は「絞り込みに該当」で既に使っているため、そこには重ねない。
   const cell = (s, provisional) => {
     const ud = user[s.id] || {};
@@ -731,9 +1309,17 @@ function renderMap(hits) {
     }, [
       marks.length ? el('span', { class: 'gridcell-marks' }, marks) : null,
       el('span', { class: 'gridcell-name' + (marks.length ? ' has-mark' : ''), text: s.name }),
+      // マスが小さいので全部は出せない。種類とタグのうち、探すときに
+      // 効くもの（立ち飲みなど）だけを1つ、種類の代わりに出す
+      cellTags(s).length
+        ? el('span', { class: 'gridcell-tags' },
+            cellTags(s).map((t) => el('span', {
+              class: 'gridtag' + (t === '未確認' ? ' gridtag--warn' : ''), text: t,
+            })))
+        : null,
       el('span', { class: 'gridcell-sub' }, [
-        el('span', { text: s.block || s.category || '' }),
-        s.rating ? el('span', { text: s.rating.toFixed(1) }) : null,
+        el('span', { text: s.block ? '区画' + s.block : (s.category || '') }),
+        el('span', { text: s.category && s.block ? s.category : '' }),
       ]),
     ]);
   };
@@ -762,18 +1348,40 @@ function renderMap(hits) {
       ]),
     ]);
 
-    if (placed.length) {
+    // 公式の平面図が手元にあるフロアは、図の上に直接置く。
+    // 区画番号から位置が分かるので、絞り込んだ店が「どこにあるか」が見える。
+    const planned = [];
+    const rest = [];
+    const planKeyName = planKey(b, f);
+    const hasPlan = !!bundledPlanUrl(planKeyName) && !!(blockSpots || {})[planKeyName];
+    for (const st of list) {
+      const spot = hasPlan ? findBlockSpot(planKeyName, st.block) : null;
+      if (spot) planned.push({ store: st, spot: spot });
+      else rest.push(st);
+    }
+
+    if (planned.length) {
+      group.appendChild(planFloor(planKeyName, planned, hitIds));
+    }
+
+    if (!planned.length && placed.length) {
       const cols = Math.max(4, ...placed.map((s) => s.pos.x + ((s.w || 1) - 1)));
       const grid = el('div', { class: 'grid', style: 'grid-template-columns: repeat(' + cols + ', var(--cell));' });
       for (const s of placed) grid.appendChild(cell(s, false));
       group.appendChild(el('div', { class: 'gridwrap' }, [grid]));
     }
 
-    // 座標が未設定のうちは区画番号順に並べる。歩く順番におおむね一致する。
-    if (flow.length) {
-      group.appendChild(el('p', { class: 'gridnote', text: (placed.length ? '以下は' : '') + '区画番号順（実配置は未設定）' }));
+    // 平面図に置けなかった店（区画番号が図に無い・未登録）は下に並べる。
+    // 図の上から消えてしまうと、あるのに無いことになってしまう
+    const leftovers = planned.length ? rest : flow;
+    if (leftovers.length) {
+      group.appendChild(el('p', {
+        class: 'gridnote',
+        text: planned.length ? '図の上に置けなかった店（区画番号が図に見当たらない）'
+          : (placed.length ? '以下は' : '') + '区画番号順（実配置は未設定）',
+      }));
       const g = el('div', { class: 'grid grid--flow' });
-      for (const s of flow) g.appendChild(cell(s, true));
+      for (const st of leftovers.slice().sort(cmpBlock)) g.appendChild(cell(st, true));
       group.appendChild(g);
     }
 
@@ -781,14 +1389,14 @@ function renderMap(hits) {
   }
 
   if (focusId) {
-    const cellEl = box.querySelector('.gridcell.is-focus');
+    const cellEl = box.querySelector('.gridcell.is-focus, .planmark.is-focus');
     const target = focusId;
     focusId = null;
     if (cellEl) {
       // レイアウト確定後でないと位置がずれる
       requestAnimationFrame(() => {
         cellEl.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
-        const wrap = cellEl.closest('.gridwrap');
+        const wrap = cellEl.closest('.gridwrap, .planmap-scroll');
         if (wrap) wrap.scrollLeft = Math.max(0, cellEl.offsetLeft - wrap.clientWidth / 2 + cellEl.offsetWidth / 2);
       });
       setTimeout(() => cellEl.classList.remove('is-focus'), 2400);
@@ -868,6 +1476,12 @@ function render() {
   const opt = $('#sort').querySelector('option[value="rating"]');
   if (opt) opt.hidden = !hasRating;
   if (!hasRating && ui.sort === 'rating') { ui.sort = 'default'; $('#sort').value = 'default'; saveUI(); }
+
+  // みんなの星も、誰かが付けるまでは出さない
+  const hasMates = stores.some((s) => crowdRating(s.id) != null);
+  const optM = $('#sort').querySelector('option[value="mates"]');
+  if (optM) optM.hidden = !hasMates;
+  if (!hasMates && ui.sort === 'mates') { ui.sort = 'default'; $('#sort').value = 'default'; saveUI(); }
   const isList = ui.view === 'list';
   $('#view-list').hidden = !isList;
   $('#view-map').hidden = isList;
@@ -904,10 +1518,21 @@ function trackPoint(e) {
   if (y) lastPointY = y;
 }
 
-function anchorTop(height) {
+// 埋め込みでは「いま画面のどこを見ているか」を知る手段が無い。
+// 分かっているのは最後に触った場所だけなので、そのすぐ上に出す。
+// 背の高いシートを下端に収めようと持ち上げると、店名のある先頭が
+// 画面の上に外れてしまうので、持ち上げない。
+function anchorTop() {
   const margin = 12;
-  const max = Math.max(margin, document.documentElement.scrollHeight - height - margin);
-  return Math.min(max, Math.max(margin, lastPointY - 40));
+  const bottom = Math.max(margin, document.documentElement.scrollHeight - 140);
+  return Math.min(bottom, Math.max(margin, lastPointY - 60));
+}
+
+// 画面に収まる高さの見当。埋め込みでは innerHeight がページ全体の
+// 高さになってしまうので、端末の画面の大きさから見積もる
+function viewportGuess() {
+  const h = (window.screen && window.screen.height) || 700;
+  return Math.max(340, Math.min(620, Math.round(h * 0.62)));
 }
 
 function openSheet(nodes) {
@@ -915,17 +1540,21 @@ function openSheet(nodes) {
   const panel = sheet.querySelector('.sheet-panel');
   panel.textContent = '';
   panel.appendChild(el('div', { class: 'sheet-grip' }));
+  // 閉じるボタンは中身の末尾にもあるが、長いシートだとそこまで
+  // 辿り着けない。いつでも押せるように上にも置く
+  panel.appendChild(el('button', {
+    class: 'sheet-x', type: 'button', text: '×', title: '閉じる',
+    'aria-label': '閉じる', onclick: closeSheet,
+  }));
   for (const n of [].concat(nodes)) if (n) panel.appendChild(n);
   panel.scrollTop = 0;
   sheet.hidden = false;
 
   if (isEmbedded()) {
-    // 先に表示してから測らないと高さが取れない
-    panel.style.top = anchorTop(0) + 'px';
-    requestAnimationFrame(() => {
-      panel.style.top = anchorTop(panel.getBoundingClientRect().height) + 'px';
-    });
+    panel.style.maxHeight = viewportGuess() + 'px';
+    panel.style.top = anchorTop() + 'px';
   } else {
+    panel.style.maxHeight = '';
     panel.style.top = '';
     // 背後のページが動くと、シートを閉じたときに元の場所を見失う
     document.body.style.overflow = 'hidden';
@@ -943,6 +1572,19 @@ function closeSheet() {
 }
 
 /* ---------------- detail ---------------- */
+
+// 「誰が行ったか・誰の星か」を並べる。共有していないときは出さない。
+// 自分が星や訪問を変えた直後にも描き直したいので、中身だけ作って返す
+function crowdBody(storeId) {
+  const rows = crowd(storeId);
+  if (!rows.length) return el('p', { class: 'crowd-empty', text: 'まだ誰も記録していません。' });
+  rows.sort((a, b) => (b.me ? 1 : 0) - (a.me ? 1 : 0) || b.rating - a.rating);
+  return el('ul', { class: 'crowd' }, rows.map((c) => el('li', { class: 'crowd-row' + (c.me ? ' is-me' : '') }, [
+    el('span', { class: 'crowd-name', text: memberLabel(c.by) + (c.me ? '（自分）' : '') }),
+    el('span', { class: 'crowd-stars', text: c.rating ? '★'.repeat(c.rating) : '—' }),
+    el('span', { class: 'crowd-visits', text: c.visits ? c.visits + '回' : '未訪問' }),
+  ])));
+}
 
 function openDetail(id) {
   const s = stores.find((x) => x.id === id);
@@ -966,6 +1608,13 @@ function openDetail(id) {
   });
   syncFav();
 
+  // 自分が星や訪問を変えたら、その場で「みんなの記録」も描き直す
+  const crowdSlot = el('div', { class: 'crowd-slot' });
+  const drawCrowd = () => {
+    crowdSlot.textContent = '';
+    crowdSlot.appendChild(crowdBody(id));
+  };
+
   const myStars = el('div', { class: 'mystars' });
   const drawStars = () => {
     myStars.textContent = '';
@@ -978,12 +1627,14 @@ function openDetail(id) {
           ud.rating = ud.rating === i ? 0 : i;
           saveUser();
           drawStars();
+          drawCrowd();
           render();
         },
       }));
     }
   };
   drawStars();
+  drawCrowd();
 
   const memo = el('textarea', { placeholder: '味・混み具合・頼むべきもの・次回メモなど' });
   memo.value = ud.memo || '';
@@ -1001,6 +1652,26 @@ function openDetail(id) {
     render();
   });
 
+  // 押しても文言が変わらず、記録済みでも「追加しました」と出ていたので、
+  // いまの状態を映して、もう一度押せば今日の分を取り消せるようにする
+  const visitBtn = el('button', { class: 'btn', type: 'button' });
+  const drawVisitBtn = () => {
+    const done = ud.visits.includes(todayStr());
+    visitBtn.textContent = done ? '今日は記録済み（取り消す）' : '今日行った';
+    visitBtn.classList.toggle('btn--done', done);
+  };
+  visitBtn.addEventListener('click', () => {
+    const d = todayStr();
+    const i = ud.visits.indexOf(d);
+    if (i < 0) { ud.visits.push(d); toast('今日行ったことにしました'); }
+    else { ud.visits.splice(i, 1); toast('今日の記録を取り消しました'); }
+    drawCrowd();
+    saveUser();
+    drawVisits();
+    drawVisitBtn();
+    render();
+  });
+
   const visitsBox = el('ul', { class: 'visits' });
   const drawVisits = () => {
     visitsBox.textContent = '';
@@ -1015,8 +1686,10 @@ function openDetail(id) {
           class: 'linkbtn', type: 'button', text: '削除',
           onclick: () => {
             ud.visits.splice(ud.visits.indexOf(d), 1);
+            drawCrowd();
             saveUser();
             drawVisits();
+            drawVisitBtn();
             render();
           },
         }),
@@ -1024,6 +1697,7 @@ function openDetail(id) {
     });
   };
   drawVisits();
+  drawVisitBtn();
 
   const dl = el('dl', {}, [
     row('場所', '第' + s.building + 'ビル ' + s.floor + (s.block ? ' ' + s.block : '')),
@@ -1079,19 +1753,12 @@ function openDetail(id) {
     ]),
     el('div', { class: 'btnrow' }, [
       favBtn,
-      el('button', {
-        class: 'btn', type: 'button', text: '今日行った',
-        onclick: () => {
-          const d = todayStr();
-          if (!ud.visits.includes(d)) ud.visits.push(d);
-          saveUser();
-          drawVisits();
-          render();
-          toast('訪問記録を追加しました');
-        },
-      }),
+      visitBtn,
     ]),
     el('div', { class: 'field' }, [el('label', { text: '自分の評価' }), myStars]),
+    cloud.shared ? el('div', { class: 'field' }, [
+      el('label', { text: 'みんなの記録' }), crowdSlot,
+    ]) : null,
     el('div', { class: 'field' }, [el('label', { text: '自分のタグ' }), myTags]),
     el('div', { class: 'field' }, [el('label', { text: 'メモ（自動保存）' }), memo]),
     el('div', { class: 'field' }, [el('label', { text: '訪問履歴' }), visitsBox]),
@@ -1504,15 +2171,18 @@ async function openPlanManager() {
     for (const f of floors) {
       const key = planKey(b, f);
       const has = have.includes(key);
+      const bundled = !!bundledPlanUrl(key);
+      const state = has ? '差し替え済み' : (bundled ? 'アプリに同梱' : '未取り込み');
       rows.appendChild(el('div', { class: 'planrow' }, [
         el('span', { class: 'planrow-name', text: '第' + b + 'ビル ' + f }),
-        el('span', { class: 'planrow-state' + (has ? ' is-on' : ''), text: has ? '取り込み済み' : '未取り込み' }),
+        el('span', { class: 'planrow-state' + (has || bundled ? ' is-on' : ''), text: state }),
         el('button', {
-          class: 'btn btn--ghost', type: 'button', text: has ? '差し替え' : '取り込む',
+          class: 'btn btn--ghost', type: 'button', text: has || bundled ? '差し替え' : '取り込む',
           onclick: () => { pending = { b: b, f: f }; file.click(); },
         }),
         has ? el('button', {
-          class: 'btn btn--ghost btn--danger', type: 'button', text: '消す',
+          class: 'btn btn--ghost btn--danger', type: 'button',
+          text: bundled ? '同梱のものに戻す' : '消す',
           onclick: async () => {
             try { await planDel(key); } catch (e) { toast('消せませんでした: ' + e.message); }
             openPlanManager();
@@ -1525,8 +2195,8 @@ async function openPlanManager() {
   if (seq !== sheetSeq) return; // 読み込み中に閉じられた
   openSheet([
     el('h2', { text: 'フロアの平面図' }),
-    el('p', { class: 'sheet-sub', text: '公式サイトの平面図を保存しておくと、店の詳細から開いて「区画番号がどこか」をその場で確かめられます。地下で電波が届かなくても見られます。画像はこの端末の中だけに保存され、どこにも送られません。' }),
-    el('p', { class: 'sheet-sub', text: '取り込み方: 店の詳細にある「公式の平面図を開く」から平面図の画像を長押しして保存 → ここで選ぶ。' }),
+    el('p', { class: 'sheet-sub', text: '店の詳細から平面図を開いて「区画番号がどこか」をその場で確かめられます。手に入っているフロアの図はアプリに同梱してあるので、取り込まなくてもそのまま見られます。' }),
+    el('p', { class: 'sheet-sub', text: '同梱していないフロア（下の「未取り込み」）は、公式サイトの平面図を長押しして保存 → ここで選ぶと使えるようになります。取り込んだ画像はこの端末の中だけに保存され、どこにも送られません。' }),
     storeBroken ? el('div', { class: 'banner', text: 'この端末では画像を保存できません。プライベートブラウズを使っていると保存領域が使えないことがあります。' }) : null,
     file,
     rows,
@@ -1536,21 +2206,58 @@ async function openPlanManager() {
   ]);
 }
 
+// 公式の平面図に書かれている区画番号が、図のどこにあるか（縦横の割合）。
+// plans/blocks.json から読む。無くても動く（自動ピンが出ないだけ）。
+let blockSpots = null;
+let blockSpotsPromise = null;
+
+function loadBlockSpots() {
+  if (blockSpots) return Promise.resolve(blockSpots);
+  if (!blockSpotsPromise) {
+    blockSpotsPromise = fetch('plans/blocks.json')
+      .then((r) => (r.ok ? r.json() : {}))
+      .catch(() => ({}))
+      .then((j) => { blockSpots = j || {}; return blockSpots; });
+  }
+  return blockSpotsPromise;
+}
+
+// 区画番号の「枝番の親」。23-1 も 23-2 も、元は同じ 23 の区画。
+function blockRoot(block) {
+  return String(block || '').split('-')[0];
+}
+
+// その店の区画が図のどこかを返す。ぴったり無ければ、同じ親番号の
+// 区画（たとえば 49 に対する 49-1）でだいたいの位置を返す。
+function findBlockSpot(key, block) {
+  const table = (blockSpots || {})[key];
+  const b = String(block || '');
+  if (!table || !b) return null;
+  if (table[b]) return { pos: table[b], exact: true, label: b };
+  const root = blockRoot(b);
+  if (!root) return null;
+  const near = Object.keys(table)
+    .filter((k) => blockRoot(k) === root)
+    .sort();
+  if (!near.length) return null;
+  return { pos: table[near[0]], exact: false, label: near[0] };
+}
+
 // 平面図を開いて、その店の場所にピンを置けるようにする。
 // 350件ぶんの座標を machine で当てるのは無理なので、歩きながら1件ずつ
 // 置いてもらう。置いた位置は端末内（user[id].pin）に残る。
 async function openPlanViewer(store) {
   const seq = sheetSeq;
-  let url = null;
-  try {
-    url = await planGet(planKey(store.building, store.floor));
-  } catch (e) {
-    // 「まだありません」で取り込み画面に送ると、保存できない端末では往復し続ける
-    toast('この端末では平面図を保存できません（' + e.message + '）');
-    return;
-  }
+  const key = planKey(store.building, store.floor);
+  const [got] = await Promise.all([planResolve(key), loadBlockSpots()]);
   if (seq !== sheetSeq) return; // 読み込み中に閉じられた
+  const url = got.url;
   if (!url) {
+    if (got.error) {
+      // 「まだありません」で取り込み画面に送ると、保存できない端末では往復し続ける
+      toast('この端末では平面図を保存できません（' + got.error.message + '）');
+      return;
+    }
     toast('第' + store.building + 'ビル ' + store.floor + ' の平面図がまだありません');
     openPlanManager();
     return;
@@ -1560,7 +2267,21 @@ async function openPlanViewer(store) {
   let placing = false;
   const img = el('img', { class: 'planimg', src: url, alt: '平面図' });
   const pin = el('div', { class: 'planpin', hidden: 'hidden' }, [el('span', { text: '▼' })]);
-  const stage = el('div', { class: 'planstage' }, [img, pin]);
+
+  // 区画番号から割り出した位置。自分で置いたピンとは別の印にして、
+  // 「番号から出した目安」であることが見て分かるようにする
+  const auto = got.kind === 'bundled' ? findBlockSpot(key, store.block) : null;
+  const autoPin = el('div', { class: 'planauto', hidden: 'hidden' }, [
+    el('span', { class: 'planauto-dot' }),
+    el('span', { class: 'planauto-tag', text: auto ? auto.label : '' }),
+  ]);
+  if (auto) {
+    autoPin.hidden = false;
+    autoPin.style.left = (auto.pos[0] * 100) + '%';
+    autoPin.style.top = (auto.pos[1] * 100) + '%';
+  }
+
+  const stage = el('div', { class: 'planstage' }, [img, autoPin, pin]);
   const scroller = el('div', { class: 'planscroll' }, [stage]);
 
   // 削除ボタンは常に作って出し入れする。開いた瞬間の状態で作ると、
@@ -1630,13 +2351,64 @@ async function openPlanViewer(store) {
     el('p', { class: 'sheet-sub' }, [
       el('strong', { text: '第' + store.building + 'ビル ' + store.floor }),
       store.block ? el('strong', { class: 'planblock', text: '区画 ' + store.block }) : null,
-      el('span', { text: store.block ? '　この番号を図の中から探してください' : '　区画番号が未登録です' }),
+      el('span', {
+        text: !store.block ? '　区画番号が未登録です'
+          : auto && auto.exact ? '　図の○印がその区画です'
+          : auto ? '　図の○印は区画' + auto.label + '。その並びにあります'
+          : '　この番号を図の中から探してください',
+      }),
     ]),
     scroller,
     el('div', { class: 'btnrow' }, [placeBtn, zoomBtn]),
     el('div', { class: 'btnrow' }, [
       delBtn,
       el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: () => openDetail(store.id) }),
+    ]),
+  ]);
+}
+
+// 仲間の一覧と、自分の名前・合言葉の変更
+function groupBox() {
+  const ids = Object.keys(memberNames);
+  if (myId() && !ids.includes(myId())) ids.push(myId());
+  return el('div', { class: 'field' }, [
+    el('label', { text: '仲間（' + ids.length + '人）' }),
+    el('ul', { class: 'crowd' }, ids.map((id) => el('li', { class: 'crowd-row' + (id === myId() ? ' is-me' : '') }, [
+      el('span', { class: 'crowd-name', text: memberLabel(id) + (id === myId() ? '（自分）' : '') }),
+    ]))),
+    el('div', { class: 'btnrow' }, [
+      el('button', {
+        class: 'btn btn--ghost', type: 'button', text: '自分の名前を変える',
+        onclick: async () => {
+          const v = prompt('みんなに見える名前', (me && me.name) || '');
+          if (v === null) return;
+          const name = v.trim().slice(0, 20);
+          if (!name) { toast('名前は空にできません'); return; }
+          me.name = name;
+          saveMe();
+          await publishMe();
+          toast('名前を変えました');
+          openMenu();
+        },
+      }),
+      el('button', {
+        class: 'btn btn--ghost', type: 'button', text: '合言葉を変える',
+        onclick: async () => {
+          const v = prompt('新しい合言葉（4文字以上）。今までの合言葉で入った端末も、次から聞かれます。');
+          if (v === null) return;
+          const pass = v.trim();
+          if (pass.length < 4) { toast('4文字以上にしてください'); return; }
+          const hash = await sha256hex(pass);
+          try {
+            await cloud.config.set({ passHash: hash, t: Date.now() });
+            me.ok = hash;
+            saveMe();
+            toast('合言葉を変えました');
+          } catch (e) {
+            toast('変えられませんでした: ' + (e.message || '権限がないようです'));
+          }
+        },
+      }),
     ]),
   ]);
 }
@@ -1662,6 +2434,13 @@ function openMenu() {
   openSheet([
     el('h2', { text: 'メニュー' }),
     el('p', { class: 'sheet-sub', text: 'お気に入り・メモ・追加した店は、この端末のブラウザに保存されています。バックアップには取り込んだ平面図は含まれません（画像が大きいため）。' }),
+    el('div', { class: 'syncline' + (cloud.on ? ' is-on' : '') }, [
+      el('span', { class: 'syncdot' }),
+      el('span', { text: cloud.on
+        ? (cloud.shared ? '同期中 — PC・スマホ・仲間と共有しています' : '同期中 — PCとスマホで同じ記録になります')
+        : (cloud.status || 'この端末だけに保存中（同期していません）') }),
+    ]),
+    cloud.shared ? groupBox() : null,
     unverified ? el('div', { class: 'banner' }, [
       '未確認の店が ' + unverified + ' 件あります。階や区画の裏が取れていないので、現地で確認したら詳細画面のボタンを押してください。',
       el('div', {}, [el('button', {
@@ -2089,6 +2868,17 @@ async function boot() {
       throw e;
     }
   }
+
+  // Artifact として開いたときは、合言葉の確認が済むまで中身を見せない。
+  // ローカルや GitHub Pages では claude が無いので、のれんは出さない
+  if (typeof window.claude !== 'undefined' && window.claude.use) gateWaiting();
+
+  // 区画の位置表（マップを平面図で出すのに要る）。届いたら描き直す。
+  // 読めなくてもアプリは動く（マップが昔の区画番号順の並びに戻るだけ）
+  loadBlockSpots().then(() => { if (ui.view === 'map') render(); }).catch(() => {});
+
+  // 同期は画面が出たあとに静かに始める。使えない場所では何も起きない
+  initCloud().catch(() => {});
 
   // manifest を宣言しているページ（=デプロイ版）でだけ Service Worker を使う。
   // 埋め込み表示などでは古いキャッシュが残って更新が届かなくなるため登録しない。

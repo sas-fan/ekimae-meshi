@@ -1,2 +1,5 @@
 # tools/plan_blocks.py が出す作業用の画像（区画の読み取り確認用）
 plans/chips/
+
+# Python の作業ファイル
+tools/__pycache__/

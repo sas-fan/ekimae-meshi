@@ -19,9 +19,12 @@ def main() -> int:
     print(f"{E.DATA_PATH}: {len(stores)} 件 (version {data.get('version')})")
 
     per_floor = collections.Counter((s.get("building"), s.get("floor")) for s in stores)
-    for (b, f), n in sorted(per_floor.items(), key=lambda kv: (kv[0][0] or 9, E.FLOORS.index(kv[0][1]) if kv[0][1] in E.FLOORS else 9)):
+    def floor_index(f):
+        return E.FLOORS.index(f) if f in E.FLOORS else 9
+
+    for (b, f), n in sorted(per_floor.items(), key=lambda kv: (E.venue_index(kv[0][0]), floor_index(kv[0][1]))):
         placed = sum(1 for s in stores if (s.get("building"), s.get("floor")) == (b, f) and s.get("pos"))
-        print(f"  第{b}ビル {f}: {n:3d} 件  (座標あり {placed})")
+        print(f"  {E.venue_name(b)} {f}: {n:3d} 件  (座標あり {placed})")
 
     verified = sum(1 for s in stores if s.get("verified"))
     print(f"\n確認済み {verified} / 未確認 {len(stores) - verified}")

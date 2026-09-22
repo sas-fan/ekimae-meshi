@@ -24,6 +24,20 @@ VENUES = {
     "lucua": "ルクア大阪 バルチカ",
 }
 BUILDINGS = list(VENUES)
+VENUE_ORDER = {str(k): i for i, k in enumerate(VENUES)}
+
+
+def venue_index(building) -> int:
+    """VENUES の並び順。app.js の venueIndex() と同じ役割。
+    building は 1〜4 の数字と 'kitte' などの文字列が混ざるので str で引く。"""
+    return VENUE_ORDER.get(str(building), 99)
+
+
+def venue_name(building) -> str:
+    for k, v in VENUES.items():
+        if str(k) == str(building):
+            return v
+    return str(building)
 
 CATEGORIES = [
     "居酒屋", "立ち飲み", "バー", "串カツ", "焼鳥", "焼肉・ホルモン", "寿司", "海鮮",
@@ -138,8 +152,7 @@ def load(path: Path = DATA_PATH) -> dict:
 
 def save(data: dict, path: Path = DATA_PATH) -> None:
     data["updatedAt"] = date.today().isoformat()
-    order = {str(k): i for i, k in enumerate(VENUES)}
-    data["stores"].sort(key=lambda s: (order.get(str(s.get("building")), 99), FLOORS.index(s["floor"]) if s.get("floor") in FLOORS else 9,
+    data["stores"].sort(key=lambda s: (venue_index(s.get("building")), FLOORS.index(s["floor"]) if s.get("floor") in FLOORS else 9,
                                        block_key(s.get("block", "")), s.get("name", "")))
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 

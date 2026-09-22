@@ -239,7 +239,8 @@ async function planDel(key) {
 
 // アプリに同梱してある公式の平面図。個人用なので手元に置いてある。
 // 取り込み済みの画像があればそちらを優先する（差し替えできるように）。
-const BUNDLED_PLANS = ['b1-B1', 'b1-B2', 'b2-B1', 'b2-B2', 'b3-B1', 'b3-B2', 'b4-B1', 'b4-B2'];
+const BUNDLED_PLANS = ['b1-B1', 'b1-B2', 'b2-B1', 'b2-B2', 'b3-B1', 'b3-B2', 'b4-B1', 'b4-B2',
+  'bkitte-B1', 'bbar03-2F', 'bbar03-3F', 'bbar03-4F', 'bbar03-5F', 'blucua-B2'];
 
 function bundledPlanUrl(key) {
   return BUNDLED_PLANS.includes(key) ? 'plans/' + key + '.jpg' : null;
@@ -1310,7 +1311,9 @@ function renderMap(hits) {
     if (a === hereKey) return -1;
     if (b === hereKey) return 1;
     const [ab, af] = a.split('/'), [bb, bf] = b.split('/');
-    return Number(ab) - Number(bb) || FLOOR_ORDER.indexOf(af) - FLOOR_ORDER.indexOf(bf);
+    // 場所キーは 1〜4 の数字と 'kitte' などの文字列が混ざるので Number() では比べられない
+    // （NaN になって並び順が崩れる）。VENUES の並び順で比べる。
+    return venueIndex(ab) - venueIndex(bb) || FLOOR_ORDER.indexOf(af) - FLOOR_ORDER.indexOf(bf);
   });
 
   const visible = keys.filter((k) => groups.get(k).some((s) => hitIds.has(s.id)));

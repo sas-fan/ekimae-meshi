@@ -1,7 +1,2 @@
-# 公式サイトの平面図そのもの。個人で使うぶんには問題ないが、
-# このリポジトリは公開なので再配布になってしまう。手元と
-# （非公開の）Artifact にだけ置き、ここには入れない。
-plans/*.jpg
-plans/*.png
-# tools/plan_blocks.py が出す作業用の画像
+# tools/plan_blocks.py が出す作業用の画像（区画の読み取り確認用）
 plans/chips/

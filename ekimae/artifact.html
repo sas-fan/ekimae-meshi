@@ -7,81 +7,99 @@
   html, body { height: auto; }
 </style>
 <header class="topbar">
-  <div class="topbar-row">
-    <h1 class="brand">駅前ビル飯</h1>
-    <div class="topbar-actions">
-      <button id="btn-add" class="icon-btn" title="店を追加">＋</button>
-      <button id="btn-menu" class="icon-btn" title="メニュー">≡</button>
-    </div>
-  </div>
   <div class="searchwrap">
-    <input id="q" type="search" inputmode="search" placeholder="店名・カテゴリ・タグ・メモで検索" autocomplete="off">
-    <button id="q-clear" class="q-clear" hidden>×</button>
+    <svg class="searchicon" viewBox="0 0 20 20" aria-hidden="true">
+      <circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M13.5 13.5 L18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <input id="q" type="search" inputmode="search" placeholder="店名・種類・タグ・メモ" autocomplete="off">
+    <button id="q-clear" class="q-clear" type="button" aria-label="検索を消す" hidden>×</button>
   </div>
-  <nav class="tabs" role="tablist">
-    <button class="tab is-active" data-view="list" role="tab">リスト</button>
-    <button class="tab" data-view="map" role="tab">マップ</button>
-  </nav>
+  <button id="btn-add" class="icon-btn" type="button" title="店を追加" aria-label="店を追加">＋</button>
 </header>
 
-<div class="filterbar">
-  <button id="btn-filters" class="filtertoggle" type="button" aria-expanded="false" aria-controls="filters">
-    絞り込み<span id="f-count" class="fcount" hidden></span><span class="caret">▾</span>
-  </button>
-  <button id="btn-here" class="filtertoggle" type="button">いまここ</button>
-  <label class="sortwrap"><span class="sortwrap-label">並び</span>
-    <select id="sort">
-      <option value="default">ビル・フロア順</option>
-      <option value="rating">星が高い順</option>
-      <option value="mates" hidden>みんなの星が高い順</option>
-      <option value="name">名前順</option>
-      <option value="recent">最近見た順</option>
-    </select>
-  </label>
-  <button id="btn-reset" class="linkbtn">クリア</button>
-</div>
-
-<!-- いま何で絞っているかは、パネルを閉じても見えていないと分からない -->
-<div id="active-filters" class="activefilters" hidden></div>
-
-<section id="filters" class="filters" hidden>
-  <div class="filter-row">
-    <span class="filter-label">ビル</span>
-    <div class="chips" id="f-building"></div>
-  </div>
-  <div class="filter-row">
-    <span class="filter-label">フロア</span>
-    <div class="chips" id="f-floor"></div>
-  </div>
-  <div class="filter-row">
-    <span class="filter-label">種類</span>
-    <div class="chipswrap">
-      <div class="chips chips--wrap is-collapsed" id="f-category"></div>
-      <button class="chips-more" id="more-category" type="button" hidden>もっと見る</button>
-    </div>
-  </div>
-  <div class="filter-row">
-    <span class="filter-label">タグ</span>
-    <div class="chipswrap">
-      <div class="chips chips--wrap is-collapsed" id="f-tag"></div>
-      <button class="chips-more" id="more-tag" type="button" hidden>もっと見る</button>
-    </div>
-  </div>
-  <div class="filter-row">
-    <span class="filter-label">条件</span>
-    <div class="chips" id="f-misc"></div>
-  </div>
-  <!-- 条件を変えた結果は、パネルに隠れてリストが見えない。ここで件数を返す -->
-  <div class="filters-foot">
-    <button id="btn-apply" class="btn btn--primary" type="button">結果を見る</button>
-  </div>
-</section>
+<!-- 条件は常に見えていてほしい。開いてから選ぶ一手間を無くすため横一列で出す -->
+<div id="quickbar" class="quickbar"></div>
 
 <main>
-  <p id="count" class="count"></p>
+  <div class="countrow">
+    <span class="brand">駅前ビル飯</span>
+    <span id="count" class="count"></span>
+  </div>
   <div id="view-list" class="view"></div>
   <div id="view-map" class="view" hidden></div>
 </main>
+
+<nav class="tabbar" role="tablist">
+  <button class="tabbtn tab is-active" data-view="list" role="tab" type="button">
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <rect x="3.5" y="4.5" width="15" height="5.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <rect x="3.5" y="12.5" width="15" height="5.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    <span>リスト</span>
+  </button>
+  <button class="tabbtn tab" data-view="map" role="tab" type="button">
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <path d="M11 20s6-6.4 6-11a6 6 0 1 0-12 0c0 4.6 6 11 6 11z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="11" cy="9" r="2.2" fill="currentColor"/>
+    </svg>
+    <span>マップ</span>
+  </button>
+  <button class="tabbtn" id="btn-menu" type="button">
+    <svg viewBox="0 0 22 22" aria-hidden="true">
+      <path d="M4 6.5h14M4 11h14M4 15.5h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span>メニュー</span>
+  </button>
+</nav>
+
+<!-- 「こだわり」シートの中身。ふだんはここに畳んでおき、開くときにシートへ移す -->
+<div id="filters-holder" hidden>
+  <section id="filters" class="filters">
+    <div class="filter-row">
+      <span class="filter-label">ビル</span>
+      <div class="chips" id="f-building"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">フロア</span>
+      <div class="chips" id="f-floor"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">種類</span>
+      <div class="chipswrap">
+        <div class="chips chips--wrap is-collapsed" id="f-category"></div>
+        <button class="chips-more" id="more-category" type="button" hidden>もっと見る</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">タグ</span>
+      <div class="chipswrap">
+        <div class="chips chips--wrap is-collapsed" id="f-tag"></div>
+        <button class="chips-more" id="more-tag" type="button" hidden>もっと見る</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">条件</span>
+      <div class="chips" id="f-misc"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">並び</span>
+      <div class="chips">
+        <select id="sort" class="sortsel">
+          <option value="default">ビル・フロア順</option>
+          <option value="rating">星が高い順</option>
+          <option value="mates" hidden>みんなの星が高い順</option>
+          <option value="name">名前順</option>
+          <option value="recent">最近見た順</option>
+        </select>
+      </div>
+    </div>
+    <!-- 条件を変えた結果は、シートに隠れてリストが見えない。ここで件数を返す -->
+    <div class="filters-foot">
+      <button id="btn-apply" class="btn btn--primary" type="button">結果を見る</button>
+    </div>
+  </section>
+</div>
 
 <div id="sheet" class="sheet" hidden>
   <div class="sheet-backdrop" data-close></div>

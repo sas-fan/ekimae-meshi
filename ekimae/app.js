@@ -57,7 +57,7 @@ let me = readJSON(KEY.me, null);
 const UI_DEFAULTS = {
   view: 'list', sort: 'default', q: '',
   buildings: [], floors: [], cats: [], tags: [], misc: [],
-  filtersOpen: false, here: null,
+  here: null,
 };
 
 // 保存されている値をそのまま信じると、型が違うだけで画面が真っ白になる。
@@ -982,6 +982,7 @@ function tabelogLink(s) {
 
 function renderChips() {
   const mk = (container, items, selected, onToggle) => {
+    if (!container) return;
     container.textContent = '';
     for (const it of items) {
       container.appendChild(el('button', {
@@ -1120,8 +1121,10 @@ function crowdBadge(storeId) {
 function storeCard(s) {
   const ud = user[s.id] || {};
   const open = isOpenNow(s);
+  // 一覧は「どこの何屋か」が分かれば足りる。読む量を減らして1行に収める
   const meta = [
-    el('span', { text: '第' + s.building + ' ' + s.floor + (s.block ? ' / ' + s.block : '') }),
+    el('span', { text: '第' + s.building + 'ビル ' + s.floor }),
+    s.block ? el('span', { text: '区画' + s.block }) : null,
     s.category ? el('span', { text: s.category }) : null,
     s.budget ? el('span', { text: '¥' + s.budget }) : null,
     s.rating ? el('span', { class: 'stars', text: starsText(s.rating) }) : null,
@@ -1413,29 +1416,87 @@ function activeFilterCount() {
   return ui.buildings.length + ui.floors.length + ui.cats.length + ui.tags.length + ui.misc.length;
 }
 
-function syncFilterBar() {
-  const n = activeFilterCount();
-  const badge = $('#f-count');
-  badge.textContent = n ? String(n) : '';
-  badge.hidden = !n;
-  $('#filters').hidden = !ui.filtersOpen;
-  $('#btn-filters').setAttribute('aria-expanded', String(ui.filtersOpen));
-  // パネルが閉じている間は高さが 0 なので、はみ出しを測れない。開いた直後に測り直す
-  if (ui.filtersOpen) { syncChipsMore('category'); syncChipsMore('tag'); }
-  $('#btn-reset').hidden = !(n || ui.q || ui.here);
-  const here = $('#btn-here');
-  here.textContent = ui.here ? '第' + ui.here.building + ' ' + ui.here.floor : 'いまここ';
-  here.classList.toggle('is-on', !!ui.here);
-  renderActiveFilters();
+// よく使う条件だけ、開かずに押せるところへ出しておく。
+// 残りは「こだわり」シートの中。
+const QUICK_TOGGLES = [
+  { kind: 'misc', value: 'fav', label: '★ お気に入り' },
+  { kind: 'misc', value: 'unvisited', label: '未訪問' },
+  { kind: 'cat', value: '立ち飲み', label: '立ち飲み' },
+  { kind: 'misc', value: 'crowd', label: '仲間の記録あり' },
+];
+
+function quickArr(kind) {
+  return kind === 'cat' ? ui.cats : ui.misc;
 }
 
-// パネルを閉じると「絞り込み ①」としか出ず、何で絞ったのか分からなかった。
-// 選択中の条件を常に並べ、その場で外せるようにする。
-function renderActiveFilters() {
-  const box = $('#active-filters');
-  box.textContent = '';
-  const items = []
-    .concat(ui.buildings.map((v) => ({ label: '第' + v, drop: () => remove(ui.buildings, v) })))
+function syncFilterBar() {
+  renderQuickbar();
+}
+
+// いま何で絞っているかが見えていないと、0件になった理由が分からない。
+// 選択中の条件はその場で外せるチップとして並べる。
+function renderQuickbar() {
+  const bar = $('#quickbar');
+  if (!bar) return;
+  bar.textContent = '';
+  const n = activeFilterCount();
+
+  const lead = el('button', {
+    class: 'qchip qchip--lead' + (n ? ' is-on' : ''), type: 'button',
+    onclick: openFilterSheet,
+  }, [
+    svgIcon('M3 6h14M3 11h14M3 16h14', [[7, 6], [13, 11], [9, 16]]),
+    el('span', { text: 'こだわり' }),
+    n ? el('span', { class: 'qbadge', text: String(n) }) : null,
+  ]);
+  bar.appendChild(lead);
+
+  bar.appendChild(el('button', {
+    class: 'qchip' + (ui.here ? ' is-on' : ''), type: 'button',
+    text: ui.here ? '📍第' + ui.here.building + ' ' + ui.here.floor : 'いまここ',
+    onclick: openHerePicker,
+  }));
+
+  for (const it of activeFilterChips()) {
+    bar.appendChild(el('button', {
+      class: 'qchip is-on', type: 'button', title: it.label + ' を外す',
+      onclick: () => { it.drop(); saveUI(); render(); },
+    }, [el('span', { text: it.label }), el('span', { class: 'qchip-x', text: '×' })]));
+  }
+
+  for (const t of QUICK_TOGGLES) {
+    const arr = quickArr(t.kind);
+    if (arr.includes(t.value)) continue;           // 選択中のものは上の列に出ている
+    if (!quickCount(t)) continue;                  // 押しても0件のものは出さない
+    bar.appendChild(el('button', {
+      class: 'qchip', type: 'button', text: t.label,
+      onclick: () => { arr.push(t.value); saveUI(); render(); },
+    }));
+  }
+
+  if (n || ui.q || ui.here) {
+    bar.appendChild(el('button', {
+      class: 'qchip qchip--clear', type: 'button', text: 'すべて解除',
+      onclick: resetFilters,
+    }));
+  }
+}
+
+function quickCount(t) {
+  if (t.kind === 'cat') return stores.some((s) => s.category === t.value);
+  return stores.some((s) => {
+    const ud = user[s.id];
+    if (t.value === 'fav') return ud && ud.fav;
+    if (t.value === 'unvisited') return !(ud && ud.visits && ud.visits.length);
+    if (t.value === 'crowd') return crowd(s.id).some((c) => !c.me);
+    return false;
+  });
+}
+
+// 選択中の条件を、外せる形で並べる
+function activeFilterChips() {
+  return []
+    .concat(ui.buildings.map((v) => ({ label: '第' + v + 'ビル', drop: () => remove(ui.buildings, v) })))
     .concat(ui.floors.map((v) => ({ label: v, drop: () => remove(ui.floors, v) })))
     .concat(ui.cats.map((v) => ({ label: v, drop: () => remove(ui.cats, v) })))
     // 種類とタグは同じ名前がある（立ち飲みなど）ので、タグ側に # を付けて区別する
@@ -1444,14 +1505,61 @@ function renderActiveFilters() {
       const m = MISC_FILTERS.find((x) => x.id === v);
       return { label: (m ? m.label : v), drop: () => remove(ui.misc, v) };
     }));
-  box.hidden = !items.length;
-  for (const it of items) {
-    box.appendChild(el('button', {
-      class: 'activechip', type: 'button',
-      title: it.label + ' を外す',
-      onclick: () => { it.drop(); saveUI(); render(); },
-    }, [el('span', { text: it.label }), el('span', { class: 'activechip-x', text: '×' })]));
+}
+
+function resetFilters() {
+  ui.buildings = []; ui.floors = []; ui.cats = []; ui.tags = []; ui.misc = []; ui.q = '';
+  ui.here = null;
+  const q = $('#q');
+  if (q) { q.value = ''; $('#q-clear').hidden = true; }
+  saveUI();
+  render();
+}
+
+function svgIcon(d, dots) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 20 22');
+  svg.setAttribute('class', 'qicon');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', d);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', 'currentColor');
+  path.setAttribute('stroke-width', '1.8');
+  path.setAttribute('stroke-linecap', 'round');
+  svg.appendChild(path);
+  for (const [cx, cy] of dots || []) {
+    const c = document.createElementNS(ns, 'circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', '2.2');
+    c.setAttribute('fill', 'currentColor');
+    svg.appendChild(c);
   }
+  return svg;
+}
+
+// 「こだわり」シート。中身は #filters-holder に畳んであるものを持ってくる
+function openFilterSheet() {
+  const box = $('#filters');
+  if (!box) return;
+  openSheet([
+    el('h2', { text: 'こだわり' }),
+    box,
+    el('div', { class: 'btnrow' }, [
+      el('button', { class: 'btn btn--ghost', type: 'button', text: 'すべて解除', onclick: resetFilters }),
+    ]),
+  ]);
+  renderChips();
+  syncChipsMore('category');
+  syncChipsMore('tag');
+}
+
+// シートを閉じるとき、借りていた #filters は元の場所へ返す。
+// 返さないとシートの中身ごと消えて、次に開いたとき空になる
+function stowFilters() {
+  const box = $('#filters');
+  const holder = $('#filters-holder');
+  if (box && holder && box.parentNode !== holder) holder.appendChild(box);
 }
 
 function remove(arr, v) {
@@ -1464,12 +1572,15 @@ function render() {
   renderChips();
   syncFilterBar();
   const hits = sorted(stores.filter(matches));
-  $('#count').textContent = hits.length + ' 件 / 登録 ' + stores.length + ' 件';
+  $('#count').textContent = hits.length === stores.length
+    ? stores.length + ' 件' : hits.length + ' 件 / ' + stores.length + ' 件';
   // 0件でも押せるようにする。ここを押せなくすると、条件を戻す導線が
   // パネルの中から消えて行き止まりに見える
-  $('#btn-apply').textContent = hits.length ? hits.length + ' 件を見る' : '0件 — 条件を外す';
-  $('#btn-apply').disabled = false;
-  $('#btn-apply').dataset.zero = hits.length ? '' : '1';
+  const apply = $('#btn-apply');
+  if (apply) {
+    apply.textContent = hits.length ? hits.length + ' 件を見る' : '0件 — 条件を外す';
+    apply.dataset.zero = hits.length ? '' : '1';
+  }
 
   // 星が1件も入っていないうちは「星が高い順」が何も起こさないので隠す
   const hasRating = stores.some((s) => s.rating != null);
@@ -1508,7 +1619,16 @@ function detectEmbedded() {
   let framed = false;
   try { framed = window.self !== window.top; } catch (e) { framed = true; }
   const noInnerScroll = document.documentElement.scrollHeight <= window.innerHeight + 1;
-  document.documentElement.classList.toggle('is-embedded', framed && noInnerScroll);
+  const embedded = framed && noInnerScroll;
+  document.documentElement.classList.toggle('is-embedded', embedded);
+
+  // 埋め込みでは position:fixed が画面ではなく文書全体を基準にしてしまい、
+  // 下のタブバーが2万px下へ飛ぶ。流し込みに戻したうえで、本文より前へ移す
+  const bar = document.querySelector('.tabbar');
+  const main = document.querySelector('main');
+  if (!bar || !main) return;
+  if (embedded && bar.nextElementSibling !== main) main.parentNode.insertBefore(bar, main);
+  if (!embedded && bar.nextElementSibling === main) document.body.appendChild(bar);
 }
 
 // 最後に触った場所。埋め込み時に、シートやトーストをそこへ出すために使う
@@ -1538,6 +1658,7 @@ function viewportGuess() {
 function openSheet(nodes) {
   const sheet = $('#sheet');
   const panel = sheet.querySelector('.sheet-panel');
+  stowFilters();   // 前のシートが「こだわり」だった場合、中身を返してから消す
   panel.textContent = '';
   panel.appendChild(el('div', { class: 'sheet-grip' }));
   // 閉じるボタンは中身の末尾にもあるが、長いシートだとそこまで
@@ -1567,6 +1688,7 @@ let sheetSeq = 0;
 
 function closeSheet() {
   sheetSeq++;
+  stowFilters();
   $('#sheet').hidden = true;
   document.body.style.overflow = '';
 }
@@ -1700,7 +1822,7 @@ function openDetail(id) {
   drawVisitBtn();
 
   const dl = el('dl', {}, [
-    row('場所', '第' + s.building + 'ビル ' + s.floor + (s.block ? ' ' + s.block : '')),
+    row('場所', '第' + s.building + 'ビル ' + s.floor + (s.block ? '　区画' + s.block : '')),
     row('カテゴリ', s.category || '—'),
     row('予算', s.budget ? '¥' + s.budget : '—'),
     row('営業', (s.hours || '—') + (s.closedDays.length ? '（休: ' + s.closedDays.join('・') + '）' : '')
@@ -1728,6 +1850,7 @@ function openDetail(id) {
       })]),
     ]),
     dl,
+    el('div', { class: 'btnrow' }, [favBtn, visitBtn]),
     el('div', { class: 'btnrow' }, [
       el('button', {
         class: 'btn', type: 'button', text: 'マップで見る',
@@ -1750,10 +1873,6 @@ function openDetail(id) {
     el('div', { class: 'btnrow' }, [
       el('a', { class: 'btn', href: gmapsLink(s), target: '_blank', rel: 'noopener', text: 'Googleマップ' }),
       el('a', { class: 'btn', href: tabelogLink(s), target: '_blank', rel: 'noopener', text: '食べログ検索' }),
-    ]),
-    el('div', { class: 'btnrow' }, [
-      favBtn,
-      visitBtn,
     ]),
     el('div', { class: 'field' }, [el('label', { text: '自分の評価' }), myStars]),
     cloud.shared ? el('div', { class: 'field' }, [
@@ -2447,10 +2566,9 @@ function openMenu() {
         class: 'btn btn--ghost', type: 'button', text: '未確認だけ表示',
         onclick: () => {
           if (!ui.misc.includes('unverified')) ui.misc.push('unverified');
-          ui.filtersOpen = true;
           saveUI();
-          render();
           closeSheet();
+          render();
         },
       })]),
     ]) : null,
@@ -2788,14 +2906,6 @@ function bind() {
   sortSel.value = ui.sort;
   sortSel.addEventListener('change', () => { ui.sort = sortSel.value; saveUI(); render(); });
 
-  $('#btn-filters').addEventListener('click', () => {
-    ui.filtersOpen = !ui.filtersOpen;
-    saveUI();
-    syncFilterBar();
-  });
-
-  $('#btn-here').addEventListener('click', openHerePicker);
-
   // 条件を変えるたびに閉じて確かめる往復が要らないよう、ここで件数を返す
   $('#btn-apply').addEventListener('click', (e) => {
     if (e.currentTarget.dataset.zero === '1') {
@@ -2804,9 +2914,7 @@ function bind() {
       render();
       return;
     }
-    ui.filtersOpen = false;
-    saveUI();
-    syncFilterBar();
+    closeSheet();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
@@ -2816,13 +2924,6 @@ function bind() {
       syncChipsMore(key);
     });
   }
-
-  $('#btn-reset').addEventListener('click', () => {
-    ui.buildings = []; ui.floors = []; ui.cats = []; ui.tags = []; ui.misc = []; ui.q = '';
-    ui.here = null;
-    q.value = ''; $('#q-clear').hidden = true;
-    saveUI(); render();
-  });
 
   $('#btn-add').addEventListener('click', () => openEditor(null));
   $('#btn-menu').addEventListener('click', openMenu);

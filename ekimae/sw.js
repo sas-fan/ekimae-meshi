@@ -1,4 +1,4 @@
-/* 駅前ビル飯 — オフラインでも開けるようにする最小構成の Service Worker */
+/* 梅田地下メシ — オフラインでも開けるようにする最小構成の Service Worker */
 const CACHE = 'ekimae-v1';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'icon.svg', 'manifest.webmanifest'];
 

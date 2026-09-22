@@ -1,4 +1,4 @@
-/* 駅前ビル飯 — 大阪駅前ビルの飲食店マップ (vanilla JS / 静的ホスティング前提) */
+/* 梅田地下メシ — 梅田の地下の飲食店マップ (vanilla JS / 静的ホスティング前提) */
 'use strict';
 
 const NS = 'ekimae.v1';
@@ -10,8 +10,43 @@ const KEY = {
   me: NS + '.me',       // 自分が誰か（名前と、合言葉を通ったかどうか）
 };
 
-const BUILDINGS = [1, 2, 3, 4];
-const FLOOR_ORDER = ['B2', 'B1', '1F', '2F', '3F'];
+/* 店のある場所。もとは大阪駅前第1〜4ビルだけだったので数字1つで足りていたが、
+   梅田のほかの地下にも広げたので、数字と文字列が混ざる形にしてある。
+
+   1〜4 を数字のままにしているのは、店のIDが「場所＋フロア＋店名のhash」で
+   決まるため。ここを文字列に変えると既存357件のIDが全部変わり、
+   お気に入り・メモ・訪問履歴が全部外れてしまう。 */
+const VENUES = [
+  { id: 1, short: '第1ビル', name: '大阪駅前第1ビル', area: '駅前ビル', search: '大阪駅前第1ビル' },
+  { id: 2, short: '第2ビル', name: '大阪駅前第2ビル', area: '駅前ビル', search: '大阪駅前第2ビル' },
+  { id: 3, short: '第3ビル', name: '大阪駅前第3ビル', area: '駅前ビル', search: '大阪駅前第3ビル' },
+  { id: 4, short: '第4ビル', name: '大阪駅前第4ビル', area: '駅前ビル', search: '大阪駅前第4ビル' },
+  { id: 'kitte', short: 'うめよこ', name: 'KITTE大阪 うめよこ', area: 'うめきた',
+    search: 'KITTE大阪 うめよこ', site: 'https://osaka.jp-kitte.jp/shop/gourmet/shoplist04.jsp' },
+  { id: 'bar03', short: 'バルチカ03', name: 'イノゲート大阪 バルチカ03', area: '大阪駅',
+    search: 'バルチカ03 イノゲート大阪', site: 'https://barchica03.com/' },
+  { id: 'lucua', short: 'バルチカ', name: 'ルクア大阪 バルチカ', area: 'ルクア',
+    search: 'ルクア大阪 バルチカ', site: 'https://www.lucua.jp/floormap/b2.html' },
+];
+
+const VENUE_BY_ID = new Map(VENUES.map((v) => [String(v.id), v]));
+
+function venueOf(id) { return VENUE_BY_ID.get(String(id)) || null; }
+function venueShort(id) { const v = venueOf(id); return v ? v.short : String(id); }
+function venueName(id) { const v = venueOf(id); return v ? v.name : String(id); }
+function venueIndex(id) {
+  const i = VENUES.findIndex((v) => String(v.id) === String(id));
+  return i < 0 ? 99 : i;
+}
+
+// 保存されている値を、定義済みの場所キーに揃える（数字は数字のまま）
+function venueKey(raw) {
+  const v = venueOf(raw);
+  if (v) return v.id;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+const FLOOR_ORDER = ['B2', 'B1', '1F', '2F', '3F', '4F', '5F'];
 
 const CATEGORIES = [
   '居酒屋', '立ち飲み', 'バー', '串カツ', '焼鳥', '焼肉・ホルモン', '寿司', '海鮮',
@@ -74,8 +109,8 @@ function sanitizeUI(saved) {
     } else if (typeof def === 'boolean') {
       if (typeof v === 'boolean') out[k] = v;
     } else if (k === 'here') {
-      if (v && typeof v === 'object' && BUILDINGS.includes(Number(v.building)) && typeof v.floor === 'string') {
-        out.here = { building: Number(v.building), floor: v.floor };
+      if (v && typeof v === 'object' && venueOf(v.building) && typeof v.floor === 'string') {
+        out.here = { building: venueKey(v.building), floor: v.floor };
       }
     }
   }
@@ -457,7 +492,7 @@ function hideGate() {
 
 function gateWaiting() {
   showGate([
-    el('h2', { class: 'gate-title', text: '駅前ビル飯' }),
+    el('h2', { class: 'gate-title', text: '梅田地下メシ' }),
     el('p', { class: 'gate-note', text: '確認しています…' }),
   ]);
 }
@@ -505,7 +540,7 @@ function askGate(opts) {
     });
 
     showGate([
-      el('h2', { class: 'gate-title', text: '駅前ビル飯' }),
+      el('h2', { class: 'gate-title', text: '梅田地下メシ' }),
       el('p', { class: 'gate-note', text: opts.setup
         ? 'まだ合言葉が決まっていません。仲間に伝える合言葉を決めてください。'
         : '合言葉を入れてください。一度入れたら、この端末では次から聞きません。' }),
@@ -724,7 +759,7 @@ function normalizeStore(s) {
   const aliases = Array.isArray(s.aliases) ? s.aliases : [];
   return Object.assign({}, s, {
     name: typeof s.name === 'string' ? s.name : String(s.name || ''),
-    building: Number(s.building) || 1,
+    building: venueKey(s.building),
     floor: s.floor || 'B1',
     tags: tags,
     closedDays: Array.isArray(s.closedDays) ? s.closedDays : [],
@@ -858,7 +893,7 @@ function matches(s) {
 
 // 「いまここ」のフロアかどうか。地下街は GPS が効かないので手で指定する
 function isHere(s) {
-  return !!ui.here && s.building === ui.here.building && s.floor === ui.here.floor;
+  return !!ui.here && String(s.building) === String(ui.here.building) && s.floor === ui.here.floor;
 }
 
 // 並べ替えの鍵。区画番号は「28」と「28-1」で長さが変わるので、
@@ -867,7 +902,7 @@ function isHere(s) {
 function sortKey(s) {
   const fi = FLOOR_ORDER.indexOf(s.floor);
   return {
-    nums: [isHere(s) ? 0 : 1, s.building, fi < 0 ? 99 : fi, ...blockKey(s.block)],
+    nums: [isHere(s) ? 0 : 1, venueIndex(s.building), fi < 0 ? 99 : fi, ...blockKey(s.block)],
     name: s.name || '',
   };
 }
@@ -951,7 +986,7 @@ function todayStr() {
 
 function gmapsLink(s) {
   if (s.gmapsUrl) return s.gmapsUrl;
-  const q = s.name + ' 大阪駅前第' + s.building + 'ビル';
+  const q = s.name + ' ' + ((venueOf(s.building) || {}).search || venueName(s.building));
   return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
 }
 
@@ -970,11 +1005,13 @@ const OFFICIAL_FLOOR_PAGES = {
 
 function floorPlanLink(s) {
   const byFloor = OFFICIAL_FLOOR_PAGES[s.building];
-  return (byFloor && byFloor[s.floor]) || null;
+  if (byFloor && byFloor[s.floor]) return byFloor[s.floor];
+  // フロアごとのページが無い施設は、公式サイトのトップへ送る
+  return (venueOf(s.building) || {}).site || null;
 }
 
 function tabelogLink(s) {
-  const q = s.name + ' 大阪駅前第' + s.building + 'ビル 食べログ';
+  const q = s.name + ' ' + ((venueOf(s.building) || {}).search || venueName(s.building)) + ' 食べログ';
   return 'https://www.google.com/search?q=' + encodeURIComponent(q);
 }
 
@@ -1001,7 +1038,16 @@ function renderChips() {
     render();
   };
 
-  mk($('#f-building'), BUILDINGS.map((b) => ({ value: String(b), label: '第' + b })), ui.buildings, (v) => toggle(ui.buildings, v));
+  // 店が1件も無い場所のチップは出さない（バルチカなどは取り込むまで現れない）
+  const venueCounts = new Map();
+  for (const st of stores) {
+    const k = String(st.building);
+    venueCounts.set(k, (venueCounts.get(k) || 0) + 1);
+  }
+  const venueList = VENUES
+    .filter((v) => venueCounts.get(String(v.id)) || ui.buildings.includes(String(v.id)))
+    .map((v) => ({ value: String(v.id), label: v.short + ' ' + (venueCounts.get(String(v.id)) || 0) }));
+  mk($('#f-building'), venueList, ui.buildings, (v) => toggle(ui.buildings, v));
 
   // フロアは「店が1件でもある階」だけ出す。駅前ビルの 1F / 2F は飲食がほとんど無く、
   // 押しても0件のチップが並ぶだけなので固定リストにはしない。
@@ -1123,7 +1169,7 @@ function storeCard(s) {
   const open = isOpenNow(s);
   // 一覧は「どこの何屋か」が分かれば足りる。読む量を減らして1行に収める
   const meta = [
-    el('span', { text: '第' + s.building + 'ビル ' + s.floor }),
+    el('span', { text: venueShort(s.building) + ' ' + s.floor }),
     s.block ? el('span', { text: '区画' + s.block }) : null,
     s.category ? el('span', { text: s.category }) : null,
     s.budget ? el('span', { text: '¥' + s.budget }) : null,
@@ -1347,7 +1393,7 @@ function renderMap(hits) {
     const group = el('div', { class: 'floorgroup' }, [
       el('h2', {}, [
         k === hereKey ? el('span', { class: 'herebadge', text: 'いまここ' }) : null,
-        el('span', { text: '第' + b + 'ビル ' + f + '　該当 ' + hitCount + ' / ' + list.length + '件' }),
+        el('span', { text: venueShort(b) + ' ' + f + '　該当 ' + hitCount + ' / ' + list.length + '件' }),
       ]),
     ]);
 
@@ -1453,7 +1499,7 @@ function renderQuickbar() {
 
   bar.appendChild(el('button', {
     class: 'qchip' + (ui.here ? ' is-on' : ''), type: 'button',
-    text: ui.here ? '📍第' + ui.here.building + ' ' + ui.here.floor : 'いまここ',
+    text: ui.here ? '📍' + venueShort(ui.here.building) + ' ' + ui.here.floor : 'いまここ',
     onclick: openHerePicker,
   }));
 
@@ -1496,7 +1542,7 @@ function quickCount(t) {
 // 選択中の条件を、外せる形で並べる
 function activeFilterChips() {
   return []
-    .concat(ui.buildings.map((v) => ({ label: '第' + v + 'ビル', drop: () => remove(ui.buildings, v) })))
+    .concat(ui.buildings.map((v) => ({ label: venueShort(v), drop: () => remove(ui.buildings, v) })))
     .concat(ui.floors.map((v) => ({ label: v, drop: () => remove(ui.floors, v) })))
     .concat(ui.cats.map((v) => ({ label: v, drop: () => remove(ui.cats, v) })))
     // 種類とタグは同じ名前がある（立ち飲みなど）ので、タグ側に # を付けて区別する
@@ -1822,7 +1868,7 @@ function openDetail(id) {
   drawVisitBtn();
 
   const dl = el('dl', {}, [
-    row('場所', '第' + s.building + 'ビル ' + s.floor + (s.block ? '　区画' + s.block : '')),
+    row('場所', venueName(s.building) + ' ' + s.floor + (s.block ? '　区画' + s.block : '')),
     row('カテゴリ', s.category || '—'),
     row('予算', s.budget ? '¥' + s.budget : '—'),
     row('営業', (s.hours || '—') + (s.closedDays.length ? '（休: ' + s.closedDays.join('・') + '）' : '')
@@ -1953,7 +1999,7 @@ function removeStore(s) {
 function openEditor(s) {
   const isNew = !s;
   const draft = Object.assign(
-    { id: '', name: '', kana: '', building: ui.buildings.length === 1 ? Number(ui.buildings[0]) : 1, floor: 'B2', block: '', category: '', tags: [], budget: '', hours: '', closedDays: [], pos: null },
+    { id: '', name: '', kana: '', building: ui.buildings.length === 1 ? venueKey(ui.buildings[0]) : 1, floor: 'B2', block: '', category: '', tags: [], budget: '', hours: '', closedDays: [], pos: null },
     s || {}
   );
 
@@ -1964,8 +2010,8 @@ function openEditor(s) {
     return el('div', { class: 'field' }, [el('label', { text: label }), input]);
   };
 
-  const selBuilding = el('select', {}, BUILDINGS.map((b) =>
-    el('option', { value: String(b), selected: Number(draft.building) === b, text: '第' + b + 'ビル' })));
+  const selBuilding = el('select', {}, VENUES.map((v) =>
+    el('option', { value: String(v.id), selected: String(draft.building) === String(v.id), text: v.name })));
   const selFloor = el('select', {}, FLOOR_ORDER.map((fl) =>
     el('option', { value: fl, selected: draft.floor === fl, text: fl })));
   const selCategory = el('select', {}, [el('option', { value: '', text: '—' })].concat(
@@ -2019,7 +2065,7 @@ function openEditor(s) {
       id: draft.id || 'c-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
       name,
       kana: f.kana.value.trim(),
-      building: Number(selBuilding.value),
+      building: venueKey(selBuilding.value),
       floor: selFloor.value,
       block: f.block.value.trim(),
       category: selCategory.value,
@@ -2056,7 +2102,7 @@ function openEditor(s) {
     mkField('name', '店名 *'),
     mkField('kana', 'よみ（検索用・ひらがな）'),
     el('div', { class: 'field-2col' }, [
-      el('div', { class: 'field' }, [el('label', { text: 'ビル' }), selBuilding]),
+      el('div', { class: 'field' }, [el('label', { text: '場所' }), selBuilding]),
       el('div', { class: 'field' }, [el('label', { text: 'フロア' }), selFloor]),
     ]),
     el('div', { class: 'field-2col' }, [
@@ -2182,7 +2228,7 @@ function openStarEntry() {
       listBox.appendChild(el('div', { class: 'star-row' }, [
         el('div', { class: 'star-row-head' }, [
           el('span', { class: 'star-row-name', text: s.name }),
-          el('span', { class: 'star-row-loc', text: '第' + s.building + ' ' + s.floor + (s.block ? ' / ' + s.block : '') }),
+          el('span', { class: 'star-row-loc', text: venueShort(s.building) + ' ' + s.floor + (s.block ? ' / ' + s.block : '') }),
         ]),
         el('div', { class: 'star-row-ctl' }, [
           el('a', { class: 'btn btn--ghost', href: gmapsLink(s), target: '_blank', rel: 'noopener', text: 'Googleマップ' }),
@@ -2217,13 +2263,16 @@ function openStarEntry() {
 }
 
 function openHerePicker() {
-  const floors = [...new Set(stores.map((s) => s.floor))]
-    .sort((a, b) => FLOOR_ORDER.indexOf(a) - FLOOR_ORDER.indexOf(b));
   const grid = el('div', { class: 'heregrid' });
-  for (const b of BUILDINGS) {
+  // 場所によって使っている階が違う（うめよこは B1 だけ）。
+  // 全部の組み合わせを出すと空のマスばかりになるので、店がある階だけ出す
+  for (const v of VENUES) {
+    const floors = [...new Set(stores.filter((s) => String(s.building) === String(v.id)).map((s) => s.floor))]
+      .sort((a, b) => FLOOR_ORDER.indexOf(a) - FLOOR_ORDER.indexOf(b));
     for (const f of floors) {
-      const on = ui.here && ui.here.building === b && ui.here.floor === f;
-      const n = stores.filter((s) => s.building === b && s.floor === f).length;
+      const b = v.id;
+      const on = !!ui.here && String(ui.here.building) === String(b) && ui.here.floor === f;
+      const n = stores.filter((s) => String(s.building) === String(b) && s.floor === f).length;
       grid.appendChild(el('button', {
         class: 'herecell' + (on ? ' is-on' : '') + (n ? '' : ' is-empty'),
         type: 'button',
@@ -2232,10 +2281,10 @@ function openHerePicker() {
           saveUI();
           render();
           closeSheet();
-          toast(ui.here ? '第' + b + 'ビル ' + f + ' を先頭に出します' : 'いまここを解除しました');
+          toast(ui.here ? v.short + ' ' + f + ' を先頭に出します' : 'いまここを解除しました');
         },
       }, [
-        el('span', { class: 'herecell-b', text: '第' + b + 'ビル' }),
+        el('span', { class: 'herecell-b', text: v.short }),
         el('span', { class: 'herecell-f', text: f }),
         el('span', { class: 'herecell-n', text: n + '件' }),
       ]));
@@ -2278,7 +2327,7 @@ async function openPlanManager() {
     try {
       toast('取り込んでいます…');
       await planPut(planKey(pending.b, pending.f), await shrinkImage(f));
-      toast('第' + pending.b + 'ビル ' + pending.f + ' の平面図を保存しました');
+      toast(venueShort(pending.b) + ' ' + pending.f + ' の平面図を保存しました');
       openPlanManager();
     } catch (e) {
       toast('保存できませんでした: ' + e.message);
@@ -2286,14 +2335,17 @@ async function openPlanManager() {
   });
 
   const rows = el('div', {});
-  for (const b of BUILDINGS) {
-    for (const f of floors) {
+  for (const v of VENUES) {
+    const b = v.id;
+    const vFloors = [...new Set(stores.filter((x) => String(x.building) === String(b)).map((x) => x.floor))]
+      .sort((a, c) => FLOOR_ORDER.indexOf(a) - FLOOR_ORDER.indexOf(c));
+    for (const f of vFloors) {
       const key = planKey(b, f);
       const has = have.includes(key);
       const bundled = !!bundledPlanUrl(key);
       const state = has ? '差し替え済み' : (bundled ? 'アプリに同梱' : '未取り込み');
       rows.appendChild(el('div', { class: 'planrow' }, [
-        el('span', { class: 'planrow-name', text: '第' + b + 'ビル ' + f }),
+        el('span', { class: 'planrow-name', text: venueShort(b) + ' ' + f }),
         el('span', { class: 'planrow-state' + (has || bundled ? ' is-on' : ''), text: state }),
         el('button', {
           class: 'btn btn--ghost', type: 'button', text: has || bundled ? '差し替え' : '取り込む',
@@ -2377,7 +2429,7 @@ async function openPlanViewer(store) {
       toast('この端末では平面図を保存できません（' + got.error.message + '）');
       return;
     }
-    toast('第' + store.building + 'ビル ' + store.floor + ' の平面図がまだありません');
+    toast(venueShort(store.building) + ' ' + store.floor + ' の平面図がまだありません');
     openPlanManager();
     return;
   }
@@ -2468,7 +2520,7 @@ async function openPlanViewer(store) {
   openSheet([
     el('h2', { text: store.name }),
     el('p', { class: 'sheet-sub' }, [
-      el('strong', { text: '第' + store.building + 'ビル ' + store.floor }),
+      el('strong', { text: venueShort(store.building) + ' ' + store.floor }),
       store.block ? el('strong', { class: 'planblock', text: '区画 ' + store.block }) : null,
       el('span', {
         text: !store.block ? '　区画番号が未登録です'
@@ -2637,7 +2689,7 @@ function csvBox() {
 
   // 見出しに ビル / フロア が無いCSV（data/stores.template.csv がそう）を
   // 貼ったときに、どこの階として入れるかを決める
-  const selB = el('select', {}, BUILDINGS.map((b) => el('option', { value: String(b), text: '第' + b + 'ビル' })));
+  const selB = el('select', {}, VENUES.map((v) => el('option', { value: String(v.id), text: v.name })));
   const selF = el('select', {}, ['B2', 'B1', '1F', '2F'].map((f) => el('option', { value: f, text: f })));
 
   const run = () => {
@@ -2657,7 +2709,7 @@ function csvBox() {
     const first = read.items[0];
     const sample = '1行目はこう読みました:\n'
       + '  店名: ' + first.name + '\n'
-      + '  場所: 第' + first.building + 'ビル ' + first.floor + (first.block ? ' / ' + first.block : '') + '\n'
+      + '  場所: ' + venueShort(first.building) + ' ' + first.floor + (first.block ? ' / ' + first.block : '') + '\n'
       + '  業種: ' + (first.category || '—') + '\n'
       + '  タグ: ' + (first.tags.join('、') || '—') + '\n\n';
     const skipNote = read.skipped.length
@@ -2687,7 +2739,7 @@ function csvBox() {
 const CSV_ALIASES = {
   name: ['name', '店名', '店舗名', '名称'],
   kana: ['kana', 'よみ', 'ヨミ', 'かな', '読み'],
-  building: ['building', 'ビル', '建物', '号館'],
+  building: ['building', 'venue', '場所', '施設', 'ビル', '建物', '号館'],
   floor: ['floor', 'フロア', '階'],
   block: ['block', '区画', '区画番号', '号', '室'],
   category: ['category', '業種', 'カテゴリ', 'ジャンル', '種別'],
@@ -2700,6 +2752,18 @@ const CSV_ALIASES = {
 };
 
 // 見出しが無いときの並び。CSV欄のラベルと揃えること
+// CSV の「場所」欄。番号・正式名・略称・キーのどれでも受ける
+function readVenueCell(raw, fallback) {
+  const t = String(raw == null ? '' : raw).normalize('NFKC').trim();
+  if (!t) return fallback;
+  const hit = VENUES.find((v) => String(v.id) === t || v.short === t || v.name === t);
+  if (hit) return hit.id;
+  const digits = t.replace(/[^0-9]/g, '');
+  const n = Number(digits);
+  if (digits && venueOf(n)) return n;
+  return null;
+}
+
 const CSV_POSITIONS = ['name', 'building', 'floor', 'block', 'category', 'tags', 'budget', 'hours', 'closedDays'];
 
 // 引用符に対応した CSV/TSV の読み取り。
@@ -2762,13 +2826,15 @@ function readCSV(text, fallbackBuilding, fallbackFloor) {
     r.forEach((cell, i) => { if (map[i] && cell !== '') rec[map[i]] = cell; });
     if (!rec.name) { skipped.push({ row: r.join(','), why: '店名が空' }); continue; }
 
-    // フロアと同じく全角を直してから読む。ここを抜かすと「３」が読めず
-    // 既定のビルに化けたまま、不正としても弾かれない
-    const rawB = String(rec.building || '').normalize('NFKC').replace(/[^0-9]/g, '');
-    if (rec.building && !rawB) { skipped.push({ row: rec.name, why: 'ビルが読めない（' + rec.building + '）' }); continue; }
-    const building = Number(rawB) || fallbackBuilding;
+    // 「３」「第3ビル」「バルチカ03」「gg03」のどれでも受ける。
+    // 全角を直してから読まないと「３」が読めず、既定の場所に化けたまま
+    // 不正としても弾かれない
+    const building = readVenueCell(rec.building, fallbackBuilding);
+    if (rec.building && building === null) {
+      skipped.push({ row: rec.name, why: '場所が読めない（' + rec.building + '）' });
+      continue;
+    }
     const floor = String(rec.floor || fallbackFloor).normalize('NFKC').toUpperCase();
-    if (!BUILDINGS.includes(building)) { skipped.push({ row: rec.name, why: 'ビルが不正' }); continue; }
     if (!FLOOR_ORDER.includes(floor)) { skipped.push({ row: rec.name, why: 'フロアが不正（' + floor + '）' }); continue; }
 
     if (rec.category && !CATEGORIES.includes(rec.category)) notes.push('業種「' + rec.category + '」は一覧に無いので空にします');
@@ -2851,10 +2917,10 @@ function importPayload(data) {
     const ok = [], bad = [];
     for (const s of data.stores) {
       if (!s || typeof s !== 'object' || !s.id || !s.name) { bad.push(s); continue; }
-      if (!BUILDINGS.includes(Number(s.building))) { bad.push(s); continue; }
+      if (!venueOf(s.building)) { bad.push(s); continue; }
       if (!FLOOR_ORDER.includes(String(s.floor))) { bad.push(s); continue; }
       ok.push(Object.assign({}, s, {
-        building: Number(s.building),
+        building: venueKey(s.building),
         tags: Array.isArray(s.tags) ? s.tags : [],
         aliases: Array.isArray(s.aliases) ? s.aliases : [],
         closedDays: Array.isArray(s.closedDays) ? s.closedDays : [],

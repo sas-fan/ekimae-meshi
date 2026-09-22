@@ -20,7 +20,7 @@ markup = body.group(1)
 # Service Worker と manifest はデプロイ版だけのもの。Artifact では使わない
 markup = re.sub(r'\s*<script src="app\.js"></script>', "", markup)
 
-out = """<title>駅前ビル飯</title>
+out = """<title>梅田地下メシ</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   /* Artifact の骨組みが :root に safe-area 分の余白を入れるため、

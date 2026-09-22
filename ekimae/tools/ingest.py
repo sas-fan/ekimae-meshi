@@ -5,6 +5,10 @@
   python3 tools/ingest.py --csv in/ekimae2_b2.csv --building 2 --floor B2 \
       --source official:ekimae2 --verified
 
+  # 駅前ビル以外は --building に場所のキーを渡す
+  python3 tools/ingest.py --csv in/kitte_B1.csv --building kitte --floor B1 \
+      --source official:kitte --verified
+
   # 保存した HTML から区画番号と店名の対を拾う（best-effort・要目視）
   python3 tools/ingest.py --html in/ekimae2_b2.html --building 2 --floor B2 \
       --source official:ekimae2 --dry-run
@@ -199,7 +203,11 @@ def main() -> int:
     src = ap.add_mutually_exclusive_group(required=True)
     src.add_argument("--csv", type=Path, help="CSV / TSV ファイル")
     src.add_argument("--html", type=Path, help="保存した公式フロア案内の HTML")
-    ap.add_argument("--building", type=int, required=True, choices=E.BUILDINGS)
+    # 1〜4 は数字、うめよこ等は文字列キー（kitte / gg03 / lucua）
+    ap.add_argument("--building", required=True,
+                    type=lambda v: int(v) if v.isdigit() else v,
+                    choices=E.BUILDINGS,
+                    metavar="{1,2,3,4,kitte,gg03,lucua}")
     ap.add_argument("--floor", required=True, choices=E.FLOORS)
     ap.add_argument("--source", default="manual", help="出どころ（例: official:ekimae2 / onsite）")
     ap.add_argument("--verified", action="store_true", help="裏が取れているものとして取り込む")

@@ -10,8 +10,20 @@ from pathlib import Path
 
 DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "stores.json"
 
-FLOORS = ["B2", "B1", "1F", "2F", "3F"]
-BUILDINGS = [1, 2, 3, 4]
+FLOORS = ["B2", "B1", "1F", "2F", "3F", "4F", "5F"]
+# 店のある場所。1〜4 は大阪駅前第1〜4ビルで、数字のまま残してある。
+# 店のIDが「場所＋フロア＋店名のhash」で決まるため、ここを文字列に
+# 変えると既存のIDが全部変わり、お気に入りやメモが外れてしまう。
+VENUES = {
+    1: "大阪駅前第1ビル",
+    2: "大阪駅前第2ビル",
+    3: "大阪駅前第3ビル",
+    4: "大阪駅前第4ビル",
+    "kitte": "KITTE大阪 うめよこ",
+    "bar03": "イノゲート大阪 バルチカ03",
+    "lucua": "ルクア大阪 バルチカ",
+}
+BUILDINGS = list(VENUES)
 
 CATEGORIES = [
     "居酒屋", "立ち飲み", "バー", "串カツ", "焼鳥", "焼肉・ホルモン", "寿司", "海鮮",
@@ -62,7 +74,7 @@ def norm(s: str) -> str:
     return re.sub(r"[\s　ー・･\-_/()（）「」【】]", "", s)
 
 
-def make_id(building: int, floor: str, name: str) -> str:
+def make_id(building, floor: str, name: str) -> str:
     h = hashlib.sha1(norm(name).encode("utf-8")).hexdigest()[:6]
     return f"b{building}-{floor}-{h}"
 
@@ -126,7 +138,8 @@ def load(path: Path = DATA_PATH) -> dict:
 
 def save(data: dict, path: Path = DATA_PATH) -> None:
     data["updatedAt"] = date.today().isoformat()
-    data["stores"].sort(key=lambda s: (s.get("building", 9), FLOORS.index(s["floor"]) if s.get("floor") in FLOORS else 9,
+    order = {str(k): i for i, k in enumerate(VENUES)}
+    data["stores"].sort(key=lambda s: (order.get(str(s.get("building")), 99), FLOORS.index(s["floor"]) if s.get("floor") in FLOORS else 9,
                                        block_key(s.get("block", "")), s.get("name", "")))
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 

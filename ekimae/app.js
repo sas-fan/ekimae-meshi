@@ -1885,6 +1885,7 @@ function openDetail(id) {
     s.url ? linkRow('サイト', siteLabel(s.url), s.url) : null,
     row('出どころ', (s.verified ? '確認済み' : '未確認') + '（' + s.source + '）'),
     s.infoSource ? infoRow(s) : null,
+    s.officialName ? nameRow(s) : null,
   ].filter(Boolean));
 
   openSheet([
@@ -1955,6 +1956,18 @@ function openDetail(id) {
       el('dd', {}, [ok
         ? el('a', { href: href, target: href.startsWith('tel:') ? null : '_blank', rel: 'noopener', text: text })
         : text]),
+    ]);
+  }
+
+  // 公式フロア案内の店名が誤字・旧店名で直した店は、元の表記と理由を見せる。
+  // 現地の看板と公式の案内のどちらで探しても同じ店だと分かるように
+  function nameRow(st) {
+    return el('div', { class: 'detail-row' }, [
+      el('dt', { text: '公式の表記' }),
+      el('dd', {}, [
+        '「' + st.officialName + '」',
+        st.nameNote ? el('p', { class: 'detail-note', text: st.nameNote }) : null,
+      ]),
     ]);
   }
 
@@ -2920,8 +2933,13 @@ function readCSV(text, fallbackBuilding, fallbackFloor) {
 
 function applyCSV(items) {
   const baseIds = new Set(base.stores.map((x) => x.id));
+  // 店名を直した店の ID は公式の旧表記から作られている。いまの店名で書かれた CSV も
+  // 同じ店に当てる（別の店として二重に増えないように）
+  const renamed = new Map(base.stores.filter((x) => x.officialName)
+    .map((x) => [makeId(x.building, x.floor, x.name), x.id]));
   let added = 0, updated = 0;
   for (const it of items) {
+    if (renamed.has(it.id)) it.id = renamed.get(it.id);
     const i = custom.findIndex((c) => c.id === it.id);
     // 配布データに同じ店があるなら、全部を上書きせず、書いてある項目だけ足す
     const payload = baseIds.has(it.id)

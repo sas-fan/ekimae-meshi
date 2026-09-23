@@ -43,6 +43,8 @@ localStorage に差分として載り、`id` をキーに上書きマージさ�
 | `infoCheckedAt` | | date | 店の中身を調べた日。`infoSource` があるときは必須 |
 | `infoUrl` | | string | いちばん当てにした出典ページ |
 | `infoNote` | | string | 土日の営業時間・情報源どうしの食い違いなどの補足 |
+| `officialName` | | string | 公式フロア案内に載っていた店名。誤字や旧店名だったので `name` を直したときだけ入る。**ID はこの名前から作ったまま変えない** |
+| `nameNote` | | string | 店名を直した理由 |
 | `updatedAt` | | date | この行を最後に触った日 |
 
 ### category（列挙）
@@ -121,3 +123,14 @@ python3 tools/validate_stores.py
 ```
 
 `--dry-run` は差分を表示するだけで書き込まない。まず必ず目視すること。
+
+## 店名を直すとき（誤字・入れ替わり）
+
+公式フロア案内の店名が誤字だったり、店が入れ替わっていたりしたときは
+`tools/rename_store.py <id> "<正しい店名>" --why "<理由>"` で直す。
+
+- `id` は変えない（お気に入り・メモ・訪問履歴・仲間のレビューが外れないように）
+- 元の店名は `officialName` と `aliases` に残るので、古い名前で検索しても見つかる
+- 公式フロア案内を取り込み直しても（`tools/ingest.py`）直した店名は上書きされない。
+  公式の案内が後で正しい店名に直った場合も同じ店として扱う
+- `python3 tools/rename_store.py --list` で直した店の一覧が見られる

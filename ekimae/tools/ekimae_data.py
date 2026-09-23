@@ -215,6 +215,12 @@ def validate(data: dict, warns: list[str] | None = None) -> list[str]:
                 errs.append(f"{where}: infoSource が不正 ({s['infoSource']!r})")
             if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", s.get("infoCheckedAt") or ""):
                 errs.append(f"{where}: infoSource があるのに infoCheckedAt が日付でない")
+        # 店名を直した店は、ID が公式の旧表記から作られたままであること（変わるとお気に入り等が外れる）
+        if s.get("officialName"):
+            if s["officialName"] == s.get("name"):
+                errs.append(f"{where}: officialName が店名と同じ（直していないなら消す）")
+            elif sid and sid != make_id(s.get("building"), s.get("floor", ""), s["officialName"]):
+                errs.append(f"{where}: id が officialName から作った ID と合わない")
         if not s.get("source"):
             errs.append(f"{where}: source が空")
 

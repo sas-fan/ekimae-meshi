@@ -170,6 +170,12 @@ SOFT = ["kana", "block", "category", "budget", "hours", "phone", "url"]
 
 def merge(data, incoming):
     index = {s["id"]: s for s in data["stores"]}
+    # 誤字・旧店名を tools/rename_store.py で直した店は、ID が公式の旧表記から作られている。
+    # 公式フロア案内のほうが後で正しい店名に直ったときも同じ店として扱えるよう、
+    # いまの店名から作った ID でも引けるようにしておく（ID そのものは変えない）
+    for s in data["stores"]:
+        if s.get("officialName"):
+            index.setdefault(E.make_id(s["building"], s["floor"], s["name"]), s)
     added = updated = 0
     for new in incoming:
         old = index.get(new["id"])
@@ -180,6 +186,10 @@ def merge(data, incoming):
             continue
         changed = False
         for k in SOFT:
+            # 業種は公式フロア案内のものが間違っていることがある。ネットで調べて直した店
+            # （infoSource がある店）は、取り込み直しで元の間違いに戻さない
+            if k == "category" and old.get("infoSource"):
+                continue
             if new.get(k) and new[k] != old.get(k):
                 old[k] = new[k]
                 changed = True

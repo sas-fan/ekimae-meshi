@@ -3037,31 +3037,6 @@
       "infoNote": "ネットの表記は「梅田家」（うちは「梅田屋」）。平日の時間。土11:30-22:30、日祝11:00-19:30。無休"
     },
     {
-      "id": "b2-B2-2e5fb6",
-      "name": "スマイルハンド 第2ビル店",
-      "kana": "",
-      "aliases": [],
-      "building": 2,
-      "floor": "B2",
-      "block": "13",
-      "pos": null,
-      "category": "",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
-      "url": "",
-      "gmapsUrl": "",
-      "rating": null,
-      "ratingCount": null,
-      "ratingSource": "",
-      "ratingCheckedAt": "",
-      "source": "official:ekimae2",
-      "verified": true,
-      "updatedAt": "2026-09-20"
-    },
-    {
       "id": "b2-B2-6c85d2",
       "name": "串カツ でんがな",
       "kana": "",
@@ -6477,15 +6452,19 @@
       "id": "b2-B1-0c3c86",
       "name": "おでんとお蕎麦 居酒屋 じんべえ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "おでんとお蕎麦居酒屋じんべえ 2ビル店"
+      ],
       "building": 2,
       "floor": "B1",
       "block": "60",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "15:00-22:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -6496,24 +6475,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae2",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004492545/",
+      "infoNote": "平日の時間。土12:00-23:00、日祝12:00-22:00。平日もドリンクのラストオーダーが22:30とあるので、閉店は23:00かもしれない。第3ビルの「おでんと鴨蕎麦 居酒屋じんべえ」は別店"
     },
     {
       "id": "b3-B2-48bb0c",
       "name": "酒場 おか長",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "海鮮酒場 おか長 大阪駅前第３ビルB２店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "6",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "喫煙可",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "10:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6345-8138",
+      "url": "https://kaj7603.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -6521,23 +6509,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/gs1g50fh0000/",
+      "infoNote": "B2店（B1-41の酒場 おか長とは別店）。定休日の記載なし。平日10〜17時は生中270円"
     },
     {
       "id": "b3-B2-97e466",
       "name": "珈琲店スパニョラ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "珈琲店 スパニョラ"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "7",
       "pos": null,
       "category": "喫茶",
-      "tags": [],
+      "tags": [
+        "喫煙可",
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "7:30-20:15",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6347-1177",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6546,7 +6543,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000448906/",
+      "infoNote": "平日の時間。日祝11:00-18:00。不定休。月〜土は喫煙可、日祝は禁煙。モンブラントースト"
     },
     {
       "id": "b3-B2-794dc3",
@@ -6577,17 +6578,22 @@
       "id": "b3-B2-c1933a",
       "name": "韓国料理 アリラン",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "アリラン韓国料理 第三ビル店",
+        "韓国家庭料理 アリラン"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "12",
       "pos": null,
       "category": "その他",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000",
+      "hours": "11:00-22:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6451-8687",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6596,24 +6602,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000973853/",
+      "infoNote": "年中無休。スンドゥブ定食880円。第2ビルのアリランとは別店"
     },
     {
       "id": "b3-B2-6ba700",
       "name": "長屋オムライス 大阪駅前第3ビル店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "長屋オムライス大阪駅前第３ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "15",
       "pos": null,
       "category": "洋食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
-      "url": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-16:00,17:00-20:15",
+      "closedDays": [
+        "水"
+      ],
+      "phone": "06-6344-8206",
+      "url": "https://www.osgroup.co.jp/business/service/nagayaomuraisu.html",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -6621,24 +6637,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031390249/",
+      "infoNote": "1/1〜1/3休み"
     },
     {
       "id": "b3-B2-4e8408",
       "name": "キラメキノ未来",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "キラメキノトリ 大阪駅前第3ビル店",
+        "キラメキノトリ"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "16",
       "pos": null,
       "category": "ラーメン",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kirameki-mirai.co.jp/shop.php?id=33",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -6646,26 +6671,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kirameki-mirai.co.jp/shop.php?id=33&v=2608",
+      "infoNote": "「キラメキノ未来」は運営会社の名前で、店は鶏ラーメンの「キラメキノトリ」。無休（臨時休業あり）"
     },
     {
       "id": "b3-B2-bcab12",
       "name": "立ち飲み 庶民",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立ち呑み 庶民 大阪駅前第三ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "17-1",
       "pos": null,
       "category": "立ち飲み",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "昼飲み"
       ],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
+      "budget": "1000-2000",
+      "hours": "11:00-21:15",
+      "closedDays": [
+        "月"
+      ],
       "phone": "",
-      "url": "",
+      "url": "https://www.tachinomishomin.net/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -6673,24 +6707,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100001586766/",
+      "infoNote": "第1ビル・第2ビルにも庶民あり（別店）"
     },
     {
       "id": "b3-B2-61dae5",
       "name": "鉄板焼肉・ホルモン まきの",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "鉄板焼肉ホルモンまきの"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "18",
       "pos": null,
       "category": "焼肉・ホルモン",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "1000-3000",
+      "hours": "11:30-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6442-7285",
+      "url": "https://akr6685988386.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -6698,7 +6741,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003560498/",
+      "infoNote": "所在地B2 18号で一致。ランチ11:30-14:00。定休日なし。立ち席は30分飲み放題390円。2024-09-18開店"
     },
     {
       "id": "b3-B2-32cff7",
@@ -6711,11 +6758,119 @@
       "pos": null,
       "category": "立ち飲み",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "昼飲み"
       ],
       "budget": "",
-      "hours": "",
+      "hours": "12:00-23:00",
       "closedDays": [],
+      "phone": "06-6467-8883",
+      "url": "https://tachinomino-kuchi.net/",
+      "gmapsUrl": "",
+      "rating": null,
+      "ratingCount": null,
+      "ratingSource": "",
+      "ratingCheckedAt": "",
+      "source": "official:ekimae3",
+      "verified": true,
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tachinomino-kuchi.net/",
+      "infoNote": "不定休。第1ビルの「さかなのくち」「ぶたのくち」と同じ系列"
+    },
+    {
+      "id": "b3-B2-9b71f5",
+      "name": "らぁ麺もう利",
+      "kana": "",
+      "aliases": [
+        "らぁ麺 もう利 梅田店"
+      ],
+      "building": 3,
+      "floor": "B2",
+      "block": "20",
+      "pos": null,
+      "category": "ラーメン",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "",
+      "hours": "11:00-15:00,17:00-22:00",
+      "closedDays": [
+        "日"
+      ],
+      "phone": "06-4256-7886",
+      "url": "https://ramen-mouri.com/",
+      "gmapsUrl": "",
+      "rating": null,
+      "ratingCount": null,
+      "ratingSource": "",
+      "ratingCheckedAt": "",
+      "source": "official:ekimae3",
+      "verified": true,
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://ramendb.supleks.jp/s/147720.html",
+      "infoNote": "鶏白湯"
+    },
+    {
+      "id": "b3-B2-160a82",
+      "name": "立呑み 焼きスパ ローマ軒",
+      "kana": "",
+      "aliases": [
+        "焼きスパ ローマ軒 大阪駅前第3ビル店",
+        "ローマ軒"
+      ],
+      "building": 3,
+      "floor": "B2",
+      "block": "21-1",
+      "pos": null,
+      "category": "立ち飲み",
+      "tags": [
+        "立ち飲み",
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-23:00",
+      "closedDays": [],
+      "phone": "",
+      "url": "https://roma-ken.com/cn4/pg113.html",
+      "gmapsUrl": "",
+      "rating": null,
+      "ratingCount": null,
+      "ratingSource": "",
+      "ratingCheckedAt": "",
+      "source": "official:ekimae3",
+      "verified": true,
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/7a3dzu2p0000/",
+      "infoNote": "月〜土の時間。日祝11:00-20:00。不定休。30分500円の生ビール飲み放題あり。焼きスパ800円前後"
+    },
+    {
+      "id": "b3-B2-445cf6",
+      "name": "イタリア食堂 cima",
+      "kana": "",
+      "aliases": [
+        "梅田バル イタリア食堂 CIMA",
+        "チーマ"
+      ],
+      "building": 3,
+      "floor": "B2",
+      "block": "21-2",
+      "pos": null,
+      "category": "洋食",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ディナー2000-3000",
+      "hours": "11:30-14:00,17:00-23:00",
+      "closedDays": [
+        "日"
+      ],
       "phone": "",
       "url": "",
       "gmapsUrl": "",
@@ -6725,16 +6880,23 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004367968/",
+      "infoNote": "平日の時間。土は夜17:00-23:00のみ"
     },
     {
-      "id": "b3-B2-9b71f5",
-      "name": "らぁ麺もう利",
+      "id": "b3-B2-29aa23",
+      "name": "笑福",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "笑福 梅田店",
+        "笑福〇わ 梅田店"
+      ],
       "building": 3,
       "floor": "B2",
-      "block": "20",
+      "block": "22-1",
       "pos": null,
       "category": "ラーメン",
       "tags": [],
@@ -6750,100 +6912,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
-    },
-    {
-      "id": "b3-B2-160a82",
-      "name": "立呑み 焼きスパ ローマ軒",
-      "kana": "",
-      "aliases": [],
-      "building": 3,
-      "floor": "B2",
-      "block": "21-1",
-      "pos": null,
-      "category": "立ち飲み",
-      "tags": [
-        "立ち飲み"
-      ],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
-      "url": "",
-      "gmapsUrl": "",
-      "rating": null,
-      "ratingCount": null,
-      "ratingSource": "",
-      "ratingCheckedAt": "",
-      "source": "official:ekimae3",
-      "verified": true,
-      "updatedAt": "2026-09-20"
-    },
-    {
-      "id": "b3-B2-445cf6",
-      "name": "イタリア食堂 cima",
-      "kana": "",
-      "aliases": [],
-      "building": 3,
-      "floor": "B2",
-      "block": "21-2",
-      "pos": null,
-      "category": "洋食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
-      "url": "",
-      "gmapsUrl": "",
-      "rating": null,
-      "ratingCount": null,
-      "ratingSource": "",
-      "ratingCheckedAt": "",
-      "source": "official:ekimae3",
-      "verified": true,
-      "updatedAt": "2026-09-20"
-    },
-    {
-      "id": "b3-B2-29aa23",
-      "name": "笑福",
-      "kana": "",
-      "aliases": [],
-      "building": 3,
-      "floor": "B2",
-      "block": "22-1",
-      "pos": null,
-      "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
-      "url": "",
-      "gmapsUrl": "",
-      "rating": null,
-      "ratingCount": null,
-      "ratingSource": "",
-      "ratingCheckedAt": "",
-      "source": "official:ekimae3",
-      "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://ramendb.supleks.jp/s/95107.html",
+      "infoNote": "うちの業種は「居酒屋」だったが二郎系のラーメン店なので直した。営業時間は見つからず"
     },
     {
       "id": "b3-B2-a3db1e",
       "name": "てんぷらや 夢二",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "天ぷら 夢二",
+        "夢二"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "22-2",
       "pos": null,
       "category": "和食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "tags": [
+        "カウンターのみ",
+        "ランチあり"
+      ],
+      "budget": "ランチ1000-2000",
+      "hours": "11:00-15:00,17:00-21:00",
+      "closedDays": [
+        "日"
+      ],
+      "phone": "06-6452-2777",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6852,23 +6949,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000451684/",
+      "infoNote": "祝日は11:30から。カウンター10席"
     },
     {
       "id": "b3-B2-f1b6f0",
       "name": "おでん ばる",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "おでんばる",
+        "odenbar"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "23-1",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "カウンターのみ",
+        "ランチあり",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-15:00,17:00-22:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6348-1133",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6877,23 +6985,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100000854684/",
+      "infoNote": "定休日なし。昼はおでん出汁の和カレー"
     },
     {
       "id": "b3-B2-7d6a7b",
       "name": "和歌山由良港地魚直送 昭和丸",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "和歌山由良港 地魚産地直送 昭和丸",
+        "昭和丸"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "23-2",
       "pos": null,
       "category": "海鮮",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "喫煙可"
+      ],
+      "budget": "2000-3000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6348-1888",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6902,23 +7019,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0005011495/",
+      "infoNote": "所在地B2F 23-2で一致。平均2,500円・生ビール200円〜。営業時間は見つからず"
     },
     {
       "id": "b3-B2-05bfb0",
       "name": "鱗家厨房",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "麟家厨房"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "23-3",
       "pos": null,
-      "category": "居酒屋",
-      "tags": [],
+      "category": "中華",
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6345-6515",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6927,23 +7052,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003648377/",
+      "infoNote": "ネットでは「麟家厨房」（中華料理）。住所表記の23-3で一致。うちの業種は「居酒屋」だったので「中華」に直した。営業時間・定休日は情報源で食い違う（「毎日11:00-22:30」と「平日11:30-22:00・土11:30-21:30・日祝休み」）ので入れていない。どちらでも昼は開いている"
     },
     {
       "id": "b3-B2-8d3bdf",
       "name": "ネスパ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "ネスパ 大阪駅前第3ビル店",
+        "西洋料理 ネスパ"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "24",
       "pos": null,
-      "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "category": "洋食",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー~2000",
+      "hours": "11:00-15:00,17:30-21:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6345-7089",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6952,23 +7086,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000018242/",
+      "infoNote": "うちの業種は「居酒屋」だったが老舗の洋食店なので直した。平日の時間。土日祝の夜は17:30-20:00。不定休。名物コロペット"
     },
     {
       "id": "b3-B2-d441e0",
       "name": "大衆酒場 フレンチマン",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場フレンチマン 第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "26",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "カウンターのみ",
+        "昼飲み"
+      ],
+      "budget": "2000-3000",
+      "hours": "13:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-4797-7500",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -6977,21 +7120,29 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004338978/",
+      "infoNote": "平日の時間。土日祝11:00-23:00。不定休"
     },
     {
       "id": "b3-B2-a430e2",
       "name": "焼売のジョー",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "焼売のジョー 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "29",
       "pos": null,
       "category": "中華",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "禁煙"
+      ],
+      "budget": "~3000",
+      "hours": "12:00-22:30",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -7002,24 +7153,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003341178/",
+      "infoNote": "所在地B2F 29号室で一致。無休。焼売1個109円〜"
     },
     {
       "id": "b3-B2-569338",
       "name": "すし酒場 さしす",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立ちすし酒場さしす 大阪駅前第3ビル地下2階店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "30",
       "pos": null,
       "category": "寿司",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "立ち飲み"
+      ],
+      "budget": "2000-3000",
+      "hours": "16:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://joujou.co.jp/shop/sashisu/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7027,24 +7186,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://skynet-c.jp/blog/article01/category/ookawa/20260313-28939/",
+      "infoNote": "B2は立ち飲みスタイルの店。B1-69の「すし酒場 さしす」（14:00-23:00とされる）は別店。不定休"
     },
     {
       "id": "b3-B2-2d9023",
       "name": "中華料理 金の華",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "中華料理 金ノ華 大阪駅前第三ビル店",
+        "食べ飲み放題中華 金の華 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "31",
       "pos": null,
       "category": "中華",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー2000-3000",
+      "hours": "11:00-23:30",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6344-0881",
+      "url": "https://kdth405.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7052,24 +7220,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/mwmgbcpa0000/",
+      "infoNote": "所在地B2F 31号で一致。年中無休。ランチ800円・ディナー2,500円。食べ放題3,200円〜"
     },
     {
       "id": "b3-B2-fe179a",
       "name": "名物どてカツ どて煮込み 酒場おちょぼ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "酒場おちょぼ 第三ビル店",
+        "酒場 おちょぼ"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "32",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "禁煙",
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ディナー3000~",
+      "hours": "11:30-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6343-0123",
+      "url": "https://sakaba-ochobo.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7077,23 +7256,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://sakaba-ochobo.com/",
+      "infoNote": "定休日はInstagramで告知。完全禁煙。どて煮込み110円〜"
     },
     {
       "id": "b3-B2-893554",
       "name": "梅田くだん",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "完全個室と京野菜とワイン 梅田くだん"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "33",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "禁煙",
+        "個室あり",
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ランチ~1000",
+      "hours": "11:30-14:00,17:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6453-1114",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7102,23 +7292,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://mrs.living.jp/osaka/town_gourmet/reporter/3364124",
+      "infoNote": "平日・祝前日の時間（昼）。夜は全日17:00-23:00。休みは12/31〜1/2。一汁三菜定食700円〜"
     },
     {
       "id": "b3-B2-2f7a20",
       "name": "かどや",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "かどやホルモン店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "34",
       "pos": null,
-      "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "category": "焼肉・ホルモン",
+      "tags": [
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ランチ1000-2000",
+      "hours": "11:30-15:00,17:00-22:00",
+      "closedDays": [
+        "日",
+        "祝"
+      ],
+      "phone": "06-6341-4654",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7127,7 +7329,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000448370/",
+      "infoNote": "ネットでは「かどやホルモン店」（第3ビルB200）。うちの業種は「居酒屋」だったがホルモン焼肉の店なので直した。平日・土の時間。昼のロース定食は1,100円・1,200円と情報源で違う"
     },
     {
       "id": "b3-B2-c75426",
@@ -7138,12 +7344,17 @@
       "floor": "B2",
       "block": "35",
       "pos": null,
-      "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "category": "洋食",
+      "tags": [
+        "喫煙可",
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-21:00",
+      "closedDays": [
+        "土"
+      ],
+      "phone": "06-6345-2934",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7152,24 +7363,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031089807/",
+      "infoNote": "うちの業種は「居酒屋」だったが洋食の定食屋なので直した。エイト750円・B定食700円"
     },
     {
       "id": "b3-B2-e44907",
       "name": "天ぷらとワイン大塩",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "天ぷらとワイン 大塩 大阪駅前第三ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "36-1",
       "pos": null,
       "category": "和食",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:30-14:30,17:30-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6343-3545",
+      "url": "https://tempura-oshio.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7177,24 +7396,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003323911/",
+      "infoNote": "月〜木の時間。金は夜22:30まで、土12:00-22:45、日12:00-22:00。天ぷら1品190円〜。定休日は見つからず"
     },
     {
       "id": "b3-B2-c2a7ad",
       "name": "元祖変わりかつ丼・親子丼専門店 祭太鼓",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "元祖 変わりかつ丼・親子丼 祭太鼓 大阪駅前第三ビル店",
+        "祭太鼓 大阪駅前第三ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "36-2",
       "pos": null,
       "category": "定食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "カウンターのみ",
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-21:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6348-1125",
+      "url": "http://matsuridaiko.co.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7202,7 +7431,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000448948/",
+      "infoNote": "無休。かつ丼770円・2個玉子かつ丼850円。第2ビルB2にも店あり"
     },
     {
       "id": "b3-B2-554ba2",
@@ -7213,13 +7446,15 @@
       "floor": "B2",
       "block": "37-1",
       "pos": null,
-      "category": "居酒屋",
-      "tags": [],
+      "category": "洋食",
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6341-5211",
+      "url": "https://www.ron-corp.com/budotei",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7227,24 +7462,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000013945/",
+      "infoNote": "うちの業種は「居酒屋」だったがハンバーグ・ステーキの洋食店なので直した。平日の時間（21:00LO）。日祝は21:00まで。休みは年末年始のみ。ご飯とスープはおかわり自由"
     },
     {
       "id": "b3-B2-252fba",
       "name": "うどん棒 大阪本店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "うどん棒 大阪店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "37-2",
       "pos": null,
       "category": "そば・うどん",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-15:00,17:30-20:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6458-5518",
+      "url": "http://www.udonbo.co.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7252,24 +7495,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "http://www.udonbo.co.jp/",
+      "infoNote": "平日の時間。土日祝は11:00-15:00のみ。麺がなくなり次第終了。不定休（SNSで告知）。住所表記の区画37-2で一致。きざみうどん550円"
     },
     {
       "id": "b3-B2-a288b9",
       "name": "第3ビルタイガー",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場 第3ビルB2タイガー"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "38",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:30-23:30",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6225-7811",
+      "url": "https://kek3500.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7277,23 +7528,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.enjoytokyo.jp/spot/g_kek3500/",
+      "infoNote": "毎日同じ時間とされる（定休日は明記なし）。生ビール199円・タコハイ99円など。第4ビルB2の「タイガー」は別店"
     },
     {
       "id": "b3-B2-f278e4",
       "name": "大衆酒場 スタンド マルカツ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場スタンド マルカツ 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "39",
       "pos": null,
       "category": "居酒屋",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "禁煙",
+        "昼飲み"
       ],
-      "budget": "",
-      "hours": "",
+      "budget": "1000-2000",
+      "hours": "11:30-23:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -7304,24 +7563,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hamoni.jp/shop/WYtta8EaolYDMw2kErI5",
+      "infoNote": "不定休。予算は情報源で「1,000円〜／2,000円〜」。19:00までハッピーアワー。席料・お通しなし"
     },
     {
       "id": "b3-B2-59b6c1",
       "name": "居酒屋 にゆう・とうきよう",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "にゆう・とうきよう 大阪駅前第三ビル店",
+        "にゆう・とうきょう 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "40",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "喫煙可",
+        "ランチあり",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:30-22:15",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://shop.newtokyo.co.jp/ton/osaka/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7329,13 +7599,19 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001205940/",
+      "infoNote": "火〜木・土の時間。金・祝前日は22:30まで、日祝は21:00まで。時間の一覧に月曜が無い（定休日かは未確認）。旧店名は「鉄板焼き とん」"
     },
     {
       "id": "b3-B2-91917f",
       "name": "海鮮一番",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "海鮮一番 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "41",
@@ -7345,7 +7621,7 @@
       "budget": "",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-4796-9666",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7354,23 +7630,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001259214/",
+      "infoNote": "営業時間が情報源で食い違うので入れていない（「月〜土16:00-23:00・日曜休み」と「火〜日15:00-22:00・月曜休み」）。生ビール1杯目299円など"
     },
     {
       "id": "b3-B2-7607bc",
       "name": "寿司屋 のだ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "寿司屋のだ 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "43-1",
       "pos": null,
       "category": "寿司",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "禁煙",
+        "ランチあり"
+      ],
+      "budget": "ランチ1000-2000/ディナー2000-3000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6348-0471",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7379,24 +7664,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031511674/",
+      "infoNote": "閉店は22:00とされるが開店時刻・定休日は見つからず。予約不可"
     },
     {
       "id": "b3-B2-21cecc",
       "name": "炭火焼鳥 鶏えん",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "炭火焼鳥 鷄えん 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "46",
       "pos": null,
       "category": "焼鳥",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "喫煙可",
+        "個室あり",
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ランチ~1000",
+      "hours": "11:30-14:30,17:30-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6131-8221",
+      "url": "https://kc16807.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7404,7 +7700,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kc16807.gorp.jp/",
+      "infoNote": "平日の時間。土日は12:00-23:00の通し営業。年中無休。102席。焼鳥1本198円〜"
     },
     {
       "id": "b3-B2-d52fe4",
@@ -7416,11 +7716,13 @@
       "block": "47",
       "pos": null,
       "category": "焼鳥",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー2000-3000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6454-5444",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7429,7 +7731,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://asayama.info/?p=1371",
+      "infoNote": "チキンカツ・チキン南蛮・唐揚げの丼と定食の店（チキンカツ丼650円〜）。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B2-0de55a",
@@ -7440,13 +7746,15 @@
       "floor": "B2",
       "block": "48",
       "pos": null,
-      "category": "焼肉・ホルモン",
+      "category": "居酒屋",
       "tags": [],
       "budget": "",
-      "hours": "",
-      "closedDays": [],
+      "hours": "16:00-23:00",
+      "closedDays": [
+        "月"
+      ],
       "phone": "",
-      "url": "",
+      "url": "https://www.ohakomeat.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7454,13 +7762,20 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://prtimes.jp/main/html/rd/p/000000004.000143294.html",
+      "infoNote": "公式の案内で「大人のモダン居酒屋」とあるので業種を「焼肉・ホルモン」から直した（国産牛の創作料理が売り）。火〜金の時間（22:00LO）。土日祝12:00-22:00。月曜が祝日なら火曜休み。2025年8月開店"
     },
     {
       "id": "b3-B2-ee744c",
       "name": "梅亭 中華居酒屋",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "中華風居酒屋 梅亭（ばいてい）",
+        "中華居酒屋 梅亭 大阪駅前第3ビル"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "56-1",
@@ -7479,13 +7794,19 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hamoni.jp/shop/UUdo8FGFiWMG3Umxe1Gz",
+      "infoNote": "梅亭コース2,650円（飲み放題60分+990円）、ドリンク+3品セット980円。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B2-50bbc3",
       "name": "大分からあげと鉄板焼き 勝男B2応援団",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大分からあげと鉄板焼 第3ビルB2応援団 勝男"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "56-2",
@@ -7493,10 +7814,10 @@
       "category": "居酒屋",
       "tags": [],
       "budget": "",
-      "hours": "",
+      "hours": "16:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kea6800.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7504,24 +7825,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kea6800.gorp.jp/",
+      "infoNote": "月〜木の時間。金〜日・祝は13:00-23:00（22:30LO）。不定休（ビルの休館日は休み）。B1の「勝男」（第3ビルB1応援団）とは別店。飲み放題つき120分コース2,800円〜、生ビール180円"
     },
     {
       "id": "b3-B2-fd3679",
       "name": "サイゼリヤ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "サイゼリヤ 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "58",
       "pos": null,
       "category": "洋食",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "10:00-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-4796-5507",
+      "url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1123",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7529,24 +7858,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1123",
+      "infoNote": "年中無休"
     },
     {
       "id": "b3-B2-d38a69",
       "name": "カレーハウス CoCo壱番屋",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "カレーハウスCoCo壱番屋 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "59-2",
       "pos": null,
       "category": "カレー",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6440-1551",
+      "url": "https://tenpo.ichibanya.co.jp/map/2632/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7554,24 +7891,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tenpo.ichibanya.co.jp/map/2632/",
+      "infoNote": "22:00はラストオーダーとの表記あり。26席。定休日は見つからず"
     },
     {
       "id": "b3-B2-66d10f",
       "name": "イタリアン バール ガルゴッタ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "Bar Gargotta（バール ガルゴッタ）",
+        "バール ガルゴッタ"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "61",
       "pos": null,
-      "category": "バー",
-      "tags": [],
-      "budget": "",
+      "category": "洋食",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6346-0034",
+      "url": "https://bar-gargotta.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7579,7 +7925,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://bar-gargotta.com/",
+      "infoNote": "住所表記B2F-61で一致。うちの業種は「バー」だったが、イタリア料理約100種と昼の生パスタが売りの店なので「洋食」に直した。ランチ880円〜。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B2-93506f",
@@ -7591,11 +7941,13 @@
       "block": "63",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "喫煙可"
+      ],
+      "budget": "3000-4000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6346-5428",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7604,21 +7956,29 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000448865/",
+      "infoNote": "営業時間が情報源で食い違うので入れていない（「月〜土・祝前日16:00-23:00、日祝休み」と「平日18:00・日祝17:00開店、年末年始休み」）。夕方6時までの「得得セット」（1杯＋2品で千円）あり。10〜20人の半個室あり"
     },
     {
       "id": "b3-B2-0de117",
       "name": "カレー百貨・居酒屋・カレー夢",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "カレー夢"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "64-1",
       "pos": null,
       "category": "カレー",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-15:00,17:00-23:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -7629,24 +7989,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004421202/",
+      "infoNote": "毎日同じ時間とされる（定休日は明記なし）。2025年1月開店。チーズカレーオムライス900円・カツカレーうどん1,000円"
     },
     {
       "id": "b3-B2-0c62c2",
       "name": "RUDYS クラブデリシャス",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "RUDY'S CLUB DELICIOUS",
+        "ルディーズ クラブ デリシャス"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "68",
       "pos": null,
       "category": "バー",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり",
+        "昼飲み",
+        "深夜営業"
+      ],
+      "budget": "ランチ~1000",
+      "hours": "11:00-14:00,16:00-24:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6454-6363",
+      "url": "https://rudys-club-delicious.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7654,24 +8025,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://rudys-club-delicious.owst.jp/",
+      "infoNote": "イスラエル料理の店（シーシャバーもある）。夜は23:30LO。ランチ748円〜、飲み放題つきコース4,378円。定休日は見つからず"
     },
     {
       "id": "b3-B2-7e2b3a",
       "name": "ステーキファイブと寿司六",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "ステーキファイブと寿司六 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "70",
       "pos": null,
       "category": "洋食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "3000-4000",
+      "hours": "11:30-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-4256-5238",
+      "url": "https://steakfive.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7679,23 +8058,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hamoni.jp/shop/yXO82OXFHflju1R6Oa5Z",
+      "infoNote": "無休（22:30LO）。熟成牛ステーキと熟成寿司の居酒屋。予約不可"
     },
     {
       "id": "b3-B2-989818",
       "name": "中華料理 金明飯店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "中華料理 金明飯店 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "71",
       "pos": null,
       "category": "中華",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー3000-4000",
+      "hours": "11:00-23:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6455-8868",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7704,7 +8091,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000764154/",
+      "infoNote": "年中無休。ランチ平均700円・ディナー平均3,600円。食べ飲み放題4,500円〜。第2ビルにも別の店あり"
     },
     {
       "id": "b3-B2-4a1788",
@@ -7716,11 +8107,14 @@
       "block": "72",
       "pos": null,
       "category": "立ち飲み",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "立ち飲み",
+        "昼飲み"
+      ],
+      "budget": "3000-4000",
+      "hours": "14:00-22:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-4795-5333",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7729,23 +8123,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031252673/",
+      "infoNote": "22:00LO。年中無休（12/30〜1/3は休み）。テーブル4つ・カウンター10人ほどの立ち飲み。同じ第3ビルのB1にも徳田酒店が2店あり（別店）"
     },
     {
       "id": "b3-B2-a2aafc",
       "name": "踊るうどん",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "踊るうどん 梅田店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "76",
       "pos": null,
       "category": "そば・うどん",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "現金のみ",
+        "ランチあり"
+      ],
+      "budget": "~2000",
+      "hours": "11:00-15:00,17:00-21:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6344-3760",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7754,24 +8157,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000753414/",
+      "infoNote": "麺がなくなり次第終了。無休。予約不可。肉まいたけ天温玉ぶっかけ1,100円"
     },
     {
       "id": "b3-B2-8b4c0f",
       "name": "串焼きと鉄板一心",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "串焼きと鉄板 一心"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "77",
       "pos": null,
       "category": "焼鳥",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://ke4p703.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7779,24 +8190,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://ke4p703.gorp.jp/",
+      "infoNote": "平日の時間。祝前日は13:00-22:00。祝日や月曜が連休になるときは連休明けが休み。2026年2月開店。ハッピーアワーあり"
     },
     {
       "id": "b3-B2-f2220a",
       "name": "串カツ 天満 七福神",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "串カツ 天満 七福神 大阪駅前第3ビル店",
+        "天満七福神 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "78",
       "pos": null,
       "category": "串カツ",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "12:00-14:30,17:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6343-0078",
+      "url": "https://sitihukujinndai3biru.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7804,24 +8224,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003388350/",
+      "infoNote": "月・水〜土の時間。日は夜21:30まで。時間の一覧に火曜が無い（定休日かは未確認）。串カツ1本165円〜"
     },
     {
       "id": "b3-B2-640573",
       "name": "キリンケラー ヤマト",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "キリンケラーヤマト 大阪駅前第3ビル店",
+        "キリンケラーヤマト 大阪駅前第三ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "80",
       "pos": null,
       "category": "バー",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "喫煙可",
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ランチ~1000",
+      "hours": "11:00-22:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kirin-keller-yamato.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7829,24 +8260,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000014630/",
+      "infoNote": "月〜木の時間。金は23:00まで、土は22:00まで、日祝は21:30まで。不定休。ビアレストラン。ランチ770円〜、名物カツオムドム930円"
     },
     {
       "id": "b3-B2-dcb3da",
       "name": "中国料理 遙華",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "個室中華食べ飲み放題 遥華 第3ビル",
+        "美食天地 遙華"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "83",
       "pos": null,
       "category": "中華",
-      "tags": [],
+      "tags": [
+        "個室あり"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://haruka-umeda.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7854,24 +8294,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000759930/",
+      "infoNote": "食べ飲み放題コース4,980〜5,650円、昼のコース3,980円。個室あり。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B2-094e61",
       "name": "ターリー屋",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "インド定食ターリー屋 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "85",
       "pos": null,
       "category": "カレー",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6347-7706",
+      "url": "https://www.thali-ya.com/shop/osaka_dai3.html",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7879,23 +8327,29 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.thali-ya.com/shop/osaka_dai3.html",
+      "infoNote": "平日の時間（22:30LO）。土日は11:00-15:00と17:00-23:00。休みは年末年始。住所表記の85号で一致"
     },
     {
       "id": "b3-B2-17b3d2",
       "name": "琉球",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "島唄ライブ 琉球"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "87",
       "pos": null,
       "category": "居酒屋",
       "tags": [],
-      "budget": "",
-      "hours": "",
+      "budget": "2500-3000",
+      "hours": "17:00-23:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6453-6534",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7904,7 +8358,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100000059885/",
+      "infoNote": "年中無休。沖縄の島唄ライブがある居酒屋。泡盛100種以上"
     },
     {
       "id": "b3-B2-5a714d",
@@ -7916,12 +8374,15 @@
       "block": "89",
       "pos": null,
       "category": "喫茶",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "禁煙",
+        "ランチあり"
+      ],
+      "budget": "1000~",
+      "hours": "7:00-20:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://www.kissa-sunshine.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -7929,7 +8390,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://mrs.living.jp/osaka/newopen/reporter/6216884",
+      "infoNote": "平日の時間。土日祝は8:00-18:30。休みはビルの休館日。1973年創業の喫茶が2025年に第3ビルB2へ移転。自家焙煎コーヒーとホットケーキ"
     },
     {
       "id": "b3-B2-fece9a",
@@ -7960,17 +8425,20 @@
       "id": "b3-B2-49449b",
       "name": "酒と宴H（昆布料理）",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "酒と宴 H",
+        "居酒屋 酒と宴Ｈ"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "92",
       "pos": null,
       "category": "居酒屋",
       "tags": [],
-      "budget": "",
+      "budget": "2000-3000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6616-8821",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -7979,19 +8447,27 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://gourmet.suntory.co.jp/shop/0X00684983/",
+      "infoNote": "昆布料理が売りの居酒屋。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B2-2c94d0",
       "name": "すし処大繁盛",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "すし処 大繁盛"
+      ],
       "building": 3,
       "floor": "B2",
       "block": "100-1",
       "pos": null,
       "category": "寿司",
-      "tags": [],
+      "tags": [
+        "立ち飲み"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
@@ -8004,7 +8480,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27152703/",
+      "infoNote": "立ち食い寿司。すし2貫330円〜、ハイボール275円〜。「15:00-19:00」とだけ出る情報があるが確かでないので入れていない。一度閉めて再開したとの口コミあり"
     },
     {
       "id": "b3-B2-548b9a",
@@ -8041,8 +8521,11 @@
       "block": "2",
       "pos": null,
       "category": "焼鳥",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "喫煙可",
+        "ランチあり"
+      ],
+      "budget": "~3000",
       "hours": "",
       "closedDays": [],
       "phone": "",
@@ -8054,23 +8537,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hamoni.jp/shop/8DYuFrqNfJiNzikv9cqZ",
+      "infoNote": "住所表記のB1F2号で一致。焼きとんのチェーン（串110円〜）。閉店23:00、昼も営業とされるが開店時刻は見つからず。全席喫煙可"
     },
     {
       "id": "b3-B1-3b88c6",
       "name": "うどんと酒逢わせ めん次郎",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "饂飩と酒逢わせ めん次郎",
+        "うどんづくし めん次郎"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "6",
       "pos": null,
       "category": "そば・うどん",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-22:30",
+      "closedDays": [
+        "日"
+      ],
+      "phone": "06-6341-0788",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -8079,7 +8573,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000941042/",
+      "infoNote": "22:00LO。かけうどん400円〜、定食600円〜、生ビール・ハイボール290円"
     },
     {
       "id": "b3-B1-0077bb",
@@ -8110,18 +8608,22 @@
       "id": "b3-B1-640f11",
       "name": "ワインとオマール海老の店 UOMO",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "ワインとオマール海老の店 UOMO ウォモ 大阪駅前第3ビル"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "14",
       "pos": null,
       "category": "洋食",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー~4000",
       "hours": "",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://wine-uomo.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8129,19 +8631,27 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001217975/",
+      "infoNote": "ランチあり。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B1-3d7edd",
       "name": "鳥すけ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "酒場 鳥すけ"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "15",
       "pos": null,
       "category": "焼鳥",
-      "tags": [],
+      "tags": [
+        "喫煙可"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
@@ -8154,7 +8664,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001285467/",
+      "infoNote": "住所表記のB1F-15で一致。平日17:00開店とされるが閉店時刻は見つからず。不定休。焼鳥1本100〜220円"
     },
     {
       "id": "b3-B1-940247",
@@ -8166,12 +8680,14 @@
       "block": "17",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6348-1005",
+      "url": "http://www.never-land.ne.jp/hanakoyomi/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8179,7 +8695,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000017378/",
+      "infoNote": "住所表記のB1-17号で一致。昼の定食920円ほど、コースは4,180円・5,500円。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B1-c24e3b",
@@ -8242,11 +8762,11 @@
       "pos": null,
       "category": "海鮮",
       "tags": [],
-      "budget": "",
+      "budget": "3000-4000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6454-3801",
+      "url": "https://ryuseimaru.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8254,7 +8774,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://ryuseimaru.gorp.jp/",
+      "infoNote": "閉店23:00とされるが開店時刻・定休日は見つからず。夜の予算3,500円ほど、コース〜4,000円"
     },
     {
       "id": "b3-B1-885864",
@@ -8287,18 +8811,23 @@
       "id": "b3-B1-a0cbb8",
       "name": "どんがめ 大阪駅前第三ビル",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場 どんがめ 大阪駅前第3ビル"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "21",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "ランチあり",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:30-23:30",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-4256-6148",
+      "url": "https://ke7u700.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8306,7 +8835,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://ke7u700.gorp.jp/",
+      "infoNote": "住所表記のB1F21号室で一致。通し営業で毎日営業とされる（定休日は明記なし）。毎日ハッピーアワーあり。ランチメニューあり。第1ビルにも店あり"
     },
     {
       "id": "b3-B1-149b31",
@@ -8318,11 +8851,14 @@
       "block": "23",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "喫煙可",
+        "昼飲み"
+      ],
+      "budget": "2000-3000",
+      "hours": "11:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-4400-4665",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -8331,24 +8867,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003323815/",
+      "infoNote": "月〜土・祝前日の時間（料理22:00LO）。日祝は11:00-21:00。定休日なし。全席喫煙可。生中200円"
     },
     {
       "id": "b3-B1-327892",
       "name": "大分からあげと鉄板焼 勝男",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大分からあげと鉄板焼 第3ビルB1応援団 勝男",
+        "大分からあげと鉄板焼 勝男 第3ビルB1応援団"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "24",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
-      "closedDays": [],
+      "hours": "15:00-23:00",
+      "closedDays": [
+        "日"
+      ],
       "phone": "",
-      "url": "",
+      "url": "https://k768791.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8356,24 +8903,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004295940/",
+      "infoNote": "22:30LO。B2の「勝男B2応援団」とは別店。飲み放題コース2,500円〜"
     },
     {
       "id": "b3-B1-d1d6d2",
       "name": "大衆食堂 うめだホール",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆食堂うめだホール"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "25",
       "pos": null,
-      "category": "定食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "category": "居酒屋",
+      "tags": [
+        "昼飲み"
+      ],
+      "budget": "2000-3000",
+      "hours": "11:30-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6442-1120",
+      "url": "https://umedahall.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8381,24 +8936,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001269975/",
+      "infoNote": "うちの業種は店名から「定食」になっていたが、どの情報源でもレトロな大衆酒場（居酒屋）なので直した。不定休"
     },
     {
       "id": "b3-B1-7ea9ba",
       "name": "マキシ亭",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "マキシ亭 大阪駅前第3ビル店",
+        "マキシ亭 大阪駅前第三ビル本店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "26",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "昼飲み"
+      ],
+      "budget": "1000-3000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6344-7779",
+      "url": "http://www.makishitei.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8406,23 +8970,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "http://www.makishitei.jp/",
+      "infoNote": "公式サイトに「昼飲みできる大衆居酒屋」とある。閉店23:30とされるが開店時刻・定休日は見つからず。第2ビルの「まきし亭 2ビル本店」は別店"
     },
     {
       "id": "b3-B1-85e20b",
       "name": "徳田酒店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "徳田酒店 第3ビルB1店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "27",
       "pos": null,
       "category": "立ち飲み",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "立ち飲み",
+        "喫煙可"
+      ],
+      "budget": "~3000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-4795-6222",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -8431,24 +9004,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031262245/",
+      "infoNote": "B1-66は「徳田酒店 御肉」と分かったので、「第3ビルB1店」はこの店として扱った。営業時間は「月 15:00-22:15」とだけ出る。B2の「徳田酒店 第3ビルB2店」とは別店"
     },
     {
       "id": "b3-B1-2257df",
       "name": "餃子の王将",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "餃子の王将 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "28",
       "pos": null,
       "category": "中華",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-21:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://map.ohsho.co.jp/b/ohsho/info/1433/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8456,7 +9037,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://map.ohsho.co.jp/b/ohsho/info/1433/",
+      "infoNote": "21:00LO。年中無休（年末年始は別）"
     },
     {
       "id": "b3-B1-4dd6da",
@@ -8469,11 +9054,11 @@
       "pos": null,
       "category": "カレー",
       "tags": [],
-      "budget": "",
+      "budget": "~1000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "050-5494-4949",
+      "url": "https://diamond-curry.jp/umeda/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8481,24 +9066,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://diamond-curry.jp/umeda/",
+      "infoNote": "大阪地下街カレーの流れをくむ欧風カレーの店。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B1-19e1ae",
       "name": "大阪トンテキ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大阪トンテキ 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "30",
       "pos": null,
       "category": "定食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "~1000",
+      "hours": "11:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6453-0552",
+      "url": "https://www.ron-corp.com/osakatonteki3",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8506,24 +9099,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001006417/",
+      "infoNote": "平日の時間（21:00LO）。日祝は21:00まで。休みは年末年始。トンテキ定食300g 1,050円"
     },
     {
       "id": "b3-B1-613d14",
       "name": "大衆酒場 天神大ホール",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場 天神大ホール 大阪駅前第三ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "32-1",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "喫煙可",
+        "昼飲み"
+      ],
+      "budget": "~3000",
+      "hours": "14:00-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-4797-5877",
+      "url": "https://joujou.co.jp/shop/tenjindaihall_osakaekimaedaisanbill/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8531,24 +9133,36 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://joujou.co.jp/shop/tenjindaihall_osakaekimaedaisanbill/",
+      "infoNote": "不定休。全面喫煙可。料理は250〜500円が中心で80種以上"
     },
     {
       "id": "b3-B1-5370ed",
       "name": "海藤花",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "海藤花 第三ビル店",
+        "海藤花（かいとうげ）"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "32-2",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "禁煙",
+        "ランチあり",
+        "昼飲み",
+        "深夜営業"
+      ],
+      "budget": "~3000",
+      "hours": "12:00-14:00,17:00-24:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6345-5255",
+      "url": "https://kaitouge-umeda.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8556,24 +9170,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004373335/",
+      "infoNote": "平日の時間。昼（12:00-14:00）は月〜金だけで、夜は毎日17:00-24:00。定休日なし（不定休あり）。店内は全面禁煙（店の外に喫煙所）。平均予算3,000円"
     },
     {
       "id": "b3-B1-e81356",
       "name": "ジャポニカ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆すし酒場 ジャポニカ 大阪駅前第3ビル店",
+        "すし酒場ジャポニカ"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "34-1",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "喫煙可"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "17:00-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6344-1101",
+      "url": "https://zyaponikasanbiru.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8581,7 +9204,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://zyaponikasanbiru.owst.jp/",
+      "infoNote": "平日の時間（22:00LO）。土日は15:00-23:00。年中無休。すし酒場で、すし1貫100円〜・生ビール299円"
     },
     {
       "id": "b3-B1-7068c3",
@@ -8612,18 +9239,20 @@
       "id": "b3-B1-bd81c9",
       "name": "インド料理シュリアルナ 第3ビル店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "シュリアルナ 第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "35",
       "pos": null,
       "category": "カレー",
       "tags": [],
-      "budget": "",
+      "budget": "ディナー2000-3000",
       "hours": "",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6345-5211",
+      "url": "https://shriaruna.jimdofree.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8631,23 +9260,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0032016191/",
+      "infoNote": "月曜は15:00までの営業とされるが、ほかの曜日の時間は見つからず"
     },
     {
       "id": "b3-B1-b37f2d",
       "name": "海鮮屋台 新鮮組",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "海鮮屋台 新鮮組 梅田店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "36",
       "pos": null,
       "category": "海鮮",
-      "tags": [],
+      "tags": [
+        "喫煙可",
+        "ランチあり",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "hours": "11:30-14:00,17:00-23:00",
+      "closedDays": [
+        "日"
+      ],
+      "phone": "06-6131-4419",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -8656,13 +9297,20 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27058289/",
+      "infoNote": "平日の時間。土は夜17:00-23:00のみ。店内喫煙可（ランチタイムは分煙）。生ビール280円"
     },
     {
       "id": "b3-B1-cc2cc0",
       "name": "囲炉裏屋 炭えん",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "囲炉裏屋 炭えん 大阪駅前第三ビル店",
+        "炭えん"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "37",
@@ -8681,7 +9329,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003340121/",
+      "infoNote": "2022年9月開店。B2の「炭火焼鳥 鶏えん」の姉妹店で、各テーブルの小さな囲炉裏で炭焼き・鍋・釜めしなど。バルチカ03にも店あり。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B1-443968",
@@ -8712,17 +9364,22 @@
       "id": "b3-B1-cb56ff",
       "name": "IndianRestaurant Gautama",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "インド料理 GAUTAMA Indian restaurant",
+        "ゴータマ"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "40",
       "pos": null,
       "category": "カレー",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~2000",
+      "hours": "11:00-15:00,17:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6344-5406",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -8731,7 +9388,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031380178/",
+      "infoNote": "住所表記のB1F-40で一致。休みは年末年始のみ。ランチセット850〜1,650円ほど。第2ビルの「マハラジャ」の姉妹店"
     },
     {
       "id": "b3-B1-48bb0c",
@@ -8801,10 +9462,15 @@
       "block": "46",
       "pos": null,
       "category": "寿司",
-      "tags": [],
+      "tags": [
+        "ランチあり",
+        "深夜営業"
+      ],
       "budget": "",
-      "hours": "",
-      "closedDays": [],
+      "hours": "11:30-24:00",
+      "closedDays": [
+        "日"
+      ],
       "phone": "",
       "url": "",
       "gmapsUrl": "",
@@ -8814,23 +9480,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27153868/",
+      "infoNote": "住所表記のB1F 46で一致。月〜金の時間（23:30LO）。土曜の時間は見つからず"
     },
     {
       "id": "b3-B1-85ceef",
       "name": "赤酢 謹賀",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "赤酢 謹賀 3ビル"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "47",
       "pos": null,
       "category": "寿司",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "立ち飲み"
+      ],
+      "budget": "3000-4000",
+      "hours": "12:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6940-6460",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -8839,24 +9513,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031515247/",
+      "infoNote": "住所表記のB1-47で一致。22:00LO。年中無休。立ち食い寿司。喫煙は情報源で「禁煙」と「全面喫煙可」に分かれるので入れていない"
     },
     {
       "id": "b3-B1-ea59cc",
       "name": "花狩人・かとう",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "花狩人 かとう"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "48",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
+      "tags": [
+        "禁煙"
+      ],
+      "budget": "~4000",
+      "hours": "16:00-23:00",
+      "closedDays": [
+        "日",
+        "祝"
+      ],
       "phone": "",
-      "url": "",
+      "url": "https://www.hanakaryudo-kato.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8864,13 +9549,19 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hanakaryudo-kato.com/",
+      "infoNote": "住所表記のB1-48で一致。22:30LO。浪速料理・割烹の店。お通し＋おすすめ3品のセットで4,000円ほど。店内は完全禁煙"
     },
     {
       "id": "b3-B1-5d9577",
       "name": "梅田産直市場",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "海鮮居酒屋 梅田産直市場 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "50",
@@ -8878,10 +9569,10 @@
       "category": "海鮮",
       "tags": [],
       "budget": "",
-      "hours": "",
+      "hours": "16:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://umedasanchokuichiba.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8889,23 +9580,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001006323/",
+      "infoNote": "月〜金・祝前日の時間。土・祝は15:00-23:00、日は15:00-22:00。飲み放題つきコース4,500円〜"
     },
     {
       "id": "b3-B1-206694",
       "name": "おでんと鴨蕎麦 居酒屋じんべえ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "おでんと鴨蕎麦居酒屋じんべえ 3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "51",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "昼飲み"
+      ],
+      "budget": "2000-3000",
+      "hours": "15:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6147-7330",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -8914,24 +9613,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hamoni.jp/shop/aDRtKKVI5b7RnCCfPBGo",
+      "infoNote": "平日の時間（22:30LO）。土12:00-23:00、日祝12:00-22:00。休みは年末年始。自家製おでんと打ちたての蕎麦。第2ビルの「じんべえ」は別店"
     },
     {
       "id": "b3-B1-d15d2f",
       "name": "麦酒&欧州バル グルメ異人館",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "麦酒＆洋食スタンド グリル異人館 大阪駅前第3ビル店",
+        "グリル異人館"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "52-2",
       "pos": null,
-      "category": "バー",
+      "category": "洋食",
       "tags": [],
       "budget": "",
-      "hours": "",
+      "hours": "12:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6455-5033",
+      "url": "https://grill-ijinkan.jp/grill-osaka/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8939,21 +9645,30 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://grill-ijinkan.jp/grill-osaka/",
+      "infoNote": "ネットでは「麦酒＆洋食スタンド グリル異人館」（第3ビルB1）。同じ階の同じ系列名なので同じ店として扱った。洋食とビールの店なので業種を「バー」から直した。月〜木・日祝の時間。金土は23:00まで"
     },
     {
       "id": "b3-B1-cf184b",
       "name": "楠木フサヱ おもや",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "和食と日本酒 楠木フサエ おもや 大阪駅前第3ビル店",
+        "楠木フサエ おもや"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "53",
       "pos": null,
       "category": "立ち飲み",
-      "tags": [],
+      "tags": [
+        "喫煙可"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "16:00-23:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -8964,24 +9679,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031349206/",
+      "infoNote": "平日の時間。土12:00-23:00、日祝12:00-22:00。不定休。第2ビルの「楠木フサヱ 本店」「はなれ」は別店。電話番号は同じ番号が別の店（最鳥）にも出ていて確かでないので入れていない"
     },
     {
       "id": "b3-B1-f229f3",
       "name": "日本酒 かんき",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "日本酒かんき",
+        "麦太郎"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "54",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "禁煙"
+      ],
       "budget": "",
-      "hours": "",
-      "closedDays": [],
+      "hours": "17:00-23:00",
+      "closedDays": [
+        "月"
+      ],
       "phone": "",
-      "url": "",
+      "url": "https://k222600.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -8989,26 +9715,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://k222600.gorp.jp/",
+      "infoNote": "平日の時間（料理22:00LO）。土・祝は22:30まで。月曜休み（祝日なら営業して翌日休み）。旧店名「麦太郎」。日本酒80種以上"
     },
     {
       "id": "b3-B1-d1b9cb",
       "name": "立呑み 晩杯屋 第3ビル",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立呑み晩杯屋 大阪駅前第三ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "55",
       "pos": null,
       "category": "立ち飲み",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "喫煙可",
+        "昼飲み"
       ],
-      "budget": "",
-      "hours": "",
+      "budget": "~3000",
+      "hours": "11:00-22:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://stores.toridoll.com/910061",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9016,24 +9750,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://stores.toridoll.com/910061",
+      "infoNote": "毎日同じ時間。休みはビルの休館日。つまみは100〜300円台。第4ビルB1にも店あり"
     },
     {
       "id": "b3-B1-6c85d2",
       "name": "串かつでんがな",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "串かつ でんがな 大阪駅前第3ビル1号店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "56",
       "pos": null,
       "category": "串カツ",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-4796-8855",
+      "url": "https://stores.dengana.jp/detail/3884/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9041,7 +9783,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0031393101/",
+      "infoNote": "不定休。第3ビルには「2号店」もあるが、そちらはB1の10号室とされるので、B1-56は1号店として扱った（2号店はうちの一覧に無い）"
     },
     {
       "id": "b3-B1-bd4468",
@@ -9053,11 +9799,13 @@
       "block": "58",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6485-9082",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9066,7 +9814,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://news.yahoo.co.jp/expert/articles/a8851c6369bef3406bd566ecfa9275f60c887155",
+      "infoNote": "住所表記のB1F 58で一致。2025年5月開店のネオ酒場。昼飲みOK・ハッピーアワーありとされる。鮮魚・おでん・寿司など。営業時間・定休日は見つからず"
     },
     {
       "id": "b3-B1-7bc497",
@@ -9079,8 +9831,8 @@
       "pos": null,
       "category": "中華",
       "tags": [],
-      "budget": "",
-      "hours": "",
+      "budget": "~1000",
+      "hours": "12:00-23:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -9091,24 +9843,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27153417/",
+      "infoNote": "餃子定食680円（ご飯盛り放題・スープとおでんつき）。定休日は見つからず"
     },
     {
       "id": "b3-B1-74b123",
       "name": "吉野家",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "吉野家 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "60",
       "pos": null,
       "category": "定食",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "8:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-4797-6414",
+      "url": "https://stores.yoshinoya.com/ysn_062348",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9116,24 +9876,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://stores.yoshinoya.com/ysn_062348",
+      "infoNote": "毎日同じ時間"
     },
     {
       "id": "b3-B1-a482a1",
       "name": "最鳥 第3ビルB1店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "からあげ酒場 最鳥 第3ビルB1店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "61-1",
       "pos": null,
-      "category": "焼鳥",
-      "tags": [],
+      "category": "居酒屋",
+      "tags": [
+        "禁煙",
+        "ランチあり",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-14:00,17:00-22:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://saicho-karaage.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9141,24 +9911,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/3884h6yz0000/",
+      "infoNote": "からあげ酒場なので業種を「焼鳥」から直した。休みは年末年始。ハッピーアワーの生ビール190円。電話番号は同じ番号が別の店（楠木フサヱ おもや）にも出ていて確かでないので入れていない"
     },
     {
       "id": "b3-B1-dac1ca",
       "name": "大衆酒場びりちゃん2",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場びりちゃん2 第3ビルB1店",
+        "大衆酒場びりちゃん"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "61-2",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "禁煙",
+        "昼飲み"
+      ],
+      "budget": "~2000",
+      "hours": "14:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kd54801.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9166,24 +9946,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hamoni.jp/shop/5NYiiG3WhTkx3Oo5di3E",
+      "infoNote": "平日の時間。土日祝は12:00-23:00。全面禁煙。定休日は見つからず"
     },
     {
       "id": "b3-B1-488049",
       "name": "レストランOKINAWA",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "レストラン オキナワ"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "63",
       "pos": null,
       "category": "その他",
       "tags": [],
-      "budget": "",
+      "budget": "3000-4000",
       "hours": "",
-      "closedDays": [],
-      "phone": "",
-      "url": "",
+      "closedDays": [
+        "日",
+        "祝"
+      ],
+      "phone": "06-6344-4567",
+      "url": "http://res-okinawa.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9191,24 +9980,36 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000448575/",
+      "infoNote": "住所表記のB1 63号で一致。沖縄料理（手作り豆腐が名物）。飲み放題つきコース4,500円〜。営業時間は見つからず"
     },
     {
       "id": "b3-B1-253495",
       "name": "田楽と季節料理おかじま",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "でんがく季節料理おかじま",
+        "季節料理 おかじま 梅田"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "64",
       "pos": null,
       "category": "和食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
-      "url": "",
+      "tags": [
+        "喫煙可",
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000",
+      "hours": "11:00-15:00,17:00-23:00",
+      "closedDays": [
+        "日"
+      ],
+      "phone": "06-6344-1001",
+      "url": "https://okajima-dengaku.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9216,24 +10017,35 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://okajima-dengaku.jp/shop/",
+      "infoNote": "昼は14:00LO、夜は22:00LO。昼の定食750円。飲み放題つきコース3,180円〜"
     },
     {
       "id": "b3-B1-e00f1b",
       "name": "大衆酒場 五の五",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "五の五 大阪駅前第3ビル店",
+        "大衆酒場 五の五 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "65",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "喫煙可",
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ランチ~2000/ディナー2000-3000",
+      "hours": "11:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://shop.create-restaurants.co.jp/sfp0001/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9241,23 +10053,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://shop.create-restaurants.co.jp/sfp0001/",
+      "infoNote": "定休日なし（1/1〜1/3はビル休館で休み）。平均予算は昼1,800円・夜2,100円。大阪市の「喫煙可能店」で20歳未満は入れない"
     },
     {
       "id": "b3-B1-7a37fb",
       "name": "徳田酒店 肉食専科",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "徳田酒店 御肉"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "66",
       "pos": null,
       "category": "立ち飲み",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "14:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6355-0956",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9266,21 +10086,30 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004381579/",
+      "infoNote": "ネットでは「徳田酒店 御肉」。住所表記の地下1階66号で一致。月〜土の時間。日は13:00-22:00。同じB1-27の「徳田酒店（第3ビルB1店）」とは別店"
     },
     {
       "id": "b3-B1-334180",
       "name": "堂山食堂",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "堂山食堂 3号店",
+        "食べ飲み放題 堂山食堂3号店 大阪駅前第3ビル"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "67",
       "pos": null,
-      "category": "定食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "category": "居酒屋",
+      "tags": [
+        "昼飲み"
+      ],
+      "budget": "1000-2000",
+      "hours": "15:00-23:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -9291,24 +10120,30 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001251569/",
+      "infoNote": "うちの業種は店名から「定食」になっていたが大衆居酒屋なので直した。定休日なし。名物はハムカツ（食べ放題あり）。第2ビル・バルチカ03の堂山食堂は別店"
     },
     {
       "id": "b3-B1-569338",
       "name": "すし酒場 さしす",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "すし酒場さしす 大阪本店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "69",
       "pos": null,
       "category": "寿司",
       "tags": [],
-      "budget": "",
-      "hours": "",
+      "budget": "2000-3000",
+      "hours": "14:00-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-4797-6667",
+      "url": "https://kbng811.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9316,24 +10151,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kbng811.gorp.jp/",
+      "infoNote": "不定休。平均予算2,500円。住所表記は地下1階68号。すし2貫150円〜・お酒190円〜。B2の「立ちすし酒場さしす」は別店"
     },
     {
       "id": "b3-B1-efdab9",
       "name": "松乃家",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "松のや 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "71",
       "pos": null,
       "category": "定食",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "7:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://ka5v083.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9341,24 +10184,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/7k74uvar0000/",
+      "infoNote": "22:30LO。年中無休。とんかつ・定食のチェーン"
     },
     {
       "id": "b3-B1-47a4e8",
       "name": "ホリーズカフェ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "ホリーズカフェ 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "73",
       "pos": null,
       "category": "喫茶",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "7:30-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6344-2288",
+      "url": "https://hollys-corp.jp/shop/o_daisanbi/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9366,24 +10217,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hollys-corp.jp/shop/o_daisanbi/",
+      "infoNote": "住所表記の地下1階73号で一致。LOは閉店30分前。不定休。第3ビルには別に「WEST店」もある"
     },
     {
       "id": "b3-B1-d337e2",
       "name": "フジオコーヒー",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "フジオ珈琲 大阪駅前第3ビル店",
+        "FUJIO COFFEE 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "74-1",
       "pos": null,
       "category": "喫茶",
-      "tags": [],
+      "tags": [
+        "分煙"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://www.fujiofood.com/shop_search/cat163/shop_2792.php",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9391,25 +10251,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27121216/",
+      "infoNote": "喫茶グリル。喫煙席は扉で仕切られている。朝から夜まで営業とされるが時刻は見つからず"
     },
     {
       "id": "b3-B1-76147c",
       "name": "立ち呑み いなせや",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立ち飲み いなせや 大阪駅前第3ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "74-2",
       "pos": null,
       "category": "立ち飲み",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "禁煙",
+        "昼飲み"
       ],
       "budget": "",
-      "hours": "",
+      "hours": "15:00-22:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-4797-7710",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9418,13 +10286,19 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004182501/",
+      "infoNote": "住所表記のB1F74-2で一致。平日の時間（22:00LO）。土日祝は13:00から。年中無休。つまみ170円〜"
     },
     {
       "id": "b3-B1-0edaec",
       "name": "新世界 串カツ いっとく 大阪駅前第3ビル店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "新世界 串カツ いっとく 大阪駅前第三ビル店"
+      ],
       "building": 3,
       "floor": "B1",
       "block": "75-2",
@@ -9432,10 +10306,10 @@
       "category": "串カツ",
       "tags": [],
       "budget": "",
-      "hours": "",
+      "hours": "17:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://c906916.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9443,7 +10317,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae3",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://c906916.gorp.jp/",
+      "infoNote": "平日の時間。土日祝は11:00-23:00。休みはビルの休館日。食べ放題2,068円〜、食べ飲み放題3,916円〜"
     },
     {
       "id": "b4-B2-1b022b",
@@ -9480,17 +10358,22 @@
       "id": "b4-B2-4ff2b5",
       "name": "串カツ七福神",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "串かつ 七福神 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "2",
       "pos": null,
       "category": "串カツ",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ランチ~1000",
+      "hours": "11:30-22:45",
       "closedDays": [],
-      "phone": "",
+      "phone": "080-1410-4177",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9499,23 +10382,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://asayama.info/?p=2249",
+      "infoNote": "年中無休。串カツ1本150円〜、常時40種ほど。昼の串カツカレー980円。カウンター席が中心。第3ビルの「串カツ 天満 七福神」とは別店"
     },
     {
       "id": "b4-B2-a6e9be",
       "name": "喫茶 愛",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "愛"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "3",
       "pos": null,
       "category": "喫茶",
-      "tags": [],
+      "tags": [
+        "喫煙可"
+      ],
       "budget": "",
       "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "closedDays": [
+        "日"
+      ],
+      "phone": "06-6346-5838",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9524,21 +10417,29 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27047874/",
+      "infoNote": "土・祝は8:00-19:00とされるが平日の時間は見つからず。日曜休み。席でたばこが吸えるレトロ喫茶"
     },
     {
       "id": "b4-B2-9f67c2",
       "name": "特製鰺フライと沖縄SOBAR がんじゅー",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "特製鯵フライと沖縄SOBAR がんじゅー"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "5",
       "pos": null,
       "category": "そば・うどん",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "1000-2000",
+      "hours": "11:00-22:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -9549,23 +10450,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27154130/",
+      "infoNote": "年中無休。2026年1月開店。鯵フライと沖縄そばの相盛り定食1,200円、沖縄そば950円ほど"
     },
     {
       "id": "b4-B2-9d6913",
       "name": "徳田酒店第4ビルB2店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆飲み処 徳田酒店 第4ビルB2店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "7",
       "pos": null,
       "category": "立ち飲み",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "カード可",
+        "昼飲み"
+      ],
+      "budget": "2000-3000",
+      "hours": "15:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6343-1555",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9574,23 +10484,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27094278/",
+      "infoNote": "休みは12/31〜1/3"
     },
     {
       "id": "b4-B2-c3f924",
       "name": "韓国料理シンガネ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "韓国料理 シンガネ"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "8-1",
       "pos": null,
       "category": "その他",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー4000-5000",
+      "hours": "11:00-14:00,17:00-23:00",
+      "closedDays": [
+        "日"
+      ],
+      "phone": "06-6344-2388",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9599,24 +10519,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000980404/",
+      "infoNote": "月〜土の時間。コース2,980円〜"
     },
     {
       "id": "b4-B2-fc74c8",
       "name": "欧風軒",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "グリル欧風軒"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "10",
       "pos": null,
       "category": "洋食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "カード不可",
+        "ランチあり"
+      ],
+      "budget": "~1500",
+      "hours": "11:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6344-3270",
+      "url": "https://www.ron-corp.com/grillohuken",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9624,23 +10553,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000726969/",
+      "infoNote": "平日の時間。日祝は21:00まで。休みは年末年始のみ。セット950〜1,300円ほど。予約不可。クレジットカード不可（PayPay・LINE Payは使える）"
     },
     {
       "id": "b4-B2-670fc2",
       "name": "煮干しらーめん玉五郎",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "煮干しらーめん 玉五郎 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "11-2",
       "pos": null,
       "category": "ラーメン",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6341-3503",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9649,23 +10586,31 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001152524/",
+      "infoNote": "毎日同じ時間（22:30LO）。定休日は明記なし"
     },
     {
       "id": "b4-B2-a85f01",
       "name": "大衆酒場フレンチマン 第4ビル店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場 フレンチマン 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "12",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "昼飲み"
+      ],
+      "budget": "3000-4000",
+      "hours": "13:00-22:30",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6225-7443",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9674,7 +10619,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004169482/",
+      "infoNote": "平日の時間（料理21:30LO）。土日祝は11:00から。不定休。平日17時までハッピーアワー。第3ビルB2の店とは別店"
     },
     {
       "id": "b4-B2-f58e55",
@@ -9686,9 +10635,12 @@
       "block": "21",
       "pos": null,
       "category": "スイーツ",
-      "tags": [],
+      "tags": [
+        "テイクアウト",
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "10:00-20:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -9699,23 +10651,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004120836/",
+      "infoNote": "住所表記のB2F 21番で一致。氷結果実を使った缶ボトルのジュース店。定休日は「なし」とする情報と記載なしの情報がある"
     },
     {
       "id": "b4-B2-f90d3d",
       "name": "マルリキ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場マルリキ 大阪駅前第4ビル店",
+        "大衆酒場マルリキ 大阪駅前第四ビル店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "22",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "喫煙可",
+        "昼飲み"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6467-8338",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9724,23 +10686,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100001471592/",
+      "infoNote": "15:00開店・ハッピーアワーありとされるが閉店時刻・定休日は見つからず。第2ビルのマルリキは別店"
     },
     {
       "id": "b4-B2-571657",
       "name": "スワンナプームタイ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "タイ料理 スワンナプームタイ 大阪"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "24",
       "pos": null,
       "category": "その他",
-      "tags": [],
-      "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "2000-3000",
+      "hours": "11:30-15:00,17:00-23:00",
+      "closedDays": [
+        "月"
+      ],
+      "phone": "06-6343-2790",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9749,13 +10721,19 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27066949/",
+      "infoNote": "平日の時間（夜22:30LO）。土日は夜22:30まで。平均予算2,800円"
     },
     {
       "id": "b4-B2-a95c97",
       "name": "立呑み処七津屋（はなれ）",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立呑み処 七津屋 七津屋第4ビルB2店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "29",
@@ -9776,24 +10754,28 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23"
     },
     {
       "id": "b4-B2-2633a6",
       "name": "キリンケラーヤマト 東梅田店",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "KIRIN KELLER Yamato 東梅田店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "32-2",
       "pos": null,
       "category": "バー",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kirin-keller-yamato.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9801,7 +10783,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/62x32ug90000/",
+      "infoNote": "平日の時間（昼11:00-14:00、夜14:00-22:30）。土日祝は22:00まで。第3日曜休み。ランチタイムは禁煙、夜は加熱式たばこのみ可。以前の場所から移転してきた店。第3ビルB2の店とは別店"
     },
     {
       "id": "b4-B2-1c0afc",
@@ -9832,18 +10818,23 @@
       "id": "b4-B2-0ed32f",
       "name": "勝男",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "第4ビルB2応援団 大分からあげと鉄板焼 勝男",
+        "大分からあげと鉄板焼 第4ビルB2応援団 勝男"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "40",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:30-23:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kepr900.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9851,24 +10842,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://katsuo-web.com/shop_list/2192",
+      "infoNote": "毎日同じ時間・年中無休。2026年2月開店"
     },
     {
       "id": "b4-B2-258e2f",
       "name": "大衆酒場 第4ビルB2 タイガー",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆酒場 第4ビルB2タイガー"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "47",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "昼飲み"
+      ],
+      "budget": "2000-3000",
+      "hours": "11:30-23:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kepd500.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9876,24 +10875,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kepd500.gorp.jp/",
+      "infoNote": "毎日同じ時間。2025年10月開店。飲み放題つきコース3,000円。第3ビルB2のタイガーとは別店"
     },
     {
       "id": "b4-B2-403df7",
       "name": "十八番",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "大衆飯店 十八番 第4ビルB2店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "48",
       "pos": null,
       "category": "中華",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "1000-3000",
+      "hours": "11:30-23:30",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "050-5489-3758",
+      "url": "https://kepr800.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9901,7 +10908,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kepr800.gorp.jp/",
+      "infoNote": "年中無休。中華の大衆酒場。50席"
     },
     {
       "id": "b4-B2-35d406",
@@ -9914,10 +10925,10 @@
       "pos": null,
       "category": "海鮮",
       "tags": [],
-      "budget": "",
+      "budget": "2500~",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "050-5589-5271",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9926,24 +10937,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hitosara.com/0004038041/",
+      "infoNote": "営業時間・定休日が情報源で食い違うので入れていない（「月火木金16:00-23:00・土日祝14:00-22:30」と「月曜・祝前日休み」など）。鮮魚仲卸直営の海鮮居酒屋"
     },
     {
       "id": "b4-B2-971d4b",
       "name": "ひもの野郎",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "ひもの野郎 大阪駅前第4ビル本店"
+      ],
       "building": 4,
       "floor": "B2",
       "block": "72",
       "pos": null,
       "category": "海鮮",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "カード可",
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "ランチ1000~/ディナー2000~",
+      "hours": "11:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://himonoyarou-osaka4.foodre.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -9951,7 +10972,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://himonoyarou-osaka4.foodre.jp/",
+      "infoNote": "住所表記のB2-71・72号で一致。不定休（ビルの休館日は休み）。第1ビルにも店あり"
     },
     {
       "id": "b4-B1-c86200",
@@ -9963,11 +10988,13 @@
       "block": "6",
       "pos": null,
       "category": "喫茶",
-      "tags": [],
+      "tags": [
+        "喫煙可"
+      ],
       "budget": "",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6341-8448",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -9976,13 +11003,19 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001006285/",
+      "infoNote": "営業時間・定休日が情報源で食い違うので入れていない（8:30-20:30と8:30-18:00、不定休と日祝休み）。全席喫煙可。モーニングあり"
     },
     {
       "id": "b4-B1-7af9ed",
       "name": "玉椿",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "鮨と四季酒肴 玉椿"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "8",
@@ -9990,9 +11023,9 @@
       "category": "居酒屋",
       "tags": [],
       "budget": "",
-      "hours": "",
+      "hours": "16:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "050-5596-5446",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -10001,7 +11034,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003916072/",
+      "infoNote": "火〜金の時間。土12:00-23:00、日祝12:00-22:00。時間の一覧に月曜が無い（定休日かは未確認）。サントリー生ビール大瓶320円など"
     },
     {
       "id": "b4-B1-a84a19",
@@ -10032,18 +11069,23 @@
       "id": "b4-B1-4e6728",
       "name": "The secondroom cafe",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "The second room cafe"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "14",
       "pos": null,
       "category": "喫茶",
-      "tags": [],
+      "tags": [
+        "個室あり",
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6347-5055",
+      "url": "https://www.2ndroomcafe.com/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10051,24 +11093,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.2ndroomcafe.com/",
+      "infoNote": "住所表記のB1F 14で一致。個室カフェ。不定休（2026年9月は水曜休みが多い）。休みは公式サイトで告知"
     },
     {
       "id": "b4-B1-e46e33",
       "name": "汁なし担担麺専門 キング軒",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "汁なし担担麺専門 キング軒 大阪梅田店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "17",
       "pos": null,
       "category": "ラーメン",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6342-7007",
+      "url": "https://kingken.world/shop/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10076,7 +11126,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kingken.world/shop/",
+      "infoNote": "平日の時間。土日祝は11:00-17:00。無休。広島式の汁なし担担麺"
     },
     {
       "id": "b4-B1-887502",
@@ -10088,10 +11142,15 @@
       "block": "20-1",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
+      "tags": [
+        "禁煙"
+      ],
+      "budget": "2000-3000",
       "hours": "",
-      "closedDays": [],
+      "closedDays": [
+        "月",
+        "日"
+      ],
       "phone": "",
       "url": "",
       "gmapsUrl": "",
@@ -10101,24 +11160,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/matome/27763/",
+      "infoNote": "11:00開店とされるが閉店時刻は見つからず"
     },
     {
       "id": "b4-B1-cd9022",
       "name": "アジアンバルフロッグス",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "アジアンバル フロッグス"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "22",
       "pos": null,
-      "category": "バー",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "category": "その他",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー2000-3000",
+      "hours": "11:30-15:30,17:30-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6341-2611",
+      "url": "https://frogus.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10126,24 +11193,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ000018240/",
+      "infoNote": "ベトナムなどのアジア料理の店なので業種を「バー」から「その他」に直した。月〜土の時間。日曜は時間の一覧に無い（定休日かは未確認）。昼830円・夜2,800円ほど"
     },
     {
       "id": "b4-B1-b131c9",
       "name": "ペペロンチーノ専門店 ぺろん",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "ペペロンチーノ専門店 ぺろん 本店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "24",
       "pos": null,
       "category": "洋食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "1000-2000",
+      "hours": "11:00-21:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://www.pe-ron.com/shop_list.html",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10151,24 +11226,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://emunoranchi.com/142579",
+      "infoNote": "月〜土の時間。日祝は11:00-15:00。不定休。予算1,500円ほど。2024年12月に第4ビルで本店が復活"
     },
     {
       "id": "b4-B1-b44eab",
       "name": "大衆酒場 あかマル",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "激安大衆居酒屋 あかマル 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "27",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "喫煙可",
+        "昼飲み"
+      ],
+      "budget": "~2000",
+      "hours": "11:30-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "050-5485-4587",
+      "url": "https://ke42610.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10176,26 +11260,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://ke42610.gorp.jp/",
+      "infoNote": "住所表記の地下1階27で一致。不定休（無休とする情報もある）。全面喫煙可。名物は激辛麻婆豆腐"
     },
     {
       "id": "b4-B1-caeb3f",
       "name": "立呑み処 七津屋",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立呑み処 七津屋 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "28",
       "pos": null,
       "category": "立ち飲み",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "喫煙可",
+        "昼飲み"
       ],
       "budget": "",
-      "hours": "",
+      "hours": "10:00-22:30",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kaj7604.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10203,7 +11295,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://kaj7604.gorp.jp/",
+      "infoNote": "平日の時間（22:15LO）。土は22:00まで、日祝は21:00までとする情報と、日曜休みとする情報があるので日曜は店に確認を。朝から飲める。B2の「七津屋（はなれ）」は別店"
     },
     {
       "id": "b4-B1-e6e688",
@@ -10259,17 +11355,25 @@
       "id": "b4-B1-d8669f",
       "name": "きたがわ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "楽酒 きたがわ"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "33-1",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "ランチあり",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
-      "closedDays": [],
-      "phone": "",
+      "hours": "11:30-14:00,17:00-22:00",
+      "closedDays": [
+        "日",
+        "祝"
+      ],
+      "phone": "06-6344-5220",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -10278,20 +11382,28 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://gourmet.suntory.co.jp/shop/WC90130301/",
+      "infoNote": "住所表記のB1-33で一致。平日の時間。土は夜17:00-21:00のみ。昼は和食ランチ"
     },
     {
       "id": "b4-B1-5e4a48",
       "name": "バールワン",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "バール ワン BA-RU ONE"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "33-2",
       "pos": null,
-      "category": "バー",
-      "tags": [],
-      "budget": "",
+      "category": "洋食",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000",
       "hours": "",
       "closedDays": [],
       "phone": "",
@@ -10303,24 +11415,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/fzb2df960000/",
+      "infoNote": "パスタが名物のイタリアンバールなので業種を「バー」から直した。ランチは15時まで・900円〜。22席。閉店時刻・定休日は見つからず"
     },
     {
       "id": "b4-B1-e1bb84",
       "name": "皆様酒場 昭和ゴールデン",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "皆様酒場 昭和ゴールデン 大阪駅前第4ビル店",
+        "皆様酒場 大衆 昭和ゴールデン"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "34",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
+      "tags": [
+        "喫煙可",
+        "昼飲み"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "12:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6454-9911",
+      "url": "https://osaka-golden.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10328,24 +11450,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004634441/",
+      "infoNote": "住所表記のB1-34で一致。月〜木の時間。金土・祝前日は23:00まで。平日18時までハッピーアワー。全席喫煙可"
     },
     {
       "id": "b4-B1-dc653d",
       "name": "ラーメンステーション大阪駅前第4ビル",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "ラーメンステーション 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "37",
       "pos": null,
       "category": "ラーメン",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-23:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-7777-5501",
+      "url": "https://www.ramen-station.jp/shop/osaka-ekimae-4-building",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10353,24 +11483,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.ramen-station.jp/shop/osaka-ekimae-4-building",
+      "infoNote": "年中無休（1/1〜1/3は休みとの情報あり）"
     },
     {
       "id": "b4-B1-b93aab",
       "name": "オステリアガウダンテ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "オステリア ガウダンテ 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "39",
       "pos": null,
       "category": "洋食",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり"
+      ],
+      "budget": "ランチ~1000/ディナー5000-6000",
+      "hours": "11:30-15:00,17:30-22:30",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6344-8685",
+      "url": "https://gaudente.jp/osaka/osaka_top.html",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10378,13 +11516,19 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://gaudante.foodre.jp/",
+      "infoNote": "平日の時間（料理は閉店60分前LO）。日祝の夜は22:00まで。年中無休。昼1,000円・夜5,500円ほど"
     },
     {
       "id": "b4-B1-8b3076",
       "name": "酒場リベリーニギる／大衆食堂ぬ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "酒場リベリー ニギる。"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "40",
@@ -10394,7 +11538,7 @@
       "budget": "",
       "hours": "",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-4796-6060",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -10403,24 +11547,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27123877/",
+      "infoNote": "住所表記のB1-40号Bで一致。寿司と天ぷらの酒場。営業時間・定休日は見つからず"
     },
     {
       "id": "b4-B1-756c8f",
       "name": "鉄板焼とおでん 小鉄",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "鉄板焼きとおでん 小鉄 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "41",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "ランチあり",
+        "昼飲み"
+      ],
+      "budget": "3000-4000",
+      "hours": "11:30-14:30,17:00-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://kotetsudai4.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10428,24 +11581,34 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ003693473/",
+      "infoNote": "平日の時間（夜は22:00LO）。土・祝は12:00-23:00、日は12:00-22:00。不定休。平均予算3,500円。64席"
     },
     {
       "id": "b4-B1-5bf614",
       "name": "大富豪",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立呑み やきとり 大富豪 大阪駅前第4ビル店",
+        "大富豪 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "46",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "立ち飲み",
+        "昼飲み"
+      ],
+      "budget": "1000-2000",
+      "hours": "12:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6450-8988",
+      "url": "https://ke97601.gorp.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10453,7 +11616,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://ke97601.gorp.jp/",
+      "infoNote": "やきとりの立ち飲み。定休日なし（不定休あり）。第1ビルの「やきとり大富豪」は別店"
     },
     {
       "id": "b4-B1-ea7237",
@@ -10465,9 +11632,12 @@
       "block": "47",
       "pos": null,
       "category": "居酒屋",
-      "tags": [],
-      "budget": "",
-      "hours": "",
+      "tags": [
+        "喫煙可",
+        "昼飲み"
+      ],
+      "budget": "1000-2000",
+      "hours": "12:00-22:30",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -10478,26 +11648,36 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27099635/",
+      "infoNote": "毎日同じ時間（21:30LO）。不定休。ドリンクが安い"
     },
     {
       "id": "b4-B1-df38d4",
       "name": "立ち呑み 庶民",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立ち呑み庶民 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "48",
       "pos": null,
       "category": "立ち飲み",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "禁煙",
+        "昼飲み"
       ],
       "budget": "",
-      "hours": "",
-      "closedDays": [],
+      "hours": "11:00-21:45",
+      "closedDays": [
+        "月"
+      ],
       "phone": "",
-      "url": "",
+      "url": "https://www.tachinomishomin.net/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10505,13 +11685,20 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://hamoni.jp/shop/p7xbAI2IvWLg01NrWf1l",
+      "infoNote": "21:30LO。祝日は時間が変わることがある。肴100円〜・ドリンク200円〜"
     },
     {
       "id": "b4-B1-d4c887",
       "name": "たこ焼酒場しん家",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "たこ焼 酒場 しん家",
+        "たこ焼酒場 しん家"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "50",
@@ -10519,10 +11706,10 @@
       "category": "お好み焼き・粉もん",
       "tags": [],
       "budget": "",
-      "hours": "",
+      "hours": "16:30-23:00",
       "closedDays": [],
       "phone": "",
-      "url": "",
+      "url": "https://takoyaki-sinya.owst.jp/",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10530,21 +11717,27 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ001117854/",
+      "infoNote": "住所表記のB1-50で一致。平日の時間（22:00LO）。土日祝は15:30から。年中無休"
     },
     {
       "id": "b4-B1-61e7e1",
       "name": "サカバダアレグロ",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "サカバダアレグロ 4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "51",
       "pos": null,
-      "category": "居酒屋",
+      "category": "洋食",
       "tags": [],
       "budget": "",
-      "hours": "",
+      "hours": "16:00-23:00",
       "closedDays": [],
       "phone": "",
       "url": "",
@@ -10555,26 +11748,33 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://www.hotpepper.jp/strJ004444596/",
+      "infoNote": "イタリアン・フレンチの小皿の酒場なので業種を「居酒屋」から直した。平日・祝前日の時間。土日祝は12:00から。平日18時までハッピーアワー。定休日は見つからず"
     },
     {
       "id": "b4-B1-c712c8",
       "name": "立呑み 晩杯屋",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "立呑み晩杯屋 大阪駅前第四ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "52",
       "pos": null,
       "category": "立ち飲み",
       "tags": [
-        "立ち飲み"
+        "立ち飲み",
+        "昼飲み"
       ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:30",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6110-5327",
+      "url": "https://stores.toridoll.com/910063",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10582,23 +11782,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://stores.toridoll.com/910063",
+      "infoNote": "年中無休。第3ビルB1にも店あり"
     },
     {
       "id": "b4-B1-b28e69",
       "name": "麺's room 神虎",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "麺's room 神虎 大阪駅前ビル店",
+        "神虎 大阪駅前ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "53",
       "pos": null,
       "category": "ラーメン",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-23:00",
       "closedDays": [],
-      "phone": "",
+      "phone": "06-6342-5746",
       "url": "",
       "gmapsUrl": "",
       "rating": null,
@@ -10607,24 +11816,32 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://r.gnavi.co.jp/dmz3kvda0000/",
+      "infoNote": "不定休。年末年始（12/31〜1/2）は休み"
     },
     {
       "id": "b4-B1-c71cc4",
       "name": "丸亀製麺",
       "kana": "",
-      "aliases": [],
+      "aliases": [
+        "丸亀製麺 大阪駅前第4ビル店"
+      ],
       "building": 4,
       "floor": "B1",
       "block": "70-7",
       "pos": null,
       "category": "そば・うどん",
-      "tags": [],
+      "tags": [
+        "ランチあり"
+      ],
       "budget": "",
-      "hours": "",
+      "hours": "11:00-22:00",
       "closedDays": [],
-      "phone": "",
-      "url": "",
+      "phone": "06-6347-7475",
+      "url": "https://stores.marugame.com/111054",
       "gmapsUrl": "",
       "rating": null,
       "ratingCount": null,
@@ -10632,7 +11849,11 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-23",
+      "infoSource": "websearch",
+      "infoCheckedAt": "2026-09-23",
+      "infoUrl": "https://stores.marugame.com/111054",
+      "infoNote": "21:30LO。定休日なし"
     },
     {
       "id": "bkitte-B1-626fa9",

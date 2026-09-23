@@ -567,6 +567,9 @@ html.is-embedded main { padding-bottom: 40px; }
 .detail-row { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
 .detail-row dt { flex: 0 0 74px; color: var(--fg-dim); margin: 0; }
 .detail-row dd { margin: 0; flex: 1; }
+.detail-row dd a { color: var(--accent, inherit); word-break: break-all; }
+.detail-row dd a.src { white-space: nowrap; word-break: keep-all; }
+.detail-note { margin: 4px 0 0; font-size: 12px; line-height: 1.5; color: var(--fg-dim); }
 
 .btnrow { display: flex; gap: 8px; margin: 12px 0 4px; flex-wrap: wrap; }
 

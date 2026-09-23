@@ -1881,7 +1881,10 @@ function openDetail(id) {
         + (s.ratingSource || 'google') + (s.ratingCheckedAt ? ' / ' + s.ratingCheckedAt + '時点' : '') + '）'
       : '未記録'),
     s.tags.length ? row('タグ', s.tags.join('・')) : null,
+    s.phone ? linkRow('電話', s.phone, 'tel:' + s.phone.replace(/[^\d+]/g, '')) : null,
+    s.url ? linkRow('サイト', siteLabel(s.url), s.url) : null,
     row('出どころ', (s.verified ? '確認済み' : '未確認') + '（' + s.source + '）'),
+    s.infoSource ? infoRow(s) : null,
   ].filter(Boolean));
 
   openSheet([
@@ -1942,6 +1945,42 @@ function openDetail(id) {
 
   function row(k, v) {
     return el('div', { class: 'detail-row' }, [el('dt', { text: k }), el('dd', { text: v })]);
+  }
+
+  // 店のデータは仲間が編集できるので、javascript: などは開かせない
+  function linkRow(k, text, href) {
+    const ok = /^(https?:|tel:)/i.test(href || '');
+    return el('div', { class: 'detail-row' }, [
+      el('dt', { text: k }),
+      el('dd', {}, [ok
+        ? el('a', { href: href, target: href.startsWith('tel:') ? null : '_blank', rel: 'noopener', text: text })
+        : text]),
+    ]);
+  }
+
+  // 営業時間や予算は、場所（出どころ）とは別に「ネットで調べた」ものかどうかを出す。
+  // 古い情報を鵜呑みにしないよう、調べた日と出典をいっしょに見せる
+  function infoRow(st) {
+    const label = { websearch: 'ネットで調べた情報', official: '公式サイトの情報', onsite: '現地で確かめた情報', manual: 'アプリで入力した情報' }[st.infoSource]
+      || st.infoSource;
+    const ok = /^https?:/i.test(st.infoUrl || '');
+    return el('div', { class: 'detail-row' }, [
+      el('dt', { text: '店の情報' }),
+      el('dd', {}, [
+        label + (st.infoCheckedAt ? '（' + st.infoCheckedAt + '時点）' : ''),
+        ok ? ' ' : null,
+        ok ? el('a', { class: 'src', href: st.infoUrl, target: '_blank', rel: 'noopener', text: '出典' }) : null,
+        st.infoNote ? el('p', { class: 'detail-note', text: st.infoNote }) : null,
+      ]),
+    ]);
+  }
+}
+
+function siteLabel(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch (e) {
+    return url;
   }
 }
 
@@ -2082,6 +2121,12 @@ function openEditor(s) {
     if (isNew) {
       patch.source = 'manual';
       patch.verified = false;
+    }
+    // 営業時間や予算を手で直したら、「ネットで調べた」という出どころはもう当てはまらない
+    const infoEdited = ['budget', 'hours'].some((k) => (draft[k] || '') !== patch[k])
+      || (draft.closedDays || []).join() !== picked.join();
+    if (!isNew && draft.infoSource && infoEdited) {
+      Object.assign(patch, { infoSource: 'manual', infoCheckedAt: todayStr(), infoUrl: '', infoNote: '' });
     }
     applyPatch(patch);
     closeSheet();

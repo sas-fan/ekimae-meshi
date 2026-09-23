@@ -54,6 +54,9 @@ TAGS = [
 
 DOW = list("日月火水木金土") + ["祝"]
 
+# 営業時間・予算・タグなど「店の中身」の出どころ。場所の出どころ（source）とは別に持つ
+INFO_SOURCES = ["websearch", "official", "onsite", "manual"]
+
 # 店名からカテゴリを推測する。長いキーワードから順に当てる。
 CATEGORY_HINTS = [
     ("お好み焼", "お好み焼き・粉もん"), ("たこ焼", "お好み焼き・粉もん"), ("粉もん", "お好み焼き・粉もん"),
@@ -206,6 +209,12 @@ def validate(data: dict, warns: list[str] | None = None) -> list[str]:
             errs.append(f"{where}: rating が範囲外 ({r!r})")
         if r is not None and not s.get("ratingCheckedAt"):
             errs.append(f"{where}: rating があるのに ratingCheckedAt が無い")
+        # ネットで調べた営業時間などは、星と同じく「いつ・どこで見たか」が無いと信用できない
+        if s.get("infoSource"):
+            if s["infoSource"] not in INFO_SOURCES:
+                errs.append(f"{where}: infoSource が不正 ({s['infoSource']!r})")
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", s.get("infoCheckedAt") or ""):
+                errs.append(f"{where}: infoSource があるのに infoCheckedAt が日付でない")
         if not s.get("source"):
             errs.append(f"{where}: source が空")
 

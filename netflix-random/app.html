@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Netflix ランダム再生</title>
+    <link rel="icon" href="icons/icon32.png" />
+    <link rel="stylesheet" href="app.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <h1 class="logo"><span class="logo-dice" aria-hidden="true">🎲</span>Netflix ランダム再生</h1>
+      <p class="perf" id="perf" aria-live="polite"></p>
+    </header>
+
+    <section class="controls" aria-label="ピックの条件">
+      <div class="field">
+        <span class="label" id="modeLabel">選び方</span>
+        <div class="segmented" role="group" aria-labelledby="modeLabel">
+          <button type="button" data-mode="mood" aria-pressed="true">気分で</button>
+          <button type="button" data-mode="genre" aria-pressed="false">ジャンルで</button>
+        </div>
+      </div>
+
+      <div class="field" id="moodField">
+        <label class="label" for="mood">気分</label>
+        <select id="mood" class="select select-wide"></select>
+      </div>
+
+      <div class="field" id="genreField" hidden>
+        <label class="label" for="genre">ジャンル</label>
+        <select id="genre" class="select select-wide"></select>
+      </div>
+
+      <div class="field">
+        <span class="label" id="durLabel">再生時間（複数選択可）</span>
+        <div class="chips" id="durations" role="group" aria-labelledby="durLabel"></div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="type">種別</label>
+        <select id="type" class="select">
+          <option value="any">指定なし</option>
+          <option value="movie">映画</option>
+          <option value="series">シリーズ</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="label" for="count">件数</label>
+        <select id="count" class="select">
+          <option value="5">5件</option>
+          <option value="10" selected>10件</option>
+          <option value="20">20件</option>
+          <option value="30">30件</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="pick"><span aria-hidden="true">🎲</span> ピック</button>
+      <button type="button" class="btn btn-outline" id="favToggle" aria-pressed="false">
+        <span class="fav-icon" aria-hidden="true">♡</span> お気に入り<span class="fav-count" id="favCount"></span>
+      </button>
+    </section>
+
+    <main class="main">
+      <div class="resultbar" id="resultbar" hidden>
+        <p class="result-text" id="resultText"></p>
+        <button type="button" class="btn btn-ghost" id="luckyPlay"><span aria-hidden="true">▶</span> この中からおまかせ再生</button>
+      </div>
+      <div class="notice" id="notice" role="status" hidden></div>
+      <div class="grid" id="grid"></div>
+    </main>
+
+    <footer class="footer">
+      <span>作品情報は Netflix の公開ページ（netflix.com/jp）から取得しています。</span>
+      <button type="button" class="linkbtn" id="clearCache">キャッシュを削除</button>
+    </footer>
+
+    <template id="cardTpl">
+      <article class="card">
+        <div class="thumb">
+          <img class="thumb-img" alt="" loading="lazy" decoding="async" />
+          <div class="thumb-fallback" aria-hidden="true"></div>
+          <button type="button" class="fav" aria-pressed="false" aria-label="お気に入りに追加">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3l-1.3-1.2C5.9 14.8 3 12.1 3 8.8 3 6.1 5.1 4 7.8 4c1.5 0 3 .7 4.2 1.9C13.2 4.7 14.7 4 16.2 4 18.9 4 21 6.1 21 8.8c0 3.3-2.9 6-7.7 10.3L12 20.3z"/></svg>
+          </button>
+        </div>
+        <div class="body">
+          <h2 class="title"><a class="title-link" target="_blank" rel="noopener noreferrer"></a></h2>
+          <p class="genre"></p>
+          <p class="meta"></p>
+          <p class="synopsis"></p>
+          <a class="watch" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▶</span> 視聴する</a>
+        </div>
+      </article>
+    </template>
+
+    <template id="skeletonTpl">
+      <div class="card skeleton" aria-hidden="true">
+        <div class="thumb"></div>
+        <div class="body"><div class="sk-line w70"></div><div class="sk-line w30"></div><div class="sk-line"></div><div class="sk-line w90"></div></div>
+      </div>
+    </template>
+  </body>
+</html>

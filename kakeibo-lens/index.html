@@ -272,6 +272,9 @@ table.mx .avg { border-right: 1px solid var(--line-strong); }
 /* ---------- settings ---------- */
 .drop { border: 1.5px dashed var(--line-strong); border-radius: var(--r); padding: 22px 16px; text-align: center; display: grid; gap: 10px; justify-items: center; background: var(--surface); }
 .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.fetch { border: 1px solid var(--accent); background: var(--accent-soft); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 10px; margin-bottom: 12px; }
+.fetch .steps li { line-height: 2; }
+.fetch textarea { background: var(--surface); resize: vertical; }
 .steps { margin: 0; padding-left: 1.3em; color: var(--fg-2); font-size: 13px; display: grid; gap: 4px; text-align: left; }
 .catgrp { border-top: 1px solid var(--line); padding: 10px 0; }
 .catgrp:first-child { border-top: 0; }
@@ -308,6 +311,66 @@ table.mx .avg { border-right: 1px solid var(--line-strong); }
 <div class="toast" id="toast" hidden></div>
 <div class="dropveil" id="dropveil" hidden>CSVをここにドロップ</div>
 <input type="file" id="file" accept=".csv,.json,text/csv,application/json" multiple hidden>
+
+<script type="text/plain" id="mf-bookmarklet">
+/* マネーフォワード ME のページ上で動く取得用コード（ブックマークレット）。
+   ログイン中のセッションのまま、入出金CSVを月ごとに取りに行き、家計簿レンズ用にまとめてコピーする。
+   1行コメントは使わないこと（ブックマーク化するときに改行が詰められるため）。 */
+var HOST = location.hostname;
+if (!/(^|\.)moneyforward\.com$/.test(HOST)) { alert('マネーフォワード ME（moneyforward.com）にログインした画面で実行してください。'); return; }
+var old = document.getElementById('kl-panel'); if (old) old.remove();
+var box = document.createElement('div'); box.id = 'kl-panel';
+box.style.cssText = 'position:fixed;z-index:2147483647;top:16px;right:16px;width:340px;max-width:calc(100vw - 32px);background:#fcfdfc;color:#13201b;border:1px solid #c3ccc7;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.25);padding:16px;font:14px/1.6 system-ui,-apple-system,sans-serif;text-align:left';
+function el(tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text != null) e.textContent = text; return e; }
+var BTN = 'border:1px solid #0e6a54;background:#0e6a54;color:#fff;border-radius:8px;padding:6px 14px;font:inherit;cursor:pointer;margin-right:6px';
+var BTN2 = 'border:1px solid #c3ccc7;background:#fff;color:#13201b;border-radius:8px;padding:6px 14px;font:inherit;cursor:pointer;margin-right:6px';
+box.appendChild(el('div', 'font-weight:700;font-size:15px;margin-bottom:8px', '家計簿レンズに取り込む'));
+var row = el('div', 'display:flex;gap:8px;align-items:center;margin-bottom:10px');
+row.appendChild(el('span', '', '取得する期間'));
+var sel = el('select', 'font:inherit;padding:4px 6px;border:1px solid #c3ccc7;border-radius:6px');
+[3, 6, 12, 24, 36].forEach(function (n) { var o = el('option', '', '直近' + n + 'か月'); o.value = n; if (n === 12) o.selected = true; sel.appendChild(o); });
+row.appendChild(sel); box.appendChild(row);
+var status = el('div', 'font-size:13px;color:#4b5853;min-height:1.6em;margin-bottom:10px;white-space:pre-line', '今月から過去にさかのぼって、月ごとにCSVを取得します。');
+box.appendChild(status);
+var acts = el('div', ''); box.appendChild(acts);
+var go = el('button', BTN, '取得する'); var close = el('button', BTN2, '閉じる');
+close.onclick = function () { box.remove(); };
+acts.appendChild(go); acts.appendChild(close);
+document.body.appendChild(box);
+go.onclick = async function () {
+  go.disabled = true; sel.disabled = true;
+  var n = +sel.value, now = new Date(), files = [], total = 0;
+  for (var i = n - 1; i >= 0; i--) {
+    var d = new Date(now.getFullYear(), now.getMonth() - i, 1), y = d.getFullYear(), m = d.getMonth() + 1, mm = (m < 10 ? '0' : '') + m;
+    status.textContent = y + '年' + m + '月を取得中…（' + (n - i) + '/' + n + '）';
+    try {
+      var res = await fetch('/cf/csv?from=' + y + '%2F' + mm + '%2F01&month=' + m + '&year=' + y, { credentials: 'include' });
+      var buf = await res.arrayBuffer(), text;
+      try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch (e) { text = new TextDecoder('shift_jis').decode(buf); }
+      if (!res.ok || /^\s*</.test(text) || text.indexOf('計算対象') < 0) {
+        status.textContent = y + '年' + m + '月の取得に失敗しました。ログインが切れているか、CSVダウンロード（プレミアム機能）が使えない状態です。MFの画面を再読み込みしてからもう一度お試しください。';
+        go.disabled = false; sel.disabled = false; return;
+      }
+      files.push({ month: y + '-' + mm, text: text.replace(/^﻿/, '') });
+      total += Math.max(0, text.trim().split(/\r?\n/).length - 1);
+    } catch (e) { status.textContent = y + '年' + m + '月の取得でエラー: ' + e.message; go.disabled = false; sel.disabled = false; return; }
+    await new Promise(function (r) { setTimeout(r, 500); });
+  }
+  var payload = JSON.stringify({ app: 'kakeibo-lens', kind: 'mf-csv', v: 1, fetchedAt: new Date().toISOString(), files: files });
+  status.textContent = n + 'か月分・' + total + '件を取得しました。\n「コピー」を押して、家計簿レンズの画面で貼り付け（Ctrl+V / ⌘V）してください。';
+  acts.textContent = '';
+  var cp = el('button', BTN, 'コピー'), sv = el('button', BTN2, 'ファイルで保存');
+  cp.onclick = async function () {
+    try { await navigator.clipboard.writeText(payload); cp.textContent = 'コピーしました'; }
+    catch (e) { var ta = el('textarea', 'width:100%;height:80px;margin-top:8px;font-size:11px'); ta.value = payload; box.appendChild(ta); ta.select(); status.textContent = '自動でコピーできませんでした。下の欄が選択された状態なので Ctrl+C / ⌘C でコピーしてください。'; }
+  };
+  sv.onclick = function () {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
+    a.download = 'kakeibo-lens-mf-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); a.remove();
+  };
+  acts.appendChild(cp); acts.appendChild(sv); acts.appendChild(close);
+};
+</script>
 
 <script>
 'use strict';
@@ -653,23 +716,44 @@ function mergeRows(rows, range) {
 }
 
 async function importFiles(files) {
+  const items = [];
+  for (const file of files) { try { items.push({ name: file.name, text: await readText(file) }); } catch (e) { items.push({ name: file.name, error: e }); } }
+  await importItems(items);
+}
+async function importItems(items) {
   if (!S.backend) { toast('保存先の準備中です。数秒後にもう一度お試しください。'); return; }
   const changed = new Set(); const lines = []; let lastP = null;
-  for (const file of files) {
+  const mergeReport = (rows, range) => {
+    const { changed: ch, stat } = mergeRows(rows, range);
+    ch.forEach(m => changed.add(m));
+    lines.push(`${range[0].replace(/-/g, '/')}〜${range[1].slice(5).replace('-', '/')}: ${stat.n}件（新規${stat.add}・更新${stat.upd}・削除${stat.del}）`);
+    const last = rows.map(r => r.d).sort().pop(); if (!lastP || last > lastP) lastP = last;
+  };
+  for (const it of items) {
     try {
-      const text = await readText(file);
-      if (/\.json$/i.test(file.name) || /^\s*\{/.test(text)) { lines.push(await importBackup(text, changed)); continue; }
+      if (it.error) throw it.error;
+      const text = it.text;
+      if (/\.json$/i.test(it.name) || /^\s*\{/.test(text)) {
+        const j = JSON.parse(text);
+        if (j && j.app === 'kakeibo-lens' && j.kind === 'mf-csv') {
+          // ブックマークレットで取ってきた複数月: まとめて1回で取り込む（期間内で消えた明細も反映）
+          const rows = j.files.flatMap(f => { try { return mfRows(f.text); } catch { return []; } });
+          if (!rows.length) { lines.push('取得したデータに明細がありませんでした'); continue; }
+          const ds = rows.map(r => r.d).sort();
+          mergeReport(rows, [ds[0], ds[ds.length - 1]]);
+          lines.unshift(`マネーフォワードから${j.files.length}か月分を取り込みました`);
+          continue;
+        }
+        lines.push(await importBackup(j, changed)); continue;
+      }
       const rows = mfRows(text);
-      if (!rows.length) { lines.push(`${file.name}: 明細が0件でした`); continue; }
-      const fm = file.name.match(/(\d{4})-(\d{2})-(\d{2})_(\d{4})-(\d{2})-(\d{2})/);
+      if (!rows.length) { lines.push(`${it.name}: 明細が0件でした`); continue; }
+      const fm = it.name.match(/(\d{4})-(\d{2})-(\d{2})_(\d{4})-(\d{2})-(\d{2})/);
       const ds = rows.map(r => r.d).sort();
       let range = fm ? [`${fm[1]}-${fm[2]}-${fm[3]}`, `${fm[4]}-${fm[5]}-${fm[6]}`] : [ds[0], ds[ds.length - 1]];
       range = [ds[0] < range[0] ? ds[0] : range[0], ds[ds.length - 1] > range[1] ? ds[ds.length - 1] : range[1]];
-      const { changed: ch, stat } = mergeRows(rows, range);
-      ch.forEach(m => changed.add(m));
-      lines.push(`${range[0].replace(/-/g, '/')}〜${range[1].slice(5).replace('-', '/')}: ${stat.n}件（新規${stat.add}・更新${stat.upd}・削除${stat.del}）`);
-      lastP = ds[ds.length - 1];
-    } catch (e) { lines.push(`${file.name}: ${e.message || e}`); }
+      mergeReport(rows, range);
+    } catch (e) { lines.push(`${it.name}: ${e.message || e}`); }
   }
   S.sample = null;
   if (changed.size) {
@@ -680,8 +764,7 @@ async function importFiles(files) {
 }
 
 /* -------------------------------------------------------------- backup */
-async function importBackup(text, changed) {
-  const j = JSON.parse(text);
+async function importBackup(j, changed) {
   if (!j || j.app !== 'kakeibo-lens' || !j.months) throw new Error('家計簿レンズのバックアップではありません');
   for (const m in j.months) { S.months[m] = j.months[m].map(toObj); changed.add(m); }
   if (j.settings) { S.settings = Object.assign(defaultSettings(), j.settings); await S.backend.saveSettings(); }
@@ -949,10 +1032,34 @@ function howTo() {
 }
 function viewEmpty(v) {
   v.appendChild(h('div', { class: 'empty' },
-    h('div', { class: 'stack' }, h('span', { class: 'eyebrow', text: 'はじめに' }), h('h2', { text: 'マネーフォワードのCSVを読み込むと、ここに分析が出ます' }),
+    h('div', { class: 'stack' }, h('span', { class: 'eyebrow', text: 'はじめに' }), h('h2', { text: 'マネーフォワードのデータを取り込むと、ここに分析が出ます' }),
       h('p', { class: 'lead', text: '大項目・中項目ごとの推移、平均との差、増えた支出の洗い出し、定期的な支払いの一覧などを自動で作ります。推移を見るには、過去12か月分くらいをまとめて読み込むのがおすすめです。' })),
-    dropZone(),
+    fetchPanel(), dropZone(),
     h('div', { class: 'row' }, h('button', { class: 'btn', type: 'button', onclick: () => { S.sample = makeSample(); onData(); } }, 'サンプルデータで見てみる'), h('span', { class: 'note', text: S.backend === CloudStore ? 'データはこのページのクラウド保存に入り、PCとスマホの両方で見られます（あなただけが読めます）。' : 'データはこのブラウザの中だけに保存され、外部には送られません。' }))));
+}
+function bookmarkletHref() {
+  const src = ($('#mf-bookmarklet') || {}).textContent || '';
+  return 'javascript:' + encodeURIComponent('(function(){' + src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n\s*/g, '\n').trim() + '})();void 0');
+}
+function fetchPanel(compact) {
+  const href = bookmarkletHref();
+  const link = h('a', { class: 'btn primary', href, draggable: 'true', title: 'ブックマークバーへドラッグ', onclick: e => { e.preventDefault(); toast('このボタンはクリックではなく、ブックマークバーへドラッグして使います。'); } }, '⇩ MFから取り込む');
+  const copy = h('button', { class: 'btn small', type: 'button', onclick: async () => {
+    try { await navigator.clipboard.writeText(href); toast('コードをコピーしました。新しいブックマークを作って、URL欄に貼り付けてください。'); }
+    catch { ta.hidden = false; ta.select(); toast('コピーできませんでした。下の欄の文字をすべて選んでコピーしてください。'); }
+  } }, 'コードをコピー');
+  const ta = h('textarea', { class: 'inp', id: 'bm-code', readonly: true, rows: 3, hidden: true, style: { width: '100%', fontSize: '11px' } }); ta.value = href;
+  const paste = h('textarea', { class: 'inp', id: 'paste-box', rows: 2, placeholder: '取得後にここへ貼り付け（PCなら画面のどこでも Ctrl+V / ⌘V で可）', style: { width: '100%' } });
+  paste.addEventListener('paste', e => { const t = e.clipboardData && e.clipboardData.getData('text'); if (t) { e.preventDefault(); e.stopPropagation(); importItems([{ name: 'clipboard.json', text: t }]); } });
+  return h('div', { class: 'fetch' },
+    h('div', { class: 'row', style: { justifyContent: 'space-between' } }, h('b', { text: 'マネーフォワードから直接取り込む' }), h('span', { class: 'pill', text: 'おすすめ' })),
+    h('ol', { class: 'steps' },
+      h('li', null, '右のボタンをブラウザのブックマークバーへドラッグ（初回だけ） ', link, ' ', copy),
+      h('li', null, 'マネーフォワード ME にログインした画面で、そのブックマークをクリック'),
+      h('li', null, '取得する月数を選んで「取得する」→「コピー」'),
+      h('li', null, 'このページに戻って貼り付け（Ctrl+V / ⌘V）')),
+    ta, compact ? null : paste,
+    h('p', { class: 'note', text: 'あなたのブラウザのログイン状態のまま、MFの「ダウンロード」ボタンと同じCSVを月ごとに取りに行くだけです。パスワードはどこにも渡しません。' }));
 }
 function dropZone() {
   return h('div', { class: 'drop', id: 'dropzone' }, h('b', { text: 'CSVファイルをここにドラッグ' }), h('span', { class: 'note', text: '複数の月をまとめて選べます（Shift_JIS / UTF-8 どちらも可）' }),
@@ -1356,7 +1463,7 @@ function viewSettings(v) {
   const grid = h('div', { class: 'grid' }); v.appendChild(grid);
   // data
   const months = Object.keys(S.months).sort().reverse();
-  const dataPanel = h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: 'データ' }), h('span', { class: 'hint', text: S.backend ? S.backend.label : '' })), dropZone());
+  const dataPanel = h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: 'データ' }), h('span', { class: 'hint', text: S.backend ? S.backend.label : '' })), fetchPanel(), dropZone());
   if (months.length) {
     dataPanel.appendChild(h('div', { class: 'panel-h', style: { marginTop: '16px' } }, h('h2', { style: { fontSize: '13.5px' }, text: `読み込み済み ${months.length}か月・${sum(months.map(m => S.months[m].length))}件` })));
     const ml = h('div', { class: 'mlist' });
@@ -1441,6 +1548,11 @@ function boot() {
   addEventListener('dragover', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) e.preventDefault(); });
   addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) veil.hidden = true; });
   addEventListener('drop', e => { e.preventDefault(); depth = 0; veil.hidden = true; const fs = [...(e.dataTransfer?.files || [])]; if (fs.length) importFiles(fs); });
+  document.addEventListener('paste', e => {
+    const t = e.clipboardData && e.clipboardData.getData('text');
+    if (!t || !t.includes('"app":"kakeibo-lens"')) return;
+    e.preventDefault(); importItems([{ name: 'clipboard.json', text: t }]);
+  });
   addEventListener('scroll', () => tip.hide(), { passive: true });
   document.addEventListener('pointerdown', e => { if (!e.target.closest('svg, .cal')) tip.hide(); });
   let lastW = innerWidth;

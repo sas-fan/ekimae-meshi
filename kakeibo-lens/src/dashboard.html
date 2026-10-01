@@ -1,0 +1,1444 @@
+<title>家計簿レンズ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap">
+<style>
+/* Layout: sticky ledger header + one scoped period switcher; content in a 12-col grid that collapses to one column; bottom tab bar on phones. */
+:root {
+  --bg: #f2f5f3;
+  --surface: #fcfdfc;
+  --surface-2: #e9eeeb;
+  --fg: #13201b;
+  --fg-2: #4b5853;
+  --muted: #7f8b86;
+  --line: #dde4e0;
+  --line-strong: #c3ccc7;
+  --accent: #0e6a54;
+  --accent-ink: #ffffff;
+  --accent-soft: #d9ede6;
+  --rule: #b8463a;
+  --up: #b42f2f;
+  --down: #1d7334;
+  --warn: #9a6400;
+  --st-good: #0ca30c;
+  --st-warn: #fab219;
+  --st-serious: #ec835a;
+  --st-critical: #d03b3b;
+  --seq: #2a78d6;
+  --div-up: #e34948;
+  --div-down: #2a78d6;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  --sother: #aab2ae;
+  --shadow: 0 1px 2px rgba(19,32,27,.06), 0 4px 16px rgba(19,32,27,.05);
+  --f-display: "Zen Kaku Gothic New", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", system-ui, sans-serif;
+  --r: 10px;
+  --gutter: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1311; --surface: #151c19; --surface-2: #1c2521; --fg: #edf3f0; --fg-2: #b6c2bd; --muted: #85918c;
+    --line: #25302b; --line-strong: #34413b; --accent: #43b896; --accent-ink: #04140e; --accent-soft: #173a2f;
+    --rule: #e0796b; --up: #ff8a80; --down: #5fd17f; --warn: #f0b84a;
+    --seq: #3987e5; --div-up: #e66767; --div-down: #3987e5;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --sother: #5b6560; --shadow: 0 1px 2px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1311; --surface: #151c19; --surface-2: #1c2521; --fg: #edf3f0; --fg-2: #b6c2bd; --muted: #85918c;
+  --line: #25302b; --line-strong: #34413b; --accent: #43b896; --accent-ink: #04140e; --accent-soft: #173a2f;
+  --rule: #e0796b; --up: #ff8a80; --down: #5fd17f; --warn: #f0b84a;
+  --seq: #3987e5; --div-up: #e66767; --div-down: #3987e5;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --sother: #5b6560; --shadow: 0 1px 2px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; color: inherit; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: .01em; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.sub { color: var(--fg-2); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- header ---------- */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1180px; margin: 0 auto; padding: 10px var(--gutter); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 8px; margin-right: auto; min-width: 0; }
+.brand h1 { font-size: 17px; }
+.brand .badge { font-size: 11px; color: var(--fg-2); border: 1px solid var(--line-strong); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+.brand .badge.sample { color: var(--warn); border-color: currentColor; }
+.period { display: flex; align-items: center; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
+.period button.step { width: 32px; height: 32px; border: 0; background: none; border-radius: 999px; cursor: pointer; font-size: 16px; color: var(--fg-2); }
+.period button.step:hover:not(:disabled) { background: var(--surface-2); }
+.period button.step:disabled { opacity: .3; cursor: default; }
+.period .pick { position: relative; padding: 0 6px; font-weight: 600; font-size: 15px; white-space: nowrap; }
+.period .pick select { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line-strong); background: var(--surface); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 500; white-space: nowrap; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.06); background: var(--accent); }
+.btn.ghost { border-color: transparent; background: none; color: var(--fg-2); }
+.btn.danger { color: var(--up); border-color: color-mix(in oklab, var(--up) 45%, transparent); }
+.btn.small { padding: 3px 9px; font-size: 12.5px; border-radius: 6px; }
+.btn:disabled { opacity: .45; cursor: default; }
+
+.tabs { max-width: 1180px; margin: 0 auto; padding: 0 var(--gutter); display: flex; gap: 4px; }
+.tabs button { border: 0; background: none; padding: 8px 12px 10px; cursor: pointer; color: var(--fg-2); font-weight: 500; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 6px; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+.tabs svg { width: 18px; height: 18px; }
+
+main { max-width: 1180px; margin: 0 auto; padding-inline: var(--gutter); padding-block: 20px 48px; }
+
+@media (max-width: 720px) {
+  .top-in { padding-block: 8px; gap: 8px; }
+  .brand h1 { font-size: 15px; }
+  .hide-sm { display: none !important; }
+  .tabs { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; max-width: none; padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 1px solid var(--line); justify-content: space-around; gap: 0; }
+  .tabs button { flex-direction: column; gap: 1px; font-size: 10.5px; padding: 6px 4px; border-bottom: 0; flex: 1; border-radius: 8px; }
+  .tabs button[aria-selected="true"] { color: var(--accent); background: var(--accent-soft); }
+  main { padding-block: 14px calc(84px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 721px) { .tabs svg { display: none; } }
+
+/* ---------- generic blocks ---------- */
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.c12 { grid-column: span 12; } .c8 { grid-column: span 8; } .c7 { grid-column: span 7; } .c6 { grid-column: span 6; } .c5 { grid-column: span 5; } .c4 { grid-column: span 4; }
+@media (max-width: 960px) { .c8, .c7, .c6, .c5, .c4 { grid-column: span 12; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; min-width: 0; }
+.panel-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.panel-h h2 { font-size: 15px; }
+.panel-h .hint { font-size: 12px; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.eyebrow { font-size: 11.5px; letter-spacing: .08em; color: var(--muted); font-weight: 500; }
+
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 8px; padding: 2px; gap: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12.5px; color: var(--fg-2); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); font-weight: 600; box-shadow: var(--shadow); }
+.seg button:disabled { opacity: .35; cursor: default; }
+select.sel, input.inp { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 8px; padding: 5px 9px; min-width: 0; }
+.check { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--fg-2); cursor: pointer; }
+.filters { display: flex; gap: 10px 14px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+
+/* ---------- overview hero ---------- */
+.hero { display: grid; gap: 14px; }
+.hero .label { font-size: 13px; color: var(--fg-2); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.hero .big { font-size: clamp(36px, 7vw, 52px); font-weight: 600; line-height: 1.05; letter-spacing: -.01em; }
+.hero .rule { height: 4px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); width: min(260px, 70%); opacity: .8; }
+.deltas { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 2px 10px; font-size: 12.5px; background: var(--surface-2); color: var(--fg-2); white-space: nowrap; }
+.chip b { font-weight: 600; color: var(--fg); }
+.chip.up b { color: var(--up); } .chip.down b { color: var(--down); }
+.tiles { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.tile { background: var(--surface); padding: 10px 12px; min-width: 0; flex: 1 1 124px; }
+.tile .k { font-size: 12px; color: var(--fg-2); }
+.tile .v { font-size: 19px; font-weight: 600; }
+.tile .d { font-size: 11.5px; color: var(--muted); }
+.note { font-size: 12px; color: var(--muted); }
+
+/* ---------- breakdown list ---------- */
+.blist { display: flex; flex-direction: column; }
+.brow { display: grid; grid-template-columns: minmax(0, 1fr) auto 96px; grid-template-areas: "name amt spark" "bar delta spark"; gap: 2px 14px; align-items: center; padding: 10px 6px; border-top: 1px solid var(--line); cursor: pointer; border-radius: 6px; }
+.brow:first-child { border-top: 0; }
+.brow:hover { background: color-mix(in oklab, var(--surface-2) 60%, transparent); }
+.brow .nm { grid-area: name; display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 500; }
+.brow .nm span.t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brow .amt { grid-area: amt; text-align: right; font-weight: 600; }
+.brow .dl { grid-area: delta; text-align: right; font-size: 12px; white-space: nowrap; }
+.brow .bar { grid-area: bar; height: 8px; background: var(--surface-2); border-radius: 4px; position: relative; overflow: hidden; }
+.brow .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; }
+.brow .bar .bud { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--fg); opacity: .6; }
+.brow .sp { grid-area: spark; }
+.brow.sub { padding-left: 26px; cursor: default; }
+.brow.sub .nm { font-weight: 400; font-size: 13px; color: var(--fg-2); }
+.brow.sub .amt { font-weight: 500; font-size: 13px; }
+.brow .caret { width: 14px; color: var(--muted); font-size: 10px; transition: transform .15s; display: inline-block; text-align: center; }
+.brow.open .caret { transform: rotate(90deg); }
+.dot { width: 10px; height: 10px; border-radius: 3px; flex: none; display: inline-block; }
+.up { color: var(--up); } .down { color: var(--down); }
+@media (max-width: 520px) { .brow { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name amt" "bar delta"; } .brow .sp { display: none; } }
+
+/* ---------- insights ---------- */
+.ins { display: grid; grid-template-columns: 4px minmax(0, 1fr); gap: 0 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.ins:first-child { border-top: 0; padding-top: 2px; }
+.ins .stripe { border-radius: 2px; }
+.ins .tt { font-weight: 600; display: flex; gap: 6px; align-items: baseline; }
+.ins .tt .ic { font-size: 11px; font-weight: 700; border-radius: 4px; padding: 0 5px; color: var(--fg); background: var(--surface-2); white-space: nowrap; }
+.ins .dd { font-size: 12.5px; color: var(--fg-2); }
+.ins button.link { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------- charts ---------- */
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart text { font-family: var(--f-body); font-size: 11px; fill: var(--muted); }
+.chart .grid-l { stroke: var(--line); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .base-l { stroke: var(--line-strong); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .lbl-strong { fill: var(--fg); font-weight: 600; }
+.chart .xhair { stroke: var(--fg-2); stroke-width: 1; opacity: .5; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--fg-2); margin-bottom: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend .lk { width: 14px; height: 2px; border-radius: 1px; display: inline-block; }
+.legend .bk { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.tip { position: fixed; z-index: 50; pointer-events: none; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.14); padding: 8px 10px; font-size: 12px; min-width: 150px; max-width: 280px; }
+.tip .th { font-weight: 600; margin-bottom: 4px; color: var(--fg); }
+.tip .tr { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 6px; align-items: center; }
+.tip .tr .k { color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tip .tr .v { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; color: var(--fg); }
+.tip .tr .key { width: 12px; height: 2px; border-radius: 1px; }
+.tip .tr.tot { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 4px; }
+
+/* ---------- matrix ---------- */
+.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.mx { border-collapse: separate; border-spacing: 0; font-size: 12.5px; min-width: 100%; }
+table.mx th, table.mx td { padding: 6px 8px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--line); }
+table.mx thead th { font-weight: 500; color: var(--muted); font-size: 11.5px; position: sticky; top: 0; background: var(--surface); }
+table.mx th.rh { text-align: left; position: sticky; left: 0; background: var(--surface); z-index: 1; font-weight: 500; color: var(--fg); max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+table.mx thead th.rh { z-index: 2; }
+table.mx td.c { cursor: pointer; }
+table.mx td.c:hover { outline: 1px solid var(--fg-2); outline-offset: -1px; }
+table.mx tr.sub th.rh { padding-left: 22px; font-weight: 400; color: var(--fg-2); }
+table.mx tr.tot th, table.mx tr.tot td { font-weight: 600; border-top: 1px solid var(--line-strong); }
+table.mx td.agg { color: var(--fg-2); background: var(--surface); }
+table.mx tr.l0 th.rh { cursor: pointer; }
+table.mx .avg { border-right: 1px solid var(--line-strong); }
+@media (max-width: 720px) { table.mx .sumc { display: none; } table.mx th.rh { max-width: 112px; } }
+.scale { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+.scale .ramp { width: 120px; height: 8px; border-radius: 4px; }
+
+/* ---------- diverging compare ---------- */
+.dv { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr) auto; gap: 4px 12px; align-items: center; }
+.dv .h { font-size: 11.5px; color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.dv .lab { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.dv .lab small { color: var(--muted); }
+.dv .track { position: relative; height: 18px; }
+.dv .track .axis { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--line-strong); }
+.dv .track i { position: absolute; top: 4px; height: 10px; }
+.dv .track i.pos { left: 50%; border-radius: 0 4px 4px 0; background: var(--div-up); }
+.dv .track i.neg { right: 50%; border-radius: 4px 0 0 4px; background: var(--div-down); }
+.dv .val { text-align: right; font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dv .val small { display: block; color: var(--muted); font-size: 11px; }
+@media (max-width: 520px) { .dv { grid-template-columns: minmax(0, 1fr) auto; } .dv .track { grid-column: 1 / -1; order: 0; } .dv .h.mid { display: none; } }
+
+/* ---------- ranking / list ---------- */
+.rk { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.rk:first-child { border-top: 0; }
+.rk .n { color: var(--muted); font-size: 12px; text-align: right; }
+.rk .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rk .v { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rk .meta { grid-column: 2 / -1; display: flex; gap: 10px; align-items: center; font-size: 11.5px; color: var(--muted); }
+.rk .meta .bar { flex: 1; height: 5px; background: var(--surface-2); border-radius: 3px; overflow: hidden; min-width: 40px; }
+.rk .meta .bar i { display: block; height: 100%; background: var(--s1); border-radius: 0 3px 3px 0; }
+.pill { display: inline-block; font-size: 11px; padding: 0 7px; border-radius: 999px; background: var(--surface-2); color: var(--fg-2); white-space: nowrap; }
+.pill.warn { background: color-mix(in oklab, var(--st-warn) 22%, transparent); color: var(--warn); }
+.pill.ex { background: none; border: 1px dashed var(--line-strong); }
+
+.tx { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 0 10px; padding: 8px 0; border-top: 1px solid var(--line); align-items: baseline; }
+.tx .d { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.tx .c { min-width: 0; }
+.tx .c .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.tx .c .m { font-size: 11.5px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.tx .a { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tx .a.inc { color: var(--down); }
+.tx.skip { opacity: .55; }
+
+/* ---------- calendar ---------- */
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal .wd { font-size: 11px; color: var(--muted); text-align: center; }
+.cal .day { aspect-ratio: 1 / .82; max-width: 100%; border-radius: 6px; padding: 4px 5px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid transparent; cursor: pointer; min-width: 0; background: var(--surface-2); }
+.cal .day .dn { font-size: 11px; line-height: 1; }
+.cal .day .dv { font-size: 11px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; line-height: 1; overflow: hidden; white-space: nowrap; }
+.cal .day.out { visibility: hidden; }
+.cal .day.sel { border-color: var(--fg); }
+.cal .day.future { opacity: .4; cursor: default; }
+.wdbars { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; align-items: end; height: 70px; margin-top: 12px; }
+.wdbars div { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 2px; font-size: 10.5px; color: var(--muted); }
+.wdbars i { width: min(22px, 70%); background: var(--s1); border-radius: 4px 4px 0 0; display: block; }
+
+/* ---------- settings ---------- */
+.drop { border: 1.5px dashed var(--line-strong); border-radius: var(--r); padding: 22px 16px; text-align: center; display: grid; gap: 10px; justify-items: center; background: var(--surface); }
+.drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.steps { margin: 0; padding-left: 1.3em; color: var(--fg-2); font-size: 13px; display: grid; gap: 4px; text-align: left; }
+.catgrp { border-top: 1px solid var(--line); padding: 10px 0; }
+.catgrp:first-child { border-top: 0; }
+.catgrp h3 { font-size: 13.5px; margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+.catrow { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 3px 0 3px 18px; font-size: 13px; flex-wrap: wrap; }
+.mlist .mi { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 13px; flex-wrap: wrap; }
+.mlist .mi:first-child { border-top: 0; }
+.mlist .mi .grow { flex: 1; min-width: 120px; }
+.budget { display: grid; grid-template-columns: minmax(0, 1fr) 140px; gap: 6px 12px; align-items: center; }
+.budget input { text-align: right; width: 100%; }
+
+/* ---------- empty / misc ---------- */
+.empty { max-width: 640px; margin: 24px auto; display: grid; gap: 18px; }
+.empty h2 { font-size: 22px; }
+.empty .lead { color: var(--fg-2); font-size: 14.5px; margin: 0; }
+.banner { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: color-mix(in oklab, var(--st-warn) 14%, var(--surface)); border: 1px solid color-mix(in oklab, var(--st-warn) 40%, transparent); border-radius: 8px; padding: 8px 12px; margin-bottom: 16px; font-size: 13px; }
+.toast { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 14px; border-radius: 10px; font-size: 13px; max-width: min(92vw, 520px); box-shadow: 0 8px 30px rgba(0,0,0,.2); white-space: pre-line; }
+@media (min-width: 721px) { .toast { bottom: 24px; } }
+.dropveil { position: fixed; inset: 0; z-index: 70; background: color-mix(in oklab, var(--accent) 18%, transparent); border: 3px dashed var(--accent); display: grid; place-items: center; font-size: 18px; font-weight: 600; color: var(--fg); pointer-events: none; }
+.loading { padding: 60px 0; text-align: center; color: var(--muted); }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; padding: 4px 0; }
+</style>
+
+<div class="top">
+  <div class="top-in">
+    <div class="brand"><h1>家計簿レンズ</h1><span class="badge" id="store-badge">読み込み中</span></div>
+    <div class="period" id="period"></div>
+    <button class="btn primary" id="btn-import" type="button"><span aria-hidden="true">＋</span><span>CSV<span class="hide-sm">を読み込む</span></span></button>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="表示の切り替え"></nav>
+</div>
+<main id="view" aria-live="polite"><div class="loading">データを読み込んでいます…</div></main>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" hidden></div>
+<div class="dropveil" id="dropveil" hidden>CSVをここにドロップ</div>
+<input type="file" id="file" accept=".csv,.json,text/csv,application/json" multiple hidden>
+
+<script>
+'use strict';
+/* ===================================================================
+   家計簿レンズ — マネーフォワード ME の入出金CSVを読み込む分析ダッシュボード
+   保存先: claude.ai 上では artifact の db（オーナーのみ読み書き）、
+           それ以外ではブラウザの localStorage。
+   =================================================================== */
+
+const APP_KEY = 'kakeibo-lens.v1';
+const UI_KEY = 'kakeibo-lens.ui.v1';
+const DEFAULT_FIXED_L = new Set(['住宅', '水道・光熱費', '通信費', '保険', '税・社会保障']);
+const DEFAULT_EXCLUDE = new Set(['その他/会社経費', 'その他/立替金']);
+const SPECIAL_L = '特別な支出';
+const NOT_EXPENSE_L = new Set(['収入']);
+const SLOTS = 7; // top-7 categories get a hue, the rest fold into その他
+const WD = ['日', '月', '火', '水', '木', '金', '土'];
+
+/* ------------------------------------------------------------------ utils */
+const $ = (s, r = document) => r.querySelector(s);
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  if (props) for (const k in props) {
+    const v = props[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'style' && typeof v === 'object') Object.assign(e.style, v);
+    else if (k.startsWith('--')) e.style.setProperty(k, v);
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (k === 'dataset') Object.assign(e.dataset, v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  append(e, kids);
+  return e;
+}
+function append(e, kids) {
+  for (const c of kids.flat(Infinity)) {
+    if (c == null || c === false) continue;
+    e.appendChild(typeof c === 'string' || typeof c === 'number' ? document.createTextNode(String(c)) : c);
+  }
+}
+const SVGNS = 'http://www.w3.org/2000/svg';
+function sv(tag, attrs, ...kids) {
+  const e = document.createElementNS(SVGNS, tag);
+  if (attrs) for (const k in attrs) { const v = attrs[k]; if (v == null) continue; if (k === 'text') e.textContent = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); }
+  for (const c of kids.flat(Infinity)) if (c) e.appendChild(c);
+  return e;
+}
+const pad = n => String(n).padStart(2, '0');
+const sum = a => a.reduce((x, y) => x + y, 0);
+const mean = a => a.length ? sum(a) / a.length : 0;
+function sd(a) { if (a.length < 2) return 0; const m = mean(a); return Math.sqrt(sum(a.map(x => (x - m) ** 2)) / (a.length - 1)); }
+function median(a) { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); const i = s.length >> 1; return s.length % 2 ? s[i] : (s[i - 1] + s[i]) / 2; }
+const yen = n => (n < -0.5 ? '−' : '') + '¥' + Math.round(Math.abs(n)).toLocaleString('ja-JP');
+const signed = n => (Math.round(n) > 0 ? '+' : Math.round(n) < 0 ? '−' : '±') + '¥' + Math.round(Math.abs(n)).toLocaleString('ja-JP');
+function man(n) {
+  const a = Math.abs(n), s = n < 0 ? '−' : '';
+  if (a >= 10000) { const v = a / 10000; return s + (v >= 100 ? Math.round(v) : +v.toFixed(v >= 10 ? 0 : 1)) + '万'; }
+  if (a >= 1000) return s + (+(a / 1000).toFixed(1)) + '千';
+  return s + Math.round(a);
+}
+const pct = (a, b) => b ? Math.round((a / b - 1) * 100) : null;
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
+
+/* -------------------------------------------------------------- periods */
+// 期間キー 'YYYY-MM'。月の開始日が1日以外なら、その月の「開始日〜翌月開始日前日」を翌月の期間として数える（例: 25日開始 → 10月 = 9/25〜10/24）。
+function startDay() { return S.settings.startDay || 1; }
+function periodOf(d) {
+  let y = +d.slice(0, 4), m = +d.slice(5, 7); const day = +d.slice(8, 10), s = startDay();
+  if (s > 1 && day >= s) { m++; if (m > 12) { m = 1; y++; } }
+  return y + '-' + pad(m);
+}
+function addP(p, k) { let y = +p.slice(0, 4), m = +p.slice(5, 7) - 1 + k; y += Math.floor(m / 12); m = ((m % 12) + 12) % 12; return y + '-' + pad(m + 1); }
+function pRange(p) {
+  const y = +p.slice(0, 4), m = +p.slice(5, 7), s = startDay();
+  if (s === 1) return [new Date(y, m - 1, 1), new Date(y, m, 0)];
+  return [new Date(y, m - 2, s), new Date(y, m - 1, s - 1)];
+}
+const DAY = 86400000;
+function pDays(p) { const [a, b] = pRange(p); return Math.round((b - a) / DAY) + 1; }
+function dateOf(d) { return new Date(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10)); }
+function dayIdx(d, p) { return Math.round((dateOf(d) - pRange(p)[0]) / DAY); } // 0-based
+const ymd = dt => dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate());
+const md = dt => (dt.getMonth() + 1) + '/' + dt.getDate();
+function pLabel(p, short) {
+  const y = +p.slice(0, 4), m = +p.slice(5, 7);
+  if (short) return m + '月';
+  return y + '年' + m + '月' + (startDay() > 1 ? '度' : '');
+}
+function pSpan(p) { const [a, b] = pRange(p); return md(a) + '〜' + md(b); }
+function todayStr() { return ymd(new Date()); }
+
+/* ---------------------------------------------------------------- state */
+const S = {
+  months: {},          // 'YYYY-MM'(暦月) -> [row]
+  parts: {},           // cloud: 暦月 -> 保存済みドキュメント数
+  settings: defaultSettings(),
+  sample: null,        // サンプル表示中の months
+  backend: null,
+  loaded: false,
+  view: 'overview',
+  period: null,
+  m: null,             // derived model
+  ui: Object.assign({
+    trendRange: 12, trendMode: 'L', trendL: '', includeSpecial: true, mxMode: 'amount',
+    cmp: 'prev', cmpLevel: 'M', merchRange: 1, q: '', fL: '', showSkipped: false, txLimit: 80,
+  }, lsGet(UI_KEY) || {}),
+  open: new Set(),     // overview で開いている大項目
+  fDay: null,          // 明細の日付フィルタ
+};
+const saveUI = debounce(() => {
+  const { trendRange, trendMode, trendL, includeSpecial, mxMode, cmp, cmpLevel, merchRange, showSkipped } = S.ui;
+  lsSet(UI_KEY, { trendRange, trendMode, trendL, includeSpecial, mxMode, cmp, cmpLevel, merchRange, showSkipped, view: S.view });
+}, 300);
+function defaultSettings() { return { v: 1, startDay: 1, cat: {}, budgets: {} }; }
+
+/* ------------------------------------------------------- classification */
+function catMode(L, M) {
+  const o = S.settings.cat[L + '/' + M];
+  if (o) return o;
+  if (DEFAULT_EXCLUDE.has(L + '/' + M)) return 'ex';
+  if (DEFAULT_FIXED_L.has(L)) return 'fixed';
+  return 'var';
+}
+// skip: 計算対象外・振替 / income / ex: 自分で除外 / fixed / var / special
+function kindOf(r) {
+  if (r.t !== 1 || r.f === 1) return 'skip';
+  if (NOT_EXPENSE_L.has(r.L) || (r.a > 0 && r.L === '未分類')) return 'income';
+  const mode = catMode(r.L, r.M);
+  if (mode === 'ex') return 'ex';
+  if (mode === 'fixed') return 'fixed';
+  if (r.L === SPECIAL_L) return 'special';
+  return 'var';
+}
+function merchantKey(r) {
+  if (r.inst === 'Amazon.co.jp' && !/^(返金|配送料|ポイント|ギフト)/.test(r.c)) return 'Amazon';
+  let s = (r.c || '').normalize('NFKC');
+  s = s.replace(/\/(NFC|カード|iD|QP|QUICPay)$/i, '').replace(/\(再計算\)/g, '').replace(/\s*\(W\)/g, '');
+  s = s.replace(/\s+\d{3,}$/, '').replace(/\s+/g, ' ').trim();
+  return s || r.c || '（不明）';
+}
+const isExp = k => k === 'fixed' || k === 'var' || k === 'special';
+
+/* ---------------------------------------------------------------- model */
+function newBucket() { return { exp: 0, inc: 0, fixed: 0, var: 0, special: 0, ex: 0, n: 0, L: new Map() }; }
+const EMPTY = newBucket();
+function buildModel() {
+  const months = S.sample || S.months;
+  const tx = [];
+  for (const k in months) for (const r of months[k]) tx.push(r);
+  tx.sort((a, b) => (a.d < b.d ? 1 : a.d > b.d ? -1 : 0));
+  const P = new Map(), totL = new Map(), totM = new Map(), tree = new Map();
+  let minD = null, maxD = null;
+  for (const r of tx) {
+    r.p = periodOf(r.d); r.k = kindOf(r); r.mk = merchantKey(r); r.v = -r.a;
+    if (!minD || r.d < minD) minD = r.d;
+    if (!maxD || r.d > maxD) maxD = r.d;
+    if (!tree.has(r.L)) tree.set(r.L, new Set());
+    tree.get(r.L).add(r.M);
+    let b = P.get(r.p); if (!b) { b = newBucket(); P.set(r.p, b); }
+    b.n++;
+    if (r.k === 'income') { b.inc += r.a; continue; }
+    if (r.k === 'ex') { b.ex += r.v; continue; }
+    if (!isExp(r.k)) continue;
+    b.exp += r.v; b[r.k] += r.v;
+    let l = b.L.get(r.L); if (!l) { l = { v: 0, M: new Map() }; b.L.set(r.L, l); }
+    l.v += r.v; l.M.set(r.M, (l.M.get(r.M) || 0) + r.v);
+    totL.set(r.L, (totL.get(r.L) || 0) + r.v);
+    const mk = r.L + '/' + r.M; totM.set(mk, (totM.get(mk) || 0) + r.v);
+  }
+  const periods = [];
+  if (minD) { const end = periodOf(maxD); for (let p = periodOf(minD); p <= end; p = addP(p, 1)) periods.push(p); }
+  const rankL = [...totL.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
+  const slotL = new Map(rankL.slice(0, SLOTS).map((L, i) => [L, i + 1]));
+  const rankM = new Map();
+  for (const L of rankL) rankM.set(L, [...totM.entries()].filter(([k]) => k.startsWith(L + '/')).sort((a, b) => b[1] - a[1]).map(([k]) => k.slice(L.length + 1)));
+  S.m = { tx, P, periods, rankL, slotL, rankM, tree, minD, maxD };
+  if (!S.period || !periods.includes(S.period)) S.period = periods[periods.length - 1] || null;
+}
+const B = p => S.m.P.get(p) || EMPTY;
+const vL = (p, L) => { const l = B(p).L.get(L); return l ? l.v : 0; };
+const vM = (p, L, M) => { const l = B(p).L.get(L); return l ? (l.M.get(M) || 0) : 0; };
+function hasP(p) { return S.m.periods.includes(p); }
+function prevPeriods(p, n) { const out = []; for (let i = 1; i <= n; i++) { const q = addP(p, -i); if (!hasP(q)) break; out.push(q); } return out; }
+function windowP(p, n) { const out = []; for (let i = n - 1; i >= 0; i--) { const q = addP(p, -i); if (hasP(q)) out.push(q); } return out; }
+function colorL(L) { const s = S.m.slotL.get(L); return s ? `var(--s${s})` : 'var(--sother)'; }
+// 期間が途中かどうか（今日がまだ期間内）
+function asOf(p) {
+  const [a, b] = pRange(p); const t = dateOf(todayStr());
+  if (t > b) return null;
+  if (t < a) return 0;
+  return Math.round((t - a) / DAY) + 1; // 経過日数
+}
+
+/* -------------------------------------------------------------- storage */
+const toArr = r => [r.id, r.d, r.c, r.a, r.inst, r.L, r.M, r.memo, r.t, r.f];
+const toObj = a => ({ id: a[0], d: a[1], c: a[2], a: a[3], inst: a[4], L: a[5], M: a[6], memo: a[7] || '', t: a[8], f: a[9] });
+const enc = new TextEncoder();
+
+const LocalStore = {
+  name: 'local',
+  label: 'このブラウザに保存',
+  async init() {
+    const raw = lsGet(APP_KEY);
+    if (raw && raw.months) for (const k in raw.months) S.months[k] = raw.months[k].map(toObj);
+    if (raw && raw.settings) S.settings = Object.assign(defaultSettings(), raw.settings);
+    S.loaded = true; onData();
+  },
+  persist() {
+    const months = {}; for (const k in S.months) months[k] = S.months[k].map(toArr);
+    if (!lsSet(APP_KEY, { months, settings: S.settings })) toast('このブラウザに保存できませんでした（容量またはプライベートモード）。表示中のデータは閉じると消えます。');
+  },
+  async saveMonths() { this.persist(); },
+  async saveSettings() { this.persist(); },
+};
+
+const CloudStore = {
+  name: 'cloud',
+  label: 'クラウド保存・PC/スマホ共通',
+  db: null, gotLedger: false, gotCfg: false,
+  async init(db) {
+    this.db = db;
+    db.collection('ledger').onSnapshot(snap => {
+      const by = {}, parts = {};
+      for (const d of snap.docs) {
+        const x = d.data(); if (!x || !x.m) continue;
+        (by[x.m] = by[x.m] || []).push(x); parts[x.m] = Math.max(parts[x.m] || 0, (x.part || 0) + 1);
+      }
+      const months = {};
+      for (const k in by) months[k] = by[k].sort((a, b) => a.part - b.part).flatMap(x => x.rows.map(toObj));
+      S.months = months; S.parts = parts; this.gotLedger = true; this.ready();
+    }, e => { toast('クラウドのデータを読めませんでした（' + e.code + '）。'); this.gotLedger = true; this.ready(); });
+    db.doc('config/settings').onSnapshot(snap => {
+      if (snap.exists) S.settings = Object.assign(defaultSettings(), snap.data());
+      this.gotCfg = true; this.ready();
+    }, () => { this.gotCfg = true; this.ready(); });
+  },
+  ready() { if (this.gotLedger && this.gotCfg) { S.loaded = true; onData(); } },
+  async saveMonths(keys) {
+    for (const m of keys) {
+      const rows = (S.months[m] || []).map(toArr);
+      const chunks = []; let cur = [], size = 0;
+      for (const r of rows) { const z = enc.encode(JSON.stringify(r)).length + 1; if (size + z > 180000 && cur.length) { chunks.push(cur); cur = []; size = 0; } cur.push(r); size += z; }
+      if (cur.length) chunks.push(cur);
+      const before = S.parts[m] || 0;
+      for (let i = 0; i < chunks.length; i++) await this.write(() => this.db.doc(`ledger/${m}.${i}`).set({ m, part: i, parts: chunks.length, rows: chunks[i], at: new Date().toISOString() }));
+      for (let i = chunks.length; i < before; i++) await this.write(() => this.db.doc(`ledger/${m}.${i}`).delete());
+      S.parts[m] = chunks.length;
+    }
+  },
+  async saveSettings() { await this.write(() => this.db.doc('config/settings').set(JSON.parse(JSON.stringify(S.settings)))); },
+  async write(fn) {
+    try { return await fn(); }
+    catch (e) {
+      if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 600 + Math.random() * 800)); try { return await fn(); } catch (e2) { e = e2; } }
+      const msg = e && e.code === 'quota_exceeded' ? '保存容量の上限に達しました。古い月を削除してから読み込み直してください。'
+        : e && e.code === 'invalid_argument' ? 'このページではデータを保存できません（閲覧のみの共有です）。'
+        : '保存に失敗しました（' + (e && e.code || 'error') + '）。少し待ってからもう一度お試しください。';
+      toast(msg); throw e;
+    }
+  },
+};
+
+async function initStorage() {
+  if (window.claude && typeof window.claude.use === 'function') {
+    let db = null;
+    try { db = await window.claude.use('db'); } catch { db = null; }
+    if (db) { S.backend = CloudStore; renderChrome(); await CloudStore.init(db); return; }
+  }
+  S.backend = LocalStore; renderChrome(); await LocalStore.init();
+}
+
+/* ----------------------------------------------------------------- CSV */
+async function readText(file) {
+  const buf = await file.arrayBuffer();
+  let t;
+  try { t = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch { t = new TextDecoder('shift_jis').decode(buf); }
+  return t.replace(/^﻿/, '');
+}
+function parseCSV(text) {
+  const rows = []; let row = [], f = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(f); f = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+    else f += c;
+  }
+  if (f !== '' || row.length) { row.push(f); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r[0] || '').trim() !== '');
+}
+function mfRows(text) {
+  const t = parseCSV(text);
+  if (!t.length) throw new Error('空のファイルです');
+  const hd = t[0].map(x => x.trim());
+  const col = name => hd.findIndex(x => x.includes(name));
+  const ix = { t: col('計算対象'), d: col('日付'), c: col('内容'), a: col('金額'), inst: col('保有金融機関'), L: col('大項目'), M: col('中項目'), memo: col('メモ'), f: col('振替'), id: col('ID') };
+  if (ix.d < 0 || ix.a < 0 || ix.L < 0) throw new Error('マネーフォワードの入出金CSVではないようです（日付・金額・大項目の列が見つかりません）');
+  const out = [];
+  for (const r of t.slice(1)) {
+    const d = (r[ix.d] || '').trim().replace(/\//g, '-');
+    if (!/^\d{4}-\d{1,2}-\d{1,2}$/.test(d)) continue;
+    const [y, m, dd] = d.split('-');
+    const date = y + '-' + pad(+m) + '-' + pad(+dd);
+    const a = Number(String(r[ix.a]).replace(/[,，円¥\s]/g, ''));
+    if (!isFinite(a)) continue;
+    const c = (r[ix.c] || '').trim();
+    out.push({
+      id: (ix.id >= 0 && r[ix.id]) ? r[ix.id].trim() : 'x' + hash(date + '|' + c + '|' + a + '|' + (r[ix.inst] || '')),
+      d: date, c: c.length > 120 ? c.slice(0, 120) + '…' : c, a,
+      inst: ix.inst >= 0 ? (r[ix.inst] || '').trim() : '',
+      L: (r[ix.L] || '未分類').trim() || '未分類', M: ix.M >= 0 ? ((r[ix.M] || '').trim() || '未分類') : '未分類',
+      memo: ix.memo >= 0 ? (r[ix.memo] || '').trim() : '',
+      t: ix.t >= 0 ? (String(r[ix.t]).trim() === '0' ? 0 : 1) : 1,
+      f: ix.f >= 0 ? (String(r[ix.f]).trim() === '1' ? 1 : 0) : 0,
+    });
+  }
+  return out;
+}
+function hash(s) { let x = 2166136261; for (let i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 16777619); } return (x >>> 0).toString(36); }
+function monthsBetween(a, b) { const out = []; for (let m = a.slice(0, 7); m <= b.slice(0, 7); m = addP(m, 1)) out.push(m); return out; }
+const same = (x, y) => x.d === y.d && x.c === y.c && x.a === y.a && x.L === y.L && x.M === y.M && x.t === y.t && x.f === y.f && x.memo === y.memo && x.inst === y.inst;
+
+// CSVは「その期間の明細すべて」とみなす: 期間内の既存行は置き換え、IDで重複を除く。
+function mergeRows(rows, range) {
+  const changed = new Set(); const stat = { add: 0, upd: 0, del: 0, n: rows.length };
+  const byM = {}; for (const r of rows) (byM[r.d.slice(0, 7)] = byM[r.d.slice(0, 7)] || []).push(r);
+  for (const m of monthsBetween(range[0], range[1])) {
+    const old = S.months[m] || [], inc = byM[m] || [];
+    const oldById = new Map(old.map(r => [r.id, r]));
+    const incIds = new Set(inc.map(r => r.id));
+    const kept = old.filter(r => (r.d < range[0] || r.d > range[1]) && !incIds.has(r.id));
+    let ch = false;
+    for (const r of inc) { const o = oldById.get(r.id); if (!o) { stat.add++; ch = true; } else if (!same(o, r)) { stat.upd++; ch = true; } }
+    for (const r of old) if (r.d >= range[0] && r.d <= range[1] && !incIds.has(r.id)) { stat.del++; ch = true; }
+    if (ch) { const merged = kept.concat(inc); if (merged.length) S.months[m] = merged; else delete S.months[m]; changed.add(m); }
+  }
+  return { changed, stat };
+}
+
+async function importFiles(files) {
+  if (!S.backend) { toast('保存先の準備中です。数秒後にもう一度お試しください。'); return; }
+  const changed = new Set(); const lines = []; let lastP = null;
+  for (const file of files) {
+    try {
+      const text = await readText(file);
+      if (/\.json$/i.test(file.name) || /^\s*\{/.test(text)) { lines.push(await importBackup(text, changed)); continue; }
+      const rows = mfRows(text);
+      if (!rows.length) { lines.push(`${file.name}: 明細が0件でした`); continue; }
+      const fm = file.name.match(/(\d{4})-(\d{2})-(\d{2})_(\d{4})-(\d{2})-(\d{2})/);
+      const ds = rows.map(r => r.d).sort();
+      let range = fm ? [`${fm[1]}-${fm[2]}-${fm[3]}`, `${fm[4]}-${fm[5]}-${fm[6]}`] : [ds[0], ds[ds.length - 1]];
+      range = [ds[0] < range[0] ? ds[0] : range[0], ds[ds.length - 1] > range[1] ? ds[ds.length - 1] : range[1]];
+      const { changed: ch, stat } = mergeRows(rows, range);
+      ch.forEach(m => changed.add(m));
+      lines.push(`${range[0].replace(/-/g, '/')}〜${range[1].slice(5).replace('-', '/')}: ${stat.n}件（新規${stat.add}・更新${stat.upd}・削除${stat.del}）`);
+      lastP = ds[ds.length - 1];
+    } catch (e) { lines.push(`${file.name}: ${e.message || e}`); }
+  }
+  S.sample = null;
+  if (changed.size) {
+    onData(lastP ? periodOf(lastP) : null);
+    try { await S.backend.saveMonths([...changed]); } catch { /* toast already shown */ }
+  }
+  toast(lines.join('\n') || '読み込める明細がありませんでした');
+}
+
+/* -------------------------------------------------------------- backup */
+async function importBackup(text, changed) {
+  const j = JSON.parse(text);
+  if (!j || j.app !== 'kakeibo-lens' || !j.months) throw new Error('家計簿レンズのバックアップではありません');
+  for (const m in j.months) { S.months[m] = j.months[m].map(toObj); changed.add(m); }
+  if (j.settings) { S.settings = Object.assign(defaultSettings(), j.settings); await S.backend.saveSettings(); }
+  return `バックアップから${Object.keys(j.months).length}か月分を復元しました`;
+}
+async function exportBackup() {
+  const months = {}; for (const k in S.months) months[k] = S.months[k].map(toArr);
+  const data = JSON.stringify({ app: 'kakeibo-lens', version: 1, exportedAt: new Date().toISOString(), settings: S.settings, months });
+  const name = `kakeibo-lens-backup-${todayStr()}.json`;
+  let dl = null;
+  if (window.claude && window.claude.use) { try { dl = await window.claude.use('downloads'); } catch { dl = null; } }
+  if (dl) {
+    try { await dl.save({ filename: name, data }); toast('バックアップを保存しました'); }
+    catch (e) { if (e && e.code !== 'declined') toast('保存できませんでした（' + (e.code || 'error') + '）'); }
+    return;
+  }
+  const a = h('a', { href: URL.createObjectURL(new Blob([data], { type: 'application/json' })), download: name });
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------------------------------------------------------- sample data */
+function makeSample() {
+  let seed = 20260901;
+  const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const pick = a => a[Math.floor(rnd() * a.length)];
+  const months = {}; const now = new Date(); let n = 0;
+  const add = (dt, c, a, L, M, inst, t = 1, f = 0) => { const d = ymd(dt); (months[d.slice(0, 7)] = months[d.slice(0, 7)] || []).push({ id: 'sample-' + (n++), d, c, a: Math.round(a / 10) * 10 || a, inst, L, M, memo: '', t, f }); };
+  for (let k = 18; k >= 1; k--) {
+    const y = new Date(now.getFullYear(), now.getMonth() - k, 1); const days = new Date(y.getFullYear(), y.getMonth() + 1, 0).getDate(); const mo = y.getMonth() + 1;
+    const D = d => new Date(y.getFullYear(), y.getMonth(), Math.min(d, days));
+    add(D(25), '給与 サンプル商事', 312000 + (mo === 6 || mo === 12 ? 420000 : 0), '収入', '給与', 'サンプル銀行');
+    add(D(27), '家賃', -88000, '住宅', '家賃・地代', 'サンプル銀行');
+    add(D(10), '電気料金', -(5200 + (mo === 1 || mo === 2 || mo === 8 ? 4200 : mo === 7 || mo === 12 ? 2500 : 0) + rnd() * 900), '水道・光熱費', '電気代', 'サンプルカード');
+    add(D(12), 'ガス料金', -(3100 + (mo <= 3 || mo === 12 ? 2400 : 0) + rnd() * 500), '水道・光熱費', 'ガス・灯油代', 'サンプルカード');
+    if (mo % 2 === 0) add(D(18), '水道局', -4620, '水道・光熱費', '水道代', 'サンプル銀行');
+    add(D(5), 'サンプルモバイル', -3278, '通信費', '携帯電話', 'サンプルカード');
+    add(D(20), 'NETFLIX', -(k > 8 ? 1490 : 1590), '通信費', '情報サービス', 'サンプルカード');
+    add(D(20), 'クラウドAI サブスク', -3000, '通信費', '情報サービス', 'サンプルカード');
+    add(D(1), 'サンプル生命', -3487, '保険', '生命保険', 'サンプルカード');
+    const shops = [['ライフ', '食料品'], ['ダイエー', '食料品'], ['セブン-イレブン', '物販'], ['ローソン', '物販'], ['フジオフードシステム', '昼ご飯'], ['松屋', '昼ご飯']];
+    const nShop = 26 + Math.floor(rnd() * 10);
+    for (let i = 0; i < nShop; i++) { const [c, M] = pick(shops); add(D(1 + Math.floor(rnd() * days)), c, -(M === '物販' ? 180 + rnd() * 700 : M === '昼ご飯' ? 650 + rnd() * 250 : 1500 + rnd() * 3500), '食費', M, 'サンプルカード'); }
+    const nOut = 4 + Math.floor(rnd() * 5) + (mo === 12 ? 4 : 0);
+    for (let i = 0; i < nOut; i++) add(D(1 + Math.floor(rnd() * days)), pick(['鳥貴族', 'サイゼリヤ', 'くら寿司', '串カツ田中']), -(1800 + rnd() * 4000), '食費', '外食', 'サンプルカード');
+    for (let i = 0; i < 4; i++) add(D(1 + Math.floor(rnd() * days)), pick(['ダイソー', 'スギ薬局', 'ニトリ']), -(300 + rnd() * 2500), '日用品', pick(['日用品', 'ドラッグストア']), 'サンプルカード');
+    for (let i = 0; i < 3 + Math.floor(rnd() * 4); i++) add(D(1 + Math.floor(rnd() * days)), pick(['タクシー', 'JR西日本']), -(400 + rnd() * 2600), '交通費', pick(['タクシー', '電車']), 'サンプルカード');
+    if (rnd() < .6) add(D(1 + Math.floor(rnd() * days)), pick(['ユニクロ', '無印良品']), -(2000 + rnd() * 9000), '衣服・美容', '衣服', 'サンプルカード');
+    if (rnd() < .5) add(D(15), 'ヘアサロン', -6600, '衣服・美容', '美容院・理髪', 'サンプルカード');
+    for (let i = 0; i < 2 + Math.floor(rnd() * 3); i++) add(D(1 + Math.floor(rnd() * days)), pick(['飲み会', '同僚と食事']), -(3000 + rnd() * 5000), '交際費', '交際費', 'サンプルカード');
+    if (rnd() < .45) add(D(1 + Math.floor(rnd() * days)), pick(['紀伊國屋書店', 'Kindle']), -(900 + rnd() * 2400), '教養・教育', '書籍', 'サンプルカード');
+    if (rnd() < .35) add(D(1 + Math.floor(rnd() * days)), 'サンプル内科', -(1500 + rnd() * 2500), '健康・医療', '医療費', 'サンプルカード');
+    for (let i = 0; i < 2 + Math.floor(rnd() * 3); i++) add(D(1 + Math.floor(rnd() * days)), pick(['映画館', 'Steam', 'ライブチケット']), -(1200 + rnd() * 5500), '趣味・娯楽', pick(['映画・音楽・ゲーム', 'その他趣味・娯楽']), 'サンプルカード');
+    if (mo === 8 || mo === 5) add(D(14), '旅行代理店', -(42000 + rnd() * 30000), '特別な支出', '旅行', 'サンプルカード');
+    if (k === 4) add(D(9), '家電量販店', -64800, '特別な支出', '家具・家電', 'サンプルカード');
+    add(D(26), 'カード引き落とし', -120000, '現金・カード', 'カード引き落とし', 'サンプル銀行', 0, 1);
+    if (rnd() < .5) add(D(22), '出張 新幹線', -14000, 'その他', '会社経費', 'サンプルカード');
+  }
+  return months;
+}
+
+/* ------------------------------------------------------------- tooltip */
+const tip = {
+  el: null,
+  show(x, y, title, rows, total) {
+    const el = this.el; el.textContent = '';
+    if (title) el.appendChild(h('div', { class: 'th', text: title }));
+    for (const r of rows) el.appendChild(h('div', { class: 'tr' + (r.tot ? ' tot' : '') }, h('i', { class: 'key', style: { background: r.color || 'transparent', height: r.box ? '10px' : '2px', borderRadius: r.box ? '3px' : '1px' } }), h('span', { class: 'k', text: r.label }), h('span', { class: 'v', text: r.value })));
+    if (total) el.appendChild(h('div', { class: 'tr tot' }, h('i'), h('span', { class: 'k', text: total[0] }), h('span', { class: 'v', text: total[1] })));
+    el.hidden = false;
+    const w = el.offsetWidth, hh = el.offsetHeight, vw = innerWidth, vh = innerHeight;
+    let left = x + 14, top = y + 14;
+    if (left + w > vw - 8) left = Math.max(8, x - w - 14);
+    if (top + hh > vh - 8) top = Math.max(8, y - hh - 14);
+    el.style.left = left + 'px'; el.style.top = top + 'px';
+  },
+  hide() { if (this.el) this.el.hidden = true; },
+};
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, Math.min(9000, 3000 + msg.length * 40)); }
+
+/* -------------------------------------------------------------- charts */
+function niceTicks(max, count = 4) {
+  if (!(max > 0)) max = 1;
+  const raw = max / count, mag = 10 ** Math.floor(Math.log10(raw)), nn = raw / mag;
+  const step = (nn <= 1 ? 1 : nn <= 2 ? 2 : nn <= 2.5 ? 2.5 : nn <= 5 ? 5 : 10) * mag;
+  const top = Math.ceil(max / step - 1e-9) * step; const ticks = [];
+  for (let v = 0; v <= top + step / 2; v += step) ticks.push(v);
+  return { top, ticks };
+}
+function topRoundedRect(x, y, w, hgt, r) {
+  r = Math.min(r, w / 2, hgt);
+  if (hgt <= 0) return '';
+  return `M${x},${y + hgt}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + hgt}Z`;
+}
+
+// 積み上げ縦棒 + 合計の移動平均線（同じ円の軸）
+function stackedChart(box, { periods, series, line, height = 280, sel, onPick }) {
+  const W = Math.max(280, box.clientWidth || 600), H = height;
+  const m = { l: 44, r: 8, t: 12, b: 34 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b, n = periods.length;
+  const totals = periods.map((_, i) => sum(series.map(s => Math.max(0, s.values[i]))));
+  const { top, ticks } = niceTicks(Math.max(...totals, ...(line ? line.values.filter(v => v != null) : [0]), 1));
+  const y = v => m.t + ph - (v / top) * ph;
+  const band = pw / n, bw = Math.max(3, Math.min(24, band * 0.62));
+  const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': '月別の支出の積み上げ棒グラフ' });
+  for (const t of ticks) {
+    svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 0 ? 'base-l' : 'grid-l' }));
+    svg.appendChild(sv('text', { x: m.l - 6, y: y(t) + 4, 'text-anchor': 'end', text: man(t) }));
+  }
+  const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(pw / 44))));
+  const cols = [];
+  periods.forEach((p, i) => {
+    const cx = m.l + band * i + band / 2; const g = sv('g', {}); let acc = 0;
+    const segs = series.map((s, si) => ({ s, v: Math.max(0, s.values[i]), si })).filter(x => x.v > 0);
+    segs.forEach((x, k) => {
+      const y0 = y(acc), y1 = y(acc + x.v); acc += x.v;
+      const isTop = k === segs.length - 1; const hh = Math.max(0, y0 - y1 - (k > 0 ? 2 : 0));
+      if (hh <= 0) return;
+      const yy = y0 - (k > 0 ? 2 : 0) - hh;
+      g.appendChild(isTop ? sv('path', { d: topRoundedRect(cx - bw / 2, yy, bw, hh, 4), fill: x.s.color }) : sv('rect', { x: cx - bw / 2, y: yy, width: bw, height: hh, fill: x.s.color }));
+    });
+    cols.push(g); svg.appendChild(g);
+    const [yy, mm] = [p.slice(0, 4), +p.slice(5, 7)];
+    if (i % every === 0 || i === n - 1) {
+      svg.appendChild(sv('text', { x: cx, y: H - m.b + 15, 'text-anchor': 'middle', class: p === sel ? 'lbl-strong' : '', text: mm + '月' }));
+      if (mm === 1 || i === 0) svg.appendChild(sv('text', { x: cx, y: H - m.b + 28, 'text-anchor': 'middle', text: yy }));
+    }
+  });
+  if (line) {
+    let d = ''; line.values.forEach((v, i) => { if (v == null) return; const cx = m.l + band * i + band / 2; d += (d ? 'L' : 'M') + cx + ',' + y(v); });
+    if (d) svg.appendChild(sv('path', { d, fill: 'none', stroke: 'var(--fg)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: .75 }));
+  }
+  const xh = sv('rect', { x: 0, y: m.t, width: band, height: ph, fill: 'var(--fg)', opacity: 0 });
+  svg.insertBefore(xh, svg.firstChild);
+  periods.forEach((p, i) => {
+    const hit = sv('rect', { x: m.l + band * i, y: m.t, width: band, height: ph + 20, fill: 'transparent', tabindex: 0, style: 'cursor:pointer;outline:none' });
+    const show = ev => {
+      xh.setAttribute('x', m.l + band * i); xh.setAttribute('opacity', .05);
+      const rows = series.map(s => ({ s, v: s.values[i] })).filter(x => Math.abs(x.v) >= 1).reverse().map(x => ({ color: x.s.color, label: x.s.label, value: yen(x.v), box: true }));
+      if (line && line.values[i] != null) rows.push({ color: 'var(--fg)', label: line.label, value: yen(line.values[i]), tot: true });
+      const r = ev.clientX != null ? [ev.clientX, ev.clientY] : (() => { const b = hit.getBoundingClientRect(); return [b.right, b.top + 20]; })();
+      tip.show(r[0], r[1], pLabel(p), rows, ['合計', yen(sum(series.map(s => s.values[i])))]);
+    };
+    hit.addEventListener('pointermove', show); hit.addEventListener('focus', show);
+    hit.addEventListener('pointerleave', () => { xh.setAttribute('opacity', 0); tip.hide(); });
+    hit.addEventListener('blur', () => { xh.setAttribute('opacity', 0); tip.hide(); });
+    if (onPick) { hit.addEventListener('click', ev => { if (ev.pointerType === 'mouse' || ev.detail === 0) onPick(p); }); hit.addEventListener('keydown', ev => { if (ev.key === 'Enter') onPick(p); }); }
+    svg.appendChild(hit);
+  });
+  box.textContent = ''; box.appendChild(svg);
+}
+
+// 折れ線（累積ペース）。lines: [{label,color,values,width,emph}]
+function lineChart(box, { len, lines, height = 220, xLabel, yfmt = man, title }) {
+  const W = Math.max(280, box.clientWidth || 600), H = height;
+  const m = { l: 44, r: 58, t: 12, b: 26 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const { top, ticks } = niceTicks(Math.max(1, ...lines.flatMap(l => l.values.filter(v => v != null))));
+  const x = i => m.l + (len <= 1 ? 0 : (i / (len - 1)) * pw);
+  const y = v => m.t + ph - (v / top) * ph;
+  const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, height: H, role: 'img', 'aria-label': title || '折れ線グラフ' });
+  for (const t of ticks) {
+    svg.appendChild(sv('line', { x1: m.l, x2: m.l + pw, y1: y(t), y2: y(t), class: t === 0 ? 'base-l' : 'grid-l' }));
+    svg.appendChild(sv('text', { x: m.l - 6, y: y(t) + 4, 'text-anchor': 'end', text: yfmt(t) }));
+  }
+  const stepX = Math.max(1, Math.ceil(len / Math.max(2, Math.floor(pw / 46))));
+  for (let i = 0; i < len; i += stepX) svg.appendChild(sv('text', { x: x(i), y: H - 8, 'text-anchor': 'middle', text: xLabel(i) }));
+  const ends = [];
+  for (const l of lines) {
+    let d = '', last = -1;
+    l.values.forEach((v, i) => { if (v == null) return; d += (d ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); last = i; });
+    if (!d) continue;
+    if (l.emph) {
+      const first = l.values.findIndex(v => v != null);
+      svg.appendChild(sv('path', { d: d + `L${x(last)},${y(0)}L${x(first)},${y(0)}Z`, fill: l.color, opacity: .1 }));
+    }
+    svg.appendChild(sv('path', { d, fill: 'none', stroke: l.color, 'stroke-width': l.width || 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: l.emph ? 1 : .9 }));
+    if (l.emph && last >= 0) {
+      svg.appendChild(sv('circle', { cx: x(last), cy: y(l.values[last]), r: 4.5, fill: l.color, stroke: 'var(--surface)', 'stroke-width': 2 }));
+      ends.push({ x: x(last), y: y(l.values[last]), text: yfmt(l.values[last]) });
+    }
+  }
+  for (const e of ends) svg.appendChild(sv('text', { x: e.x + 8, y: e.y + 4, class: 'lbl-strong', text: e.text }));
+  const xl = sv('line', { x1: 0, x2: 0, y1: m.t, y2: m.t + ph, class: 'xhair', opacity: 0 });
+  svg.appendChild(xl);
+  const hit = sv('rect', { x: m.l, y: m.t, width: pw, height: ph, fill: 'transparent' });
+  const move = ev => {
+    const b = svg.getBoundingClientRect(); const px = (ev.clientX - b.left) * (W / b.width);
+    const i = Math.max(0, Math.min(len - 1, Math.round(((px - m.l) / pw) * (len - 1))));
+    xl.setAttribute('x1', x(i)); xl.setAttribute('x2', x(i)); xl.setAttribute('opacity', 1);
+    tip.show(ev.clientX, ev.clientY, xLabel(i, true), lines.map(l => ({ color: l.color, label: l.label, value: l.values[i] == null ? '—' : yen(l.values[i]) })));
+  };
+  hit.addEventListener('pointermove', move); hit.addEventListener('pointerdown', move);
+  hit.addEventListener('pointerleave', () => { xl.setAttribute('opacity', 0); tip.hide(); });
+  svg.appendChild(hit);
+  box.textContent = ''; box.appendChild(svg);
+}
+
+function spark(values, { w = 96, h = 26, color = 'var(--muted)', end = 'var(--s1)' } = {}) {
+  const n = values.length; const mx = Math.max(1, ...values); const pad2 = 3;
+  const x = i => n <= 1 ? w / 2 : pad2 + (i / (n - 1)) * (w - pad2 * 2);
+  const y = v => h - pad2 - (Math.max(0, v) / mx) * (h - pad2 * 2);
+  let d = ''; values.forEach((v, i) => { d += (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); });
+  return sv('svg', { width: w, height: h, viewBox: `0 0 ${w} ${h}`, 'aria-hidden': 'true' },
+    sv('path', { d: d + `L${x(n - 1)},${h}L${x(0)},${h}Z`, fill: color, opacity: .12 }),
+    sv('path', { d, fill: 'none', stroke: color, 'stroke-width': 1.5, 'stroke-linejoin': 'round' }),
+    sv('circle', { cx: x(n - 1), cy: y(values[n - 1]), r: 3, fill: end, stroke: 'var(--surface)', 'stroke-width': 1.5 }));
+}
+function legend(items) { return h('div', { class: 'legend' }, items.map(it => h('span', null, h('i', { class: it.line ? 'lk' : 'bk', style: { background: it.color } }), it.label))); }
+
+/* --------------------------------------------------------------- views */
+const VIEWS = [
+  ['overview', '概要', '<path d="M3 13h4v8H3zM10 8h4v13h-4zM17 3h4v18h-4z" fill="currentColor"/>'],
+  ['trends', '推移', '<path d="M3 17l5-6 4 3 7-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'],
+  ['compare', '比較', '<path d="M12 3v18M5 8h7M12 15h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'],
+  ['detail', '明細', '<path d="M5 5h14M5 10h14M5 15h10M5 20h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'],
+  ['settings', '設定', '<circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'],
+];
+function renderChrome() {
+  const tabs = $('#tabs'); tabs.textContent = '';
+  for (const [k, label, icon] of VIEWS) {
+    const b = h('button', { type: 'button', role: 'tab', 'aria-selected': String(S.view === k), onclick: () => go(k) });
+    b.appendChild(sv('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' })).innerHTML = icon;
+    b.appendChild(h('span', { text: label }));
+    tabs.appendChild(b);
+  }
+  const badge = $('#store-badge');
+  badge.className = 'badge' + (S.sample ? ' sample' : '');
+  badge.textContent = S.sample ? 'サンプル表示中' : S.backend ? S.backend.label : '読み込み中';
+  const per = $('#period'); per.textContent = '';
+  const ps = S.m ? S.m.periods : [];
+  per.hidden = !ps.length;
+  if (ps.length) {
+    const i = ps.indexOf(S.period);
+    per.append(
+      h('button', { class: 'step', type: 'button', 'aria-label': '前の月', disabled: i <= 0, onclick: () => setPeriod(ps[i - 1]) }, '‹'),
+      h('label', { class: 'pick' }, h('span', { class: 'num', text: pLabel(S.period) }),
+        h('select', { 'aria-label': '月を選ぶ', id: 'period-select', onchange: e => setPeriod(e.target.value) }, [...ps].reverse().map(p => { const o = h('option', { value: p, text: pLabel(p) }); if (p === S.period) o.selected = true; return o; }))),
+      h('button', { class: 'step', type: 'button', 'aria-label': '次の月', disabled: i >= ps.length - 1, onclick: () => setPeriod(ps[i + 1]) }, '›'));
+  }
+}
+function go(v) { S.view = v; saveUI(); render(); try { history.replaceState(null, '', '#' + v); } catch { /* ignore */ } window.scrollTo(0, 0); }
+function setPeriod(p) { S.period = p; S.fDay = null; render(); }
+function onData(focusP) { buildModel(); if (focusP && S.m.periods.includes(focusP)) S.period = focusP; render(); }
+
+function render() {
+  tip.hide();
+  renderChrome();
+  const v = $('#view'); v.textContent = '';
+  if (!S.loaded && !S.sample) { v.appendChild(h('div', { class: 'loading', text: 'データを読み込んでいます…' })); return; }
+  if (S.sample) v.appendChild(h('div', { class: 'banner' }, h('span', null, h('b', { text: 'サンプルデータを表示中です。' }), ' 数字は架空のものです。自分のCSVを読み込むと置き換わります。'), h('button', { class: 'btn small', type: 'button', onclick: () => { S.sample = null; onData(); } }, 'サンプルを閉じる')));
+  if (S.view === 'settings') { viewSettings(v); return; }
+  if (!S.m.periods.length) { viewEmpty(v); return; }
+  ({ overview: viewOverview, trends: viewTrends, compare: viewCompare, detail: viewDetail })[S.view](v);
+}
+const rerender = debounce(() => { if (S.view !== 'settings' && S.m && S.m.periods.length) render(); }, 150);
+
+/* ----- empty */
+function howTo() {
+  return h('ol', { class: 'steps' },
+    h('li', null, 'マネーフォワード ME（PCブラウザ）で「家計簿」→「入出金」を開く'),
+    h('li', null, '月を切り替えながら、右上の「ダウンロード」→「CSVファイル」で各月を保存'),
+    h('li', null, '保存したCSVをまとめてこのページにドラッグするか、「CSVを読み込む」で選ぶ'),
+    h('li', null, '同じ月を読み込み直すと、その月の明細が最新の内容に置き換わります'));
+}
+function viewEmpty(v) {
+  v.appendChild(h('div', { class: 'empty' },
+    h('div', { class: 'stack' }, h('span', { class: 'eyebrow', text: 'はじめに' }), h('h2', { text: 'マネーフォワードのCSVを読み込むと、ここに分析が出ます' }),
+      h('p', { class: 'lead', text: '大項目・中項目ごとの推移、平均との差、増えた支出の洗い出し、定期的な支払いの一覧などを自動で作ります。推移を見るには、過去12か月分くらいをまとめて読み込むのがおすすめです。' })),
+    dropZone(),
+    h('div', { class: 'row' }, h('button', { class: 'btn', type: 'button', onclick: () => { S.sample = makeSample(); onData(); } }, 'サンプルデータで見てみる'), h('span', { class: 'note', text: S.backend === CloudStore ? 'データはこのページのクラウド保存に入り、PCとスマホの両方で見られます（あなただけが読めます）。' : 'データはこのブラウザの中だけに保存され、外部には送られません。' }))));
+}
+function dropZone() {
+  return h('div', { class: 'drop', id: 'dropzone' }, h('b', { text: 'CSVファイルをここにドラッグ' }), h('span', { class: 'note', text: '複数の月をまとめて選べます（Shift_JIS / UTF-8 どちらも可）' }),
+    h('button', { class: 'btn primary', type: 'button', onclick: () => $('#file').click() }, 'ファイルを選ぶ'), howTo());
+}
+
+/* ----- overview */
+function viewOverview(v) {
+  const p = S.period, b = B(p), prev = addP(p, -1), hist = prevPeriods(p, 6);
+  const histMean = mean(hist.map(q => B(q).exp));
+  const ao = asOf(p); const partial = ao !== null && ao < pDays(p);
+  const grid = h('div', { class: 'grid' });
+  v.appendChild(grid);
+
+  // hero
+  const hero = h('section', { class: 'panel c7 hero', 'aria-label': '今月のまとめ' });
+  const deltas = h('div', { class: 'deltas' });
+  const dchip = (label, base) => { const d = b.exp - base; const p2 = pct(b.exp, base); return h('span', { class: 'chip ' + (d > 0 ? 'up' : 'down') }, label, h('b', { class: 'num', text: (d > 0 ? '▲ ' : '▼ ') + signed(d) }), p2 != null ? `(${p2 > 0 ? '+' : ''}${p2}%)` : ''); };
+  if (hasP(prev)) deltas.appendChild(dchip(partial ? '前月の同じ日まで比 ' : '前月比 ', partial ? cumAt(prev, ao) : B(prev).exp));
+  if (hist.length >= 2 && !partial) deltas.appendChild(dchip(`過去${hist.length}か月平均比 `, histMean));
+  const save = b.inc - b.exp;
+  append(hero, [
+    h('div', { class: 'label' }, h('span', { text: pLabel(p) + 'の支出' }), h('span', { class: 'muted', text: pSpan(p) + (partial ? `・${ao}日目まで` : '') })),
+    h('div', { class: 'big', text: yen(b.exp) }), h('div', { class: 'rule', 'aria-hidden': 'true' }), deltas,
+    h('div', { class: 'tiles' },
+      tile('収入', yen(b.inc), b.inc ? `収支 ${signed(save)}` : '収入の記録なし'),
+      tile('貯蓄率', b.inc > 0 ? Math.round((save / b.inc) * 100) + '%' : '—', hist.length ? `平均 ${avgRate(hist)}` : ''),
+      tile('固定費', yen(b.fixed), hist.length ? `平均 ${yen(mean(hist.map(q => B(q).fixed)))}` : `支出の${share(b.fixed, b.exp)}`),
+      tile('変動費', yen(b.var), hist.length ? `平均 ${yen(mean(hist.map(q => B(q).var)))}` : `支出の${share(b.var, b.exp)}`),
+      tile('特別な支出', yen(b.special), hist.length ? `平均 ${yen(mean(hist.map(q => B(q).special)))}` : '家具・旅行など')),
+    partial ? h('div', { class: 'note' }, `このペースだと月末の見込みは `, h('b', { class: 'num', text: yen(projection(p, ao, hist)) }), '（固定費は過去の平均で補完）') : null,
+    b.ex ? h('div', { class: 'note', text: `集計から外している支出 ${yen(b.ex)}（${exNames()}）。設定で変えられます。` }) : null]);
+  grid.appendChild(hero);
+
+  // insights
+  const ins = insights(p);
+  grid.appendChild(h('section', { class: 'panel c5' }, h('div', { class: 'panel-h' }, h('h2', { text: '気になる動き' }), h('span', { class: 'hint', text: hist.length ? `過去${hist.length}か月と比べて` : '1か月分のデータから' })),
+    ins.length ? h('div', null, ins.map(insightRow)) : h('p', { class: 'note', text: '目立った変化はありません。' })));
+
+  // pace chart
+  const pace = h('section', { class: 'panel c12' });
+  const box = h('div', { class: 'chart' });
+  const len = pDays(p);
+  const cur = cumArr(p, partial ? ao : len);
+  const lines = [{ label: pLabel(p, true), color: 'var(--s1)', values: cur, width: 2.5, emph: true }];
+  if (hasP(prev)) lines.push({ label: '前月 ' + pLabel(prev, true), color: 'var(--fg-2)', values: cumArr(prev, pDays(prev)), width: 1.5 });
+  if (hist.length >= 2) { const arrs = hist.map(q => cumArr(q, pDays(q))); lines.push({ label: `過去${hist.length}か月平均`, color: 'var(--sother)', values: Array.from({ length: 31 }, (_, i) => { const xs = arrs.filter(a => a[i] != null).map(a => a[i]); return xs.length ? mean(xs) : null; }), width: 2 }); }
+  pace.append(h('div', { class: 'panel-h' }, h('h2', { text: '支出のペース' }), h('span', { class: 'hint', text: '月初からの累計。線が上にあるほど使うのが早い' })), legend(lines.map(l => ({ label: l.label, color: l.color, line: true }))), box);
+  grid.appendChild(pace);
+  const [st] = pRange(p);
+  for (const l of lines) l.values = l.values.slice(0, len);
+  requestAnimationFrame(() => lineChart(box, { len, lines, title: '月初からの累計支出', xLabel: (i, full) => { const dt = new Date(st.getTime() + i * DAY); return full ? `${i + 1}日目（${md(dt)}）` : String(dt.getDate()); } }));
+
+  // breakdown
+  const br = h('section', { class: 'panel c12' });
+  br.appendChild(h('div', { class: 'panel-h' }, h('h2', { text: '大項目別' }), h('span', { class: 'hint', text: hist.length ? `右の数字は過去${hist.length}か月平均との差・グラフは直近12か月` : 'タップで中項目を表示' })));
+  const list = h('div', { class: 'blist' });
+  const spP = windowP(p, 12);
+  const Ls = [...new Set([...b.L.keys(), ...S.m.rankL.filter(L => hist.some(q => vL(q, L)))])].sort((x, y) => vL(p, y) - vL(p, x) || mean(hist.map(q => vL(q, y))) - mean(hist.map(q => vL(q, x))));
+  const maxV = Math.max(1, ...Ls.map(L => Math.max(vL(p, L), S.settings.budgets[L] || 0)));
+  for (const L of Ls) {
+    const val = vL(p, L), avg = mean(hist.map(q => vL(q, L))), bud = S.settings.budgets[L] || 0;
+    const open = S.open.has(L);
+    const over = bud && val > bud;
+    const row = h('div', { class: 'brow' + (open ? ' open' : ''), role: 'button', tabindex: 0, 'aria-expanded': String(open) },
+      h('div', { class: 'nm' }, h('span', { class: 'caret', text: '▶' }), h('i', { class: 'dot', style: { background: colorL(L) } }), h('span', { class: 't', text: L }), bud ? h('span', { class: 'pill' + (over ? ' warn' : ''), text: `予算 ${Math.round((val / bud) * 100)}%` }) : null),
+      h('div', { class: 'amt num', text: yen(val) }),
+      h('div', { class: 'bar' }, h('i', { style: { width: (Math.max(0, val) / maxV * 100) + '%', background: colorL(L) } }), bud ? h('span', { class: 'bud', style: { left: `calc(${bud / maxV * 100}% - 1px)` }, title: '予算' }) : null),
+      h('div', { class: 'dl' }, hist.length ? deltaText(val - avg) : null),
+      h('div', { class: 'sp' }, spP.length > 1 ? spark(spP.map(q => vL(q, L)), { end: colorL(L) }) : null));
+    const toggle = () => { if (S.open.has(L)) S.open.delete(L); else S.open.add(L); render(); };
+    row.addEventListener('click', toggle); row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+    list.appendChild(row);
+    if (open) {
+      const Ms = [...(S.m.tree.get(L) || [])].filter(M => vM(p, L, M) || hist.some(q => vM(q, L, M))).sort((a, c) => vM(p, L, c) - vM(p, L, a));
+      for (const M of Ms) {
+        const mv = vM(p, L, M), ma = mean(hist.map(q => vM(q, L, M)));
+        list.appendChild(h('div', { class: 'brow sub' },
+          h('div', { class: 'nm' }, h('span', { class: 't', text: M }), catMode(L, M) === 'fixed' ? h('span', { class: 'pill', text: '固定' }) : null),
+          h('div', { class: 'amt num', text: yen(mv) }),
+          h('div', { class: 'bar' }, h('i', { style: { width: (Math.max(0, mv) / maxV * 100) + '%', background: colorL(L), opacity: .55 } })),
+          h('div', { class: 'dl' }, hist.length ? deltaText(mv - ma) : null),
+          h('div', { class: 'sp' }, spP.length > 1 ? spark(spP.map(q => vM(q, L, M)), { end: colorL(L) }) : null)));
+      }
+      list.appendChild(h('div', { class: 'brow sub', style: { cursor: 'pointer' }, onclick: () => { S.ui.fL = L; S.ui.q = ''; S.fDay = null; go('detail'); } }, h('div', { class: 'nm' }, h('span', { class: 't', style: { color: 'var(--accent)' }, text: `${L}の明細を見る →` }))));
+    }
+  }
+  br.appendChild(list);
+  grid.appendChild(br);
+}
+function tile(k, val, d) { return h('div', { class: 'tile' }, h('div', { class: 'k', text: k }), h('div', { class: 'v', text: val }), d ? h('div', { class: 'd', text: d }) : null); }
+function share(a, b) { return b ? Math.round(a / b * 100) + '%' : '—'; }
+function avgRate(ps) { const xs = ps.filter(q => B(q).inc > 0).map(q => (B(q).inc - B(q).exp) / B(q).inc); return xs.length ? Math.round(mean(xs) * 100) + '%' : '—'; }
+function exNames() { const s = new Set(); for (const r of S.m.tx) if (r.p === S.period && r.k === 'ex') s.add(r.M); return [...s].join('・'); }
+function deltaText(d) {
+  if (Math.abs(d) < 500) return h('span', { class: 'muted', text: '平均並み' });
+  return h('span', { class: 'num ' + (d > 0 ? 'up' : 'down'), text: (d > 0 ? '▲ ' : '▼ ') + signed(d) });
+}
+function cumArr(p, upto) {
+  const len = pDays(p); const daily = new Array(len).fill(0);
+  for (const r of S.m.tx) if (r.p === p && isExp(r.k)) { const i = dayIdx(r.d, p); if (i >= 0 && i < len) daily[i] += r.v; }
+  const out = []; let acc = 0; for (let i = 0; i < len; i++) { acc += daily[i]; out.push(i < upto ? acc : null); }
+  return out;
+}
+function cumAt(p, days) { const a = cumArr(p, pDays(p)); return a[Math.min(days, a.length) - 1] || 0; }
+function projection(p, ao, hist) {
+  const b = B(p); const len = pDays(p);
+  const fixedAvg = hist.length ? mean(hist.map(q => B(q).fixed)) : b.fixed;
+  return Math.max(b.fixed, fixedAvg) + (b.var / Math.max(1, ao)) * len + b.special;
+}
+
+/* ----- insights */
+function insights(p) {
+  const out = []; const hist = prevPeriods(p, 6); const b = B(p);
+  const ao = asOf(p); const partial = ao !== null && ao < pDays(p);
+  // budget
+  for (const L in S.settings.budgets) {
+    const bud = S.settings.budgets[L]; if (!bud) continue; const val = vL(p, L);
+    if (val > bud) out.push({ sev: 'critical', ic: '予算超過', title: `${L}が予算を ${yen(val - bud)} 超えています`, detail: `予算 ${yen(bud)} に対して ${yen(val)}`, w: 1e9 + val - bud });
+    else if (partial && val / ao * pDays(p) > bud) out.push({ sev: 'serious', ic: 'ペース', title: `${L}がこのペースだと予算オーバー`, detail: `月末見込み ${yen(val / ao * pDays(p))}（予算 ${yen(bud)}）`, w: 1e8 });
+  }
+  if (hist.length >= 2 && !partial) {
+    for (const [L, l] of b.L) for (const [M, x] of l.M) {
+      const xs = hist.map(q => vM(q, L, M)); const mu = mean(xs), s = sd(xs);
+      if (mu === 0 && x >= 3000 && xs.every(v => v === 0)) { out.push({ sev: 'serious', ic: '新しい支出', title: `${M}（${L}）が新しく ${yen(x)}`, detail: `過去${hist.length}か月は0円でした`, w: x, L, M }); continue; }
+      const d = x - mu;
+      if (d >= Math.max(3000, 2 * s, 0.3 * mu)) out.push({ sev: 'serious', ic: '増加', title: `${M}が平均より ${yen(d)} 多い`, detail: `${L}・今月 ${yen(x)}／平均 ${yen(mu)}（${(x / Math.max(1, mu)).toFixed(1)}倍）`, w: d, L, M });
+    }
+    // 減った（良いニュース）を最大2件
+    const downs = [];
+    for (const L of S.m.rankL) {
+      const xs = hist.map(q => vL(q, L)); const mu = mean(xs); const d = vL(p, L) - mu;
+      if (d <= -Math.max(3000, 0.25 * mu)) downs.push({ sev: 'good', ic: '減少', title: `${L}が平均より ${yen(-d)} 少ない`, detail: `今月 ${yen(vL(p, L))}／平均 ${yen(mu)}`, w: -d });
+    }
+    downs.sort((a, c) => c.w - a.w).slice(0, 2).forEach(x => out.push(Object.assign(x, { w: x.w * 0.5 })));
+  }
+  // 大きな支出
+  const big = S.m.tx.filter(r => r.p === p && (r.k === 'var' || r.k === 'special') && r.v >= 8000).sort((a, c) => c.v - a.v).slice(0, 3);
+  for (const r of big) out.push({ sev: 'info', ic: '大きな支出', title: `${r.mk} ${yen(r.v)}`, detail: `${+r.d.slice(5, 7)}/${+r.d.slice(8)}・${r.L} › ${r.M}`, w: r.v * 0.6 });
+  // よく行くお店（ちりつも）
+  const cnt = new Map();
+  for (const r of S.m.tx) if (r.p === p && r.k === 'var' && r.v > 0) { const c = cnt.get(r.mk) || { n: 0, v: 0, M: r.M }; c.n++; c.v += r.v; cnt.set(r.mk, c); }
+  [...cnt.entries()].filter(([, c]) => c.n >= 7).sort((a, c) => c[1].v - a[1].v).slice(0, 2).forEach(([k, c]) => out.push({ sev: 'info', ic: 'ちりつも', title: `${k}に${c.n}回・合計 ${yen(c.v)}`, detail: `1回あたり ${yen(c.v / c.n)}。年間に直すと約 ${man(c.v * 12)}円`, w: c.v * 0.9 }));
+  // 収支
+  if (b.inc > 0 && b.exp > b.inc && !partial) out.push({ sev: 'critical', ic: '赤字', title: `支出が収入を ${yen(b.exp - b.inc)} 上回りました`, detail: `収入 ${yen(b.inc)}／支出 ${yen(b.exp)}`, w: 5e8 });
+  return out.sort((a, c) => c.w - a.w).slice(0, 7);
+}
+const SEV = { critical: 'var(--st-critical)', serious: 'var(--st-serious)', warning: 'var(--st-warn)', good: 'var(--st-good)', info: 'var(--line-strong)' };
+function insightRow(x) {
+  return h('div', { class: 'ins' }, h('i', { class: 'stripe', style: { background: SEV[x.sev] } }),
+    h('div', null, h('div', { class: 'tt' }, h('span', { class: 'ic', text: x.ic }), h('span', { text: x.title })), h('div', { class: 'dd', text: x.detail }),
+      x.L ? h('button', { class: 'link', type: 'button', onclick: () => { S.ui.fL = x.L; S.ui.q = x.M; S.fDay = null; go('detail'); } }, '明細を見る') : null));
+}
+
+/* ----- trends */
+function seriesFor(ps) {
+  const ui = S.ui; const inc = ui.includeSpecial;
+  if (ui.trendMode === 'kind') {
+    const out = [{ label: '固定費', color: 'var(--s1)', values: ps.map(q => B(q).fixed) }, { label: '変動費', color: 'var(--s3)', values: ps.map(q => B(q).var) }];
+    if (inc) out.push({ label: '特別な支出', color: 'var(--s2)', values: ps.map(q => B(q).special) });
+    return out;
+  }
+  if (ui.trendMode === 'M' && ui.trendL && S.m.tree.has(ui.trendL)) {
+    const L = ui.trendL; const Ms = S.m.rankM.get(L) || []; const top = Ms.slice(0, SLOTS);
+    const out = top.map((M, i) => ({ label: M, color: `var(--s${i + 1})`, values: ps.map(q => vM(q, L, M)) }));
+    const rest = Ms.slice(SLOTS); if (rest.length) out.push({ label: 'その他', color: 'var(--sother)', values: ps.map(q => sum(rest.map(M => vM(q, L, M)))) });
+    return out;
+  }
+  const Ls = S.m.rankL.filter(L => inc || L !== SPECIAL_L);
+  const top = Ls.filter(L => S.m.slotL.has(L)); const rest = Ls.filter(L => !S.m.slotL.has(L));
+  const out = top.map(L => ({ label: L, color: colorL(L), values: ps.map(q => vL(q, L)) }));
+  if (rest.length) out.push({ label: 'その他', color: 'var(--sother)', values: ps.map(q => sum(rest.map(L => vL(q, L)))) });
+  return out;
+}
+function viewTrends(v) {
+  const ui = S.ui, p = S.period;
+  const all = S.m.periods.filter(q => q <= p);
+  const ps = ui.trendRange ? all.slice(-ui.trendRange) : all;
+  if (!ui.trendL || !S.m.tree.has(ui.trendL)) ui.trendL = S.m.rankL[0] || '';
+  const f = h('div', { class: 'filters' },
+    seg([[6, '6か月'], [12, '12か月'], [24, '24か月'], [0, '全期間']], ui.trendRange, x => { ui.trendRange = x; saveUI(); render(); }, '期間'),
+    seg([['L', '大項目'], ['M', '中項目'], ['kind', '固定・変動']], ui.trendMode, x => { ui.trendMode = x; saveUI(); render(); }, '分け方'),
+    ui.trendMode === 'M' ? h('select', { class: 'sel', id: 'trend-l', 'aria-label': '大項目を選ぶ', onchange: e => { ui.trendL = e.target.value; saveUI(); render(); } }, S.m.rankL.map(L => { const o = h('option', { value: L, text: L }); if (L === ui.trendL) o.selected = true; return o; })) : null,
+    ui.trendMode !== 'M' ? h('label', { class: 'check' }, h('input', { type: 'checkbox', id: 'inc-special', checked: ui.includeSpecial, onchange: e => { ui.includeSpecial = e.target.checked; saveUI(); render(); } }), '特別な支出を含める') : null);
+  v.appendChild(f);
+  const series = seriesFor(ps);
+  const tot = ps.map((_, i) => sum(series.map(s => s.values[i])));
+  const ma = tot.map((_, i) => i >= 2 ? mean(tot.slice(i - 2, i + 1)) : null);
+  const allTot = series.length ? mean(tot) : 0;
+  const title = ui.trendMode === 'M' ? `${ui.trendL}の中項目` : ui.trendMode === 'kind' ? '固定費と変動費' : '大項目別の支出';
+  const box = h('div', { class: 'chart' });
+  const lg = series.map(s => ({ label: s.label, color: s.color })).reverse();
+  if (ps.length >= 3) lg.push({ label: '合計の3か月移動平均', color: 'var(--fg)', line: true });
+  v.appendChild(h('section', { class: 'panel' },
+    h('div', { class: 'panel-h' }, h('h2', { text: title }), h('span', { class: 'hint num', text: `${pLabel(ps[0])}〜${pLabel(ps[ps.length - 1])}・月平均 ${yen(allTot)}` })),
+    legend(lg), box, h('p', { class: 'note', text: 'バーにカーソルを合わせる（タップする）と内訳が出ます。クリックでその月に移動します。' })));
+  requestAnimationFrame(() => stackedChart(box, { periods: ps, series, line: ps.length >= 3 ? { label: '3か月移動平均', values: ma } : null, sel: p, height: innerWidth < 720 ? 240 : 300, onPick: q => { S.period = q; go('overview'); } }));
+
+  // matrix
+  const mx = h('section', { class: 'panel', style: { marginTop: '16px' } });
+  mx.appendChild(h('div', { class: 'panel-h' }, h('h2', { text: '月×項目の表' }),
+    seg([['amount', '金額の大きさ'], ['diff', '平均との差']], ui.mxMode, x => { ui.mxMode = x; saveUI(); render(); }, '色の意味')));
+  mx.appendChild(matrix(ps));
+  v.appendChild(mx);
+}
+function seg(opts, cur, on, label) {
+  return h('div', { class: 'seg', role: 'group', 'aria-label': label }, opts.map(([k, t, dis]) => h('button', { type: 'button', 'aria-pressed': String(k === cur), disabled: !!dis, onclick: () => on(k) }, t)));
+}
+function matrix(ps) {
+  const ui = S.ui; const mode = ui.mxMode;
+  const rows = []; // {label, L, M, values}
+  const Ls = S.m.rankL.filter(L => ps.some(q => vL(q, L)));
+  for (const L of Ls) {
+    rows.push({ L, label: L, values: ps.map(q => vL(q, L)), lvl: 0 });
+    if (S.open.has('mx:' + L)) for (const M of (S.m.rankM.get(L) || []).filter(M => ps.some(q => vM(q, L, M)))) rows.push({ L, M, label: M, values: ps.map(q => vM(q, L, M)), lvl: 1 });
+  }
+  const table = h('table', { class: 'mx' });
+  table.appendChild(h('thead', null, h('tr', null, h('th', { class: 'rh', text: '項目' }), h('th', { class: 'avg', text: '月平均' }), ps.map(q => h('th', { text: (q.slice(5) === '01' || q === ps[0] ? q.slice(2, 4) + '/' : '') + +q.slice(5) + '月' })), h('th', { class: 'sumc', text: '合計' }))));
+  const tb = h('tbody'); table.appendChild(tb);
+  const maxCell = Math.max(1, ...rows.filter(r => r.lvl === 0).flatMap(r => r.values));
+  for (const r of rows) {
+    const avg = mean(r.values), s = sd(r.values);
+    const tr = h('tr', { class: r.lvl ? 'sub' : 'l0' });
+    const th = h('th', { class: 'rh', title: r.label }, r.lvl ? '' : h('span', { class: 'caret', style: { display: 'inline-block', width: '14px', color: 'var(--muted)', fontSize: '10px', transform: S.open.has('mx:' + r.L) ? 'rotate(90deg)' : '' }, text: '▶' }), r.lvl ? '' : h('i', { class: 'dot', style: { background: colorL(r.L), marginRight: '6px', verticalAlign: '-1px' } }), r.label);
+    if (!r.lvl) th.addEventListener('click', () => { const k = 'mx:' + r.L; if (S.open.has(k)) S.open.delete(k); else S.open.add(k); render(); });
+    tr.append(th, h('td', { class: 'agg avg', text: Math.round(avg).toLocaleString('ja-JP') }));
+    r.values.forEach((x, i) => {
+      let bg = 'transparent';
+      if (mode === 'amount') { const t = r.lvl ? x / Math.max(1, ...r.values) : x / maxCell; if (x > 0) bg = `color-mix(in oklab, var(--seq) ${Math.round(8 + t * 62)}%, var(--surface))`; }
+      else if (ps.length > 1) { const z = (x - avg) / Math.max(s, avg * 0.15, 500); const a = Math.min(1, Math.abs(z) / 2.2); if (Math.abs(x - avg) >= 300) bg = `color-mix(in oklab, ${z > 0 ? 'var(--div-up)' : 'var(--div-down)'} ${Math.round(a * 58)}%, var(--surface))`; }
+      const td = h('td', { class: 'c', style: { background: bg }, text: x ? Math.round(x).toLocaleString('ja-JP') : '—', title: `${pLabel(ps[i])} ${r.label} ${yen(x)}（平均との差 ${signed(x - avg)}）` });
+      td.addEventListener('click', () => { S.period = ps[i]; S.ui.fL = r.L; S.ui.q = r.M || ''; S.fDay = null; go('detail'); });
+      tr.appendChild(td);
+    });
+    tr.append(h('td', { class: 'agg sumc', text: Math.round(sum(r.values)).toLocaleString('ja-JP') }));
+    tb.appendChild(tr);
+  }
+  const tot = ps.map(q => B(q).exp);
+  tb.appendChild(h('tr', { class: 'tot' }, h('th', { class: 'rh', text: '支出合計' }), h('td', { class: 'agg avg', text: Math.round(mean(tot)).toLocaleString('ja-JP') }), tot.map(x => h('td', { text: Math.round(x).toLocaleString('ja-JP') })), h('td', { class: 'agg sumc', text: Math.round(sum(tot)).toLocaleString('ja-JP') })));
+  const inc = ps.map(q => B(q).inc);
+  tb.appendChild(h('tr', null, h('th', { class: 'rh', text: '収入' }), h('td', { class: 'agg avg', text: Math.round(mean(inc)).toLocaleString('ja-JP') }), inc.map(x => h('td', { text: x ? Math.round(x).toLocaleString('ja-JP') : '—' })), h('td', { class: 'agg sumc', text: Math.round(sum(inc)).toLocaleString('ja-JP') })));
+  const wrap = h('div', null, h('div', { class: 'scroll-x', id: 'mx-scroll' }, table),
+    h('div', { class: 'scale' }, mode === 'amount'
+      ? [h('span', { text: '少ない' }), h('i', { class: 'ramp', style: { background: 'linear-gradient(90deg, color-mix(in oklab, var(--seq) 8%, var(--surface)), var(--seq))' } }), h('span', { text: '多い（大項目は全体で、中項目は行ごとに比較）' })]
+      : [h('span', { text: '平均より少ない' }), h('i', { class: 'ramp', style: { background: 'linear-gradient(90deg, var(--div-down), var(--surface-2), var(--div-up))' } }), h('span', { text: '平均より多い' })]),
+    h('p', { class: 'note', text: '大項目の名前をタップすると中項目が開きます。数字をタップするとその月の明細へ。単位は円。' }));
+  requestAnimationFrame(() => { const sc = $('#mx-scroll'); if (sc) sc.scrollLeft = sc.scrollWidth; });
+  return wrap;
+}
+
+/* ----- compare */
+function viewCompare(v) {
+  const ui = S.ui, p = S.period;
+  const presets = {
+    prev: ['前月と比べる', [p], [addP(p, -1)]],
+    yoy: ['前年同月と比べる', [p], [addP(p, -12)]],
+    q3: ['直近3か月 vs その前3か月', [0, 1, 2].map(i => addP(p, -i)), [3, 4, 5].map(i => addP(p, -i))],
+    h6: ['直近6か月 vs その前6か月', [0, 1, 2, 3, 4, 5].map(i => addP(p, -i)), [6, 7, 8, 9, 10, 11].map(i => addP(p, -i))],
+  };
+  const ok = k => presets[k][2].every(hasP);
+  if (!ok(ui.cmp)) ui.cmp = Object.keys(presets).find(ok) || 'prev';
+  v.appendChild(h('div', { class: 'filters' },
+    seg(Object.entries(presets).map(([k, x]) => [k, x[0], !ok(k)]), ui.cmp, x => { ui.cmp = x; saveUI(); render(); }, '比べ方'),
+    seg([['L', '大項目'], ['M', '中項目']], ui.cmpLevel, x => { ui.cmpLevel = x; saveUI(); render(); }, '単位')));
+  const [name, A, Bp] = presets[ui.cmp];
+  if (!ok(ui.cmp)) { v.appendChild(h('section', { class: 'panel' }, h('h2', { text: '比べる月のデータがまだありません' }), h('p', { class: 'sub', text: '前の月のCSVも読み込むと、何が増えて何が減ったかをここに並べます。' }), howTo())); return; }
+  const lab = ps => ps.length === 1 ? pLabel(ps[0]) : `${pLabel(ps[ps.length - 1], true)}〜${pLabel(ps[0], true)}`;
+  const avgOf = (ps, fn) => mean(ps.map(fn));
+  const keys = new Map();
+  for (const q of [...A, ...Bp]) for (const [L, l] of B(q).L) { if (ui.cmpLevel === 'L') keys.set(L, { L }); else for (const M of l.M.keys()) keys.set(L + '/' + M, { L, M }); }
+  const items = [...keys.values()].map(k => {
+    const fn = q => k.M ? vM(q, k.L, k.M) : vL(q, k.L);
+    const a = avgOf(A, fn), b = avgOf(Bp, fn); return Object.assign(k, { a, b, d: a - b });
+  }).filter(x => Math.abs(x.d) >= 1).sort((x, y) => Math.abs(y.d) - Math.abs(x.d));
+  const totA = avgOf(A, q => B(q).exp), totB = avgOf(Bp, q => B(q).exp);
+  const per = A.length > 1 ? '（月平均）' : '';
+  v.appendChild(h('section', { class: 'panel' },
+    h('div', { class: 'panel-h' }, h('h2', { text: `${lab(A)} と ${lab(Bp)}${per}` }), h('span', { class: 'hint', text: name })),
+    h('div', { class: 'tiles' }, tile(lab(A), yen(totA), '支出' + per), tile(lab(Bp), yen(totB), '支出' + per), tile('差', signed(totA - totB), pct(totA, totB) != null ? `${pct(totA, totB) > 0 ? '+' : ''}${pct(totA, totB)}%` : '')),
+  ));
+  const ups = items.filter(x => x.d > 0).slice(0, 12), downs = items.filter(x => x.d < 0).slice(0, 12);
+  const mx = Math.max(1, ...items.map(x => Math.abs(x.d)));
+  const block = (title, arr) => h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: title }), h('span', { class: 'hint', text: `${arr.length}件` })),
+    arr.length ? h('div', { class: 'dv' }, h('span', { class: 'h', text: '項目' }), h('span', { class: 'h mid', text: '差' }), h('span', { class: 'h', style: { textAlign: 'right' }, text: `${lab(A)} ／ ${lab(Bp)}` }),
+      arr.map(x => [
+        h('span', { class: 'lab', title: x.M ? `${x.L} › ${x.M}` : x.L }, h('i', { class: 'dot', style: { background: colorL(x.L), marginRight: '6px', verticalAlign: '-1px' } }), x.M || x.L, x.M ? h('small', { text: ' ' + x.L }) : null),
+        h('span', { class: 'track' }, h('span', { class: 'axis' }), h('i', { class: x.d > 0 ? 'pos' : 'neg', style: { width: (Math.abs(x.d) / mx * 50) + '%' } })),
+        h('span', { class: 'val' }, h('b', { class: x.d > 0 ? 'up' : 'down', text: signed(x.d) }), h('small', { text: `${yen(x.a)} ／ ${yen(x.b)}` })),
+      ])) : h('p', { class: 'note', text: 'なし' }));
+  v.appendChild(h('div', { class: 'grid', style: { marginTop: '16px' } }, block('増えたもの', ups), block('減ったもの', downs)));
+}
+
+/* ----- detail */
+function viewDetail(v) {
+  const ui = S.ui, p = S.period;
+  const grid = h('div', { class: 'grid' }); v.appendChild(grid);
+  // merchants
+  const rng = ui.merchRange; const ps = windowP(p, rng);
+  const agg = new Map();
+  for (const r of S.m.tx) if (ps.includes(r.p) && isExp(r.k)) { const a = agg.get(r.mk) || { n: 0, v: 0, cats: new Map() }; a.n++; a.v += r.v; a.cats.set(r.L + ' › ' + r.M, (a.cats.get(r.L + ' › ' + r.M) || 0) + 1); agg.set(r.mk, a); }
+  const top = [...agg.entries()].sort((a, b) => b[1].v - a[1].v).slice(0, 15);
+  const mxv = Math.max(1, ...top.map(x => x[1].v));
+  grid.appendChild(h('section', { class: 'panel c6' },
+    h('div', { class: 'panel-h' }, h('h2', { text: 'お店・サービス別' }), seg([[1, '今月'], [3, '3か月'], [12, '12か月']], rng, x => { ui.merchRange = x; saveUI(); render(); }, '期間')),
+    top.length ? h('div', null, top.map(([k, a], i) => h('div', { class: 'rk', style: { cursor: 'pointer' }, onclick: () => { ui.q = k === 'Amazon' ? '' : k; ui.fL = ''; S.fDay = null; render(); requestAnimationFrame(() => { const t = $('#txlist'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); } },
+      h('span', { class: 'n', text: i + 1 }), h('span', { class: 'nm', text: k }), h('span', { class: 'v', text: yen(a.v) }),
+      h('span', { class: 'meta' }, h('span', { text: `${a.n}回` }), h('span', { class: 'bar' }, h('i', { style: { width: (a.v / mxv * 100) + '%' } })), h('span', { text: [...a.cats.entries()].sort((x, y) => y[1] - x[1])[0][0] })))))
+      : h('p', { class: 'note', text: 'この期間の支出はありません。' })));
+  // recurring
+  grid.appendChild(recurringPanel(p));
+  // calendar
+  grid.appendChild(calendarPanel(p));
+  // tx list
+  grid.appendChild(txPanel(p));
+}
+function recurringPanel(p) {
+  const ps = windowP(p, 6);
+  const panel = h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: '定期的な支払い' }), h('span', { class: 'hint', text: '直近6か月から自動で検出' })));
+  if (ps.length < 2) { panel.appendChild(h('p', { class: 'note', text: '2か月分以上のデータがあると、毎月ほぼ同じ金額で出ている支払い（サブスクなど）をここに並べます。' })); return panel; }
+  const by = new Map();
+  for (const r of S.m.tx) if (ps.includes(r.p) && isExp(r.k) && r.v > 0 && r.mk !== 'Amazon') {
+    const x = by.get(r.mk) || { per: new Map(), L: r.L, M: r.M, last: r.d }; x.per.set(r.p, (x.per.get(r.p) || []).concat(r.v)); if (r.d > x.last) x.last = r.d; by.set(r.mk, x);
+  }
+  const need = Math.min(3, ps.length);
+  const out = [];
+  for (const [k, x] of by) {
+    if (x.per.size < need) continue;
+    const counts = [...x.per.values()].map(a => a.length); if (Math.max(...counts) > 2) continue;
+    const totals = [...x.per.values()].map(sum); const md2 = median(totals);
+    if (md2 < 100 || sd(totals) / md2 > 0.25) continue;
+    const ordered = ps.filter(q => x.per.has(q)).map(q => sum(x.per.get(q)));
+    const last = ordered[ordered.length - 1], before = ordered[ordered.length - 2];
+    out.push({ k, md: md2, n: x.per.size, L: x.L, M: x.M, last: x.last, changed: before && Math.abs(last - before) / before > 0.03 ? last - before : 0 });
+  }
+  out.sort((a, b) => b.md - a.md);
+  if (!out.length) { panel.appendChild(h('p', { class: 'note', text: '毎月決まった額の支払いは見つかりませんでした。' })); return panel; }
+  panel.appendChild(h('div', { class: 'kv' }, h('span', { class: 'sub', text: `${out.length}件・月あたり合計` }), h('b', { class: 'num', text: yen(sum(out.map(x => x.md))) })));
+  panel.appendChild(h('div', null, out.slice(0, 14).map((x, i) => h('div', { class: 'rk' }, h('span', { class: 'n', text: i + 1 }), h('span', { class: 'nm', text: x.k }), h('span', { class: 'v', text: yen(x.md) }),
+    h('span', { class: 'meta' }, h('span', { text: `${x.L} › ${x.M}` }), h('span', { text: `${ps.length}か月中${x.n}回` }), x.changed ? h('span', { class: 'pill warn', text: `${x.changed > 0 ? '値上がり' : '値下がり'} ${signed(x.changed)}` }) : null)))));
+  return panel;
+}
+function calendarPanel(p) {
+  const [st] = pRange(p); const len = pDays(p); const ao = asOf(p);
+  const daily = new Array(len).fill(0);
+  for (const r of S.m.tx) if (r.p === p && (r.k === 'var' || r.k === 'special')) { const i = dayIdx(r.d, p); if (i >= 0 && i < len) daily[i] += r.v; }
+  const mx = Math.max(1, ...daily);
+  const cal = h('div', { class: 'cal' }, ['月', '火', '水', '木', '金', '土', '日'].map(w => h('span', { class: 'wd', text: w })));
+  const lead = (st.getDay() + 6) % 7; for (let i = 0; i < lead; i++) cal.appendChild(h('span', { class: 'day out' }));
+  for (let i = 0; i < len; i++) {
+    const dt = new Date(st.getTime() + i * DAY); const ds = ymd(dt); const x = daily[i]; const fut = ao !== null && i >= ao;
+    const t = x > 0 ? Math.sqrt(x / mx) : 0;
+    const c = h('button', { type: 'button', class: 'day' + (S.fDay === ds ? ' sel' : '') + (fut ? ' future' : ''), disabled: fut, 'aria-label': `${md(dt)} ${yen(x)}`, style: { background: x > 0 ? `color-mix(in oklab, var(--seq) ${Math.round(10 + t * 72)}%, var(--surface-2))` : '', color: t > 0.62 ? '#fff' : '' } },
+      h('span', { class: 'dn', text: dt.getDate() }), h('span', { class: 'dv', text: x > 0 ? man(x) : '' }));
+    c.addEventListener('click', () => { S.fDay = S.fDay === ds ? null : ds; S.ui.fL = ''; S.ui.q = ''; render(); requestAnimationFrame(() => { const tl = $('#txlist'); if (tl && S.fDay) tl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); });
+    c.addEventListener('pointermove', ev => tip.show(ev.clientX, ev.clientY, `${md(dt)}（${WD[dt.getDay()]}）`, [{ label: '変動費＋特別な支出', value: yen(x) }]));
+    c.addEventListener('pointerleave', () => tip.hide());
+    cal.appendChild(c);
+  }
+  // 曜日別の平均（直近3か月）
+  const ps = windowP(p, 3); const wd = Array.from({ length: 7 }, () => ({ v: 0, days: 0 }));
+  for (const q of ps) { const [s0] = pRange(q); const n = asOf(q) ?? pDays(q); for (let i = 0; i < n; i++) wd[new Date(s0.getTime() + i * DAY).getDay()].days++; }
+  for (const r of S.m.tx) if (ps.includes(r.p) && (r.k === 'var' || r.k === 'special')) wd[dateOf(r.d).getDay()].v += r.v;
+  const order = [1, 2, 3, 4, 5, 6, 0]; const avgs = order.map(i => wd[i].days ? wd[i].v / wd[i].days : 0); const amx = Math.max(1, ...avgs);
+  return h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: '日ごとの支出' }), h('span', { class: 'hint', text: '固定費を除く・日付をタップで明細' })), cal,
+    h('div', { class: 'panel-h', style: { marginTop: '16px', marginBottom: 0 } }, h('h2', { style: { fontSize: '13px' }, text: '曜日ごとの1日平均' }), h('span', { class: 'hint', text: `直近${ps.length}か月` })),
+    h('div', { class: 'wdbars' }, order.map((i, k) => h('div', { title: `${WD[i]}曜 ${yen(avgs[k])}` }, h('span', { class: 'num', text: man(avgs[k]) }), h('i', { style: { height: Math.max(2, avgs[k] / amx * 44) + 'px' } }), h('span', { text: WD[i] })))));
+}
+function txPanel(p) {
+  const ui = S.ui;
+  const panel = h('section', { class: 'panel c6', id: 'txlist' });
+  const q = (ui.q || '').trim().toLowerCase();
+  const rows = S.m.tx.filter(r => (S.fDay ? r.d === S.fDay : r.p === p) && (ui.showSkipped || r.k !== 'skip') && (!ui.fL || r.L === ui.fL) &&
+    (!q || (r.c + ' ' + r.mk + ' ' + r.M + ' ' + r.memo + ' ' + r.inst).toLowerCase().includes(q)));
+  const total = sum(rows.filter(r => isExp(r.k)).map(r => r.v));
+  const Ls = [...S.m.tree.keys()].sort((a, b) => (S.m.rankL.indexOf(a) + 1 || 99) - (S.m.rankL.indexOf(b) + 1 || 99));
+  const search = h('input', { class: 'inp', type: 'search', id: 'tx-q', placeholder: 'お店・メモ・中項目で検索', value: ui.q || '', style: { flex: '1 1 160px' } });
+  search.addEventListener('input', debounce(e => { ui.q = e.target.value; render(); requestAnimationFrame(() => { const s = $('#tx-q'); if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } }); }, 250));
+  panel.append(
+    h('div', { class: 'panel-h' }, h('h2', { text: S.fDay ? `${+S.fDay.slice(5, 7)}/${+S.fDay.slice(8)}の明細` : `${pLabel(p)}の明細` }), h('span', { class: 'hint num', text: `${rows.length}件・支出 ${yen(total)}` })),
+    h('div', { class: 'filters', style: { marginBottom: '8px' } }, search,
+      h('select', { class: 'sel', id: 'tx-l', 'aria-label': '大項目で絞り込む', onchange: e => { ui.fL = e.target.value; render(); } }, h('option', { value: '', text: 'すべての大項目' }), Ls.map(L => { const o = h('option', { value: L, text: L }); if (L === ui.fL) o.selected = true; return o; })),
+      h('label', { class: 'check' }, h('input', { type: 'checkbox', id: 'tx-skip', checked: ui.showSkipped, onchange: e => { ui.showSkipped = e.target.checked; saveUI(); render(); } }), '振替・計算対象外も表示'),
+      (S.fDay || ui.fL || ui.q) ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => { S.fDay = null; ui.fL = ''; ui.q = ''; render(); } }, '絞り込みを解除') : null));
+  const list = h('div');
+  for (const r of rows.slice(0, ui.txLimit)) {
+    const tag = r.k === 'skip' ? (r.f ? '振替' : '計算対象外') : r.k === 'ex' ? '除外中' : r.k === 'fixed' ? '固定' : null;
+    list.appendChild(h('div', { class: 'tx' + (r.k === 'skip' ? ' skip' : '') },
+      h('span', { class: 'd', text: `${+r.d.slice(5, 7)}/${+r.d.slice(8)}` }),
+      h('span', { class: 'c' }, h('span', { class: 't', text: r.c, title: r.c }), h('span', { class: 'm' }, h('i', { class: 'dot', style: { background: colorL(r.L), width: '8px', height: '8px' } }), `${r.L} › ${r.M}`, h('span', { text: '・' + r.inst }), tag ? h('span', { class: 'pill' + (r.k === 'ex' ? ' ex' : ''), text: tag }) : null, r.memo ? h('span', { text: '📝 ' + r.memo }) : null)),
+      h('span', { class: 'a' + (r.a > 0 ? ' inc' : ''), text: (r.a > 0 ? '+' : '') + yen(Math.abs(r.a)) })));
+  }
+  if (!rows.length) list.appendChild(h('p', { class: 'note', text: '条件に合う明細はありません。' }));
+  if (rows.length > ui.txLimit) list.appendChild(h('button', { class: 'btn small', type: 'button', style: { marginTop: '10px' }, onclick: () => { ui.txLimit += 300; render(); } }, `残り${rows.length - ui.txLimit}件を表示`));
+  panel.appendChild(list);
+  return panel;
+}
+
+/* ----- settings */
+function viewSettings(v) {
+  const st = S.settings;
+  const grid = h('div', { class: 'grid' }); v.appendChild(grid);
+  // data
+  const months = Object.keys(S.months).sort().reverse();
+  const dataPanel = h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: 'データ' }), h('span', { class: 'hint', text: S.backend ? S.backend.label : '' })), dropZone());
+  if (months.length) {
+    dataPanel.appendChild(h('div', { class: 'panel-h', style: { marginTop: '16px' } }, h('h2', { style: { fontSize: '13.5px' }, text: `読み込み済み ${months.length}か月・${sum(months.map(m => S.months[m].length))}件` })));
+    const ml = h('div', { class: 'mlist' });
+    for (const m of months) {
+      const rows = S.months[m]; const ds = rows.map(r => r.d).sort();
+      const del = h('button', { class: 'btn small ghost', type: 'button' }, '削除');
+      del.addEventListener('click', async () => {
+        if (del.dataset.armed !== '1') { del.dataset.armed = '1'; del.textContent = '本当に削除'; del.className = 'btn small danger'; setTimeout(() => { if (del.isConnected) { del.dataset.armed = ''; del.textContent = '削除'; del.className = 'btn small ghost'; } }, 4000); return; }
+        delete S.months[m]; onData(); try { await S.backend.saveMonths([m]); toast(`${+m.slice(0, 4)}年${+m.slice(5)}月の明細を削除しました`); } catch { /* shown */ }
+      });
+      ml.appendChild(h('div', { class: 'mi' }, h('span', { class: 'grow' }, h('b', { text: `${+m.slice(0, 4)}年${+m.slice(5)}月` }), h('span', { class: 'muted num', text: `  ${rows.length}件・${ds[0].slice(5).replace('-', '/')}〜${ds[ds.length - 1].slice(5).replace('-', '/')}` })), del));
+    }
+    dataPanel.appendChild(ml);
+    dataPanel.appendChild(h('div', { class: 'row', style: { marginTop: '12px' } },
+      h('button', { class: 'btn', type: 'button', onclick: exportBackup }, 'バックアップを保存（JSON）'),
+      h('span', { class: 'note', text: 'JSONを「CSVを読み込む」から選ぶと復元できます。' })));
+  }
+  grid.appendChild(dataPanel);
+
+  // general
+  const gen = h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: '集計のルール' })));
+  const sd2 = h('select', { class: 'sel', id: 'start-day', onchange: async e => { st.startDay = +e.target.value; onData(); await S.backend.saveSettings().catch(() => {}); } },
+    Array.from({ length: 28 }, (_, i) => { const o = h('option', { value: i + 1, text: `${i + 1}日` }); if (i + 1 === (st.startDay || 1)) o.selected = true; return o; }));
+  gen.append(
+    h('div', { class: 'kv' }, h('label', { for: 'start-day', text: '月の開始日' }), sd2),
+    h('p', { class: 'note', text: (st.startDay || 1) > 1 ? `${st.startDay}日始まり: たとえば「10月度」は 9/${st.startDay}〜10/${st.startDay - 1} です。マネーフォワードの設定と合わせてください。` : '給料日に合わせたい場合は変更してください（例: 25日 → 10月度 = 9/25〜10/24）。' }),
+    h('p', { class: 'note', text: '「振替」「計算対象外」の明細は集計に入れません。Amazonや楽天の購入明細とカード明細の二重計上も、マネーフォワード側の振替設定がそのまま使われます。返金（プラスの金額）は同じ項目の支出から差し引きます。' }));
+  grid.appendChild(gen);
+
+  // categories
+  const cats = h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: '中項目の扱い' }), h('span', { class: 'hint', text: '固定費・変動費の分け方と、集計から外す項目' })));
+  const tree = S.m ? S.m.tree : new Map();
+  const exL = new Set(S.m ? S.m.tx.filter(r => r.k === 'ex').map(r => r.L) : []);
+  const Ls = [...tree.keys()].filter(L => !NOT_EXPENSE_L.has(L) && (S.m.rankL.includes(L) || exL.has(L))).sort((a, b) => (S.m.rankL.indexOf(a) + 1 || 99) - (S.m.rankL.indexOf(b) + 1 || 99));
+  if (!Ls.length) cats.appendChild(h('p', { class: 'note', text: 'CSVを読み込むと、ここに項目が並びます。' }));
+  for (const L of Ls) {
+    const g = h('div', { class: 'catgrp' }, h('h3', null, h('i', { class: 'dot', style: { background: colorL(L) } }), L));
+    for (const M of [...tree.get(L)].sort()) {
+      const key = L + '/' + M; const cur = catMode(L, M);
+      g.appendChild(h('div', { class: 'catrow' }, h('span', { text: M }), seg([['fixed', '固定'], ['var', L === SPECIAL_L ? '特別' : '変動'], ['ex', '除外']], cur, async x => { st.cat[key] = x; onData(); await S.backend.saveSettings().catch(() => {}); }, M + 'の扱い')));
+    }
+    cats.appendChild(g);
+  }
+  grid.appendChild(cats);
+
+  // budgets
+  const bud = h('section', { class: 'panel c6' }, h('div', { class: 'panel-h' }, h('h2', { text: '月の予算' }), h('span', { class: 'hint', text: '大項目ごと・空欄なら予算なし' })));
+  const bg = h('div', { class: 'budget' });
+  const saveB = debounce(async () => { await S.backend.saveSettings().catch(() => {}); buildModel(); }, 700);
+  const hist = S.m && S.period ? windowP(S.period, 6) : [];
+  for (const L of (S.m ? S.m.rankL : [])) {
+    const id = 'bud-' + hash(L);
+    const inp = h('input', { class: 'inp num', id, type: 'number', inputmode: 'numeric', min: 0, step: 1000, value: st.budgets[L] || '', placeholder: hist.length ? `目安 ${(Math.round(mean(hist.map(q => vL(q, L))) / 1000) * 1000).toLocaleString('ja-JP')}` : '' });
+    inp.addEventListener('input', e => { const n = Math.max(0, Math.round(+e.target.value || 0)); if (n) st.budgets[L] = n; else delete st.budgets[L]; saveB(); });
+    bg.append(h('label', { for: id, style: { display: 'flex', alignItems: 'center', gap: '8px' } }, h('i', { class: 'dot', style: { background: colorL(L) } }), L), inp);
+  }
+  if (!S.m || !S.m.rankL.length) bg.appendChild(h('p', { class: 'note', text: 'CSVを読み込むと設定できます。' }));
+  bud.appendChild(bg);
+  grid.appendChild(bud);
+
+  // danger
+  if (months.length) {
+    const wipe = h('button', { class: 'btn danger', type: 'button' }, 'すべての明細を削除');
+    wipe.addEventListener('click', async () => {
+      if (wipe.dataset.armed !== '1') { wipe.dataset.armed = '1'; wipe.textContent = 'もう一度押すと削除します'; setTimeout(() => { if (wipe.isConnected) { wipe.dataset.armed = ''; wipe.textContent = 'すべての明細を削除'; } }, 4000); return; }
+      const ks = Object.keys(S.months); S.months = {}; onData(); try { await S.backend.saveMonths(ks); toast('すべての明細を削除しました'); } catch { /* shown */ }
+    });
+    grid.appendChild(h('section', { class: 'panel c12' }, h('div', { class: 'panel-h' }, h('h2', { text: 'データの削除' }), wipe), h('p', { class: 'note', text: '設定（予算・中項目の扱い）は残ります。' })));
+  }
+}
+
+/* --------------------------------------------------------------- boot */
+function boot() {
+  tip.el = $('#tip');
+  const hv = (location.hash || '').slice(1);
+  const saved = lsGet(UI_KEY);
+  S.view = VIEWS.some(x => x[0] === hv) ? hv : (saved && saved.view) || 'overview';
+  $('#btn-import').addEventListener('click', () => $('#file').click());
+  $('#file').addEventListener('change', e => { const fs = [...e.target.files]; e.target.value = ''; if (fs.length) importFiles(fs); });
+  let depth = 0; const veil = $('#dropveil');
+  addEventListener('dragenter', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { depth++; veil.hidden = false; e.preventDefault(); } });
+  addEventListener('dragover', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) e.preventDefault(); });
+  addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) veil.hidden = true; });
+  addEventListener('drop', e => { e.preventDefault(); depth = 0; veil.hidden = true; const fs = [...(e.dataTransfer?.files || [])]; if (fs.length) importFiles(fs); });
+  addEventListener('scroll', () => tip.hide(), { passive: true });
+  document.addEventListener('pointerdown', e => { if (!e.target.closest('svg, .cal')) tip.hide(); });
+  let lastW = innerWidth;
+  addEventListener('resize', () => { if (Math.abs(innerWidth - lastW) > 30) { lastW = innerWidth; rerender(); } });
+  buildModel(); render();
+  initStorage();
+}
+boot();
+</script>

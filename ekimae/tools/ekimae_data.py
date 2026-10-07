@@ -209,6 +209,13 @@ def validate(data: dict, warns: list[str] | None = None) -> list[str]:
             errs.append(f"{where}: rating が範囲外 ({r!r})")
         if r is not None and not s.get("ratingCheckedAt"):
             errs.append(f"{where}: rating があるのに ratingCheckedAt が無い")
+        # 食べログの点は Google の星と尺度が違う（3.5で高評価）ので別の項目に持つ
+        tr = s.get("tabelogRating")
+        if tr is not None:
+            if not isinstance(tr, (int, float)) or not (0 <= tr <= 5):
+                errs.append(f"{where}: tabelogRating が範囲外 ({tr!r})")
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", s.get("tabelogCheckedAt") or ""):
+                errs.append(f"{where}: tabelogRating があるのに tabelogCheckedAt が日付でない")
         # ネットで調べた営業時間などは、星と同じく「いつ・どこで見たか」が無いと信用できない
         if s.get("infoSource"):
             if s["infoSource"] not in INFO_SOURCES:

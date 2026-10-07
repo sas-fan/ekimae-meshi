@@ -37,6 +37,9 @@ localStorage に差分として載り、`id` をキーに上書きマージさ�
 | `ratingCount` | | number\|null | レビュー件数 |
 | `ratingSource` | | string | `google` / `tabelog` など |
 | `ratingCheckedAt` | | date | 星を確認した日。**古い星を信用しないための必須情報** |
+| `tabelogRating` | | number\|null | 食べログの点（0〜5）。**Google の星と尺度が違う**（食べログは3.5で高評価）ので `rating` とは混ぜない |
+| `tabelogCheckedAt` | | date | 食べログの点を確認した日。`tabelogRating` があるときは必須 |
+| `tabelogUrl` | | string | 確認したページ（ビルごとの店舗一覧など） |
 | `source` | ● | string | 出どころ。`official:ekimae2` / `websearch` / `manual` / `onsite` |
 | `verified` | ● | boolean | 現地または公式フロア案内で裏が取れているか |
 | `infoSource` | | string | 営業時間・予算・タグなど**店の中身**の出どころ。`websearch` / `official` / `onsite` / `manual`（下記） |

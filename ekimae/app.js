@@ -70,6 +70,8 @@ const MISC_FILTERS = [
   { id: 'crowd', label: '仲間の記録あり' },
   { id: 'r35', label: '星3.5+' },
   { id: 'r40', label: '星4.0+' },
+  // 食べログは尺度が違う（3.5で高評価）。Google の星とは別の条件にする
+  { id: 'tb35', label: '食べログ3.5+' },
   { id: 'unverified', label: '未確認' },
 ];
 
@@ -765,6 +767,7 @@ function normalizeStore(s) {
     tags: tags,
     closedDays: Array.isArray(s.closedDays) ? s.closedDays : [],
     rating: typeof s.rating === 'number' ? s.rating : null,
+    tabelogRating: typeof s.tabelogRating === 'number' ? s.tabelogRating : null,
     aliases: aliases,
     verified: s.verified === true,
     source: s.source || 'manual',
@@ -881,6 +884,7 @@ function matches(s) {
     if (m === 'crowd' && !crowd(s.id).some((c) => !c.me)) return false;
     if (m === 'r35' && !(s.rating >= 3.5)) return false;
     if (m === 'r40' && !(s.rating >= 4.0)) return false;
+    if (m === 'tb35' && !(s.tabelogRating >= 3.5)) return false;
     if (m === 'unverified' && s.verified) return false;
   }
 
@@ -922,6 +926,8 @@ function sorted(list) {
       || a.name.localeCompare(b.name, 'ja'));
   } else if (ui.sort === 'rating') {
     arr.sort((a, b) => (b.rating || 0) - (a.rating || 0) || a.name.localeCompare(b.name, 'ja'));
+  } else if (ui.sort === 'tabelog') {
+    arr.sort((a, b) => (b.tabelogRating || 0) - (a.tabelogRating || 0) || a.name.localeCompare(b.name, 'ja'));
   } else if (ui.sort === 'name') {
     arr.sort((a, b) => (a.kana || a.name).localeCompare(b.kana || b.name, 'ja'));
   } else if (ui.sort === 'recent') {
@@ -1110,6 +1116,7 @@ function renderChips() {
     if (id === 'crowd') return crowd(s.id).some((c) => !c.me);
     if (id === 'r35') return s.rating >= 3.5;
     if (id === 'r40') return s.rating >= 4.0;
+    if (id === 'tb35') return s.tabelogRating >= 3.5;
     if (id === 'unverified') return !s.verified;
     return false;
   }).length;
@@ -1175,6 +1182,7 @@ function storeCard(s) {
     s.category ? el('span', { text: s.category }) : null,
     s.budget ? el('span', { text: '¥' + s.budget }) : null,
     s.rating ? el('span', { class: 'stars', text: starsText(s.rating) }) : null,
+    s.tabelogRating ? el('span', { class: 'stars', text: '食べログ' + s.tabelogRating.toFixed(2) }) : null,
     open === null ? null : el('span', { class: open ? 'open-now' : 'open-closed', text: open ? '営業中' : '時間外' }),
   ].filter(Boolean);
 
@@ -1637,6 +1645,11 @@ function render() {
   if (opt) opt.hidden = !hasRating;
   if (!hasRating && ui.sort === 'rating') { ui.sort = 'default'; $('#sort').value = 'default'; saveUI(); }
 
+  const hasTabelog = stores.some((s) => s.tabelogRating != null);
+  const optT = $('#sort').querySelector('option[value="tabelog"]');
+  if (optT) optT.hidden = !hasTabelog;
+  if (!hasTabelog && ui.sort === 'tabelog') { ui.sort = 'default'; $('#sort').value = 'default'; saveUI(); }
+
   // みんなの星も、誰かが付けるまでは出さない
   const hasMates = stores.some((s) => crowdRating(s.id) != null);
   const optM = $('#sort').querySelector('option[value="mates"]');
@@ -1880,6 +1893,7 @@ function openDetail(id) {
       ? starsText(s.rating) + (s.ratingCount ? '（' + s.ratingCount + '件' : '（')
         + (s.ratingSource || 'google') + (s.ratingCheckedAt ? ' / ' + s.ratingCheckedAt + '時点' : '') + '）'
       : '未記録'),
+    s.tabelogRating ? tabelogRow(s) : null,
     s.tags.length ? row('タグ', s.tags.join('・')) : null,
     s.phone ? linkRow('電話', s.phone, 'tel:' + s.phone.replace(/[^\d+]/g, '')) : null,
     s.url ? linkRow('サイト', siteLabel(s.url), s.url) : null,
@@ -1956,6 +1970,19 @@ function openDetail(id) {
       el('dd', {}, [ok
         ? el('a', { href: href, target: href.startsWith('tel:') ? null : '_blank', rel: 'noopener', text: text })
         : text]),
+    ]);
+  }
+
+  // 食べログの点は Google の星と尺度が違うので、別の行に出典と確認日つきで出す
+  function tabelogRow(st) {
+    const ok = /^https?:/i.test(st.tabelogUrl || '');
+    return el('div', { class: 'detail-row' }, [
+      el('dt', { text: '食べログ' }),
+      el('dd', {}, [
+        st.tabelogRating.toFixed(2) + (st.tabelogCheckedAt ? '（' + st.tabelogCheckedAt + '時点）' : ''),
+        ok ? ' ' : null,
+        ok ? el('a', { class: 'src', href: st.tabelogUrl, target: '_blank', rel: 'noopener', text: '出典' }) : null,
+      ]),
     ]);
   }
 

@@ -121,6 +121,23 @@ python3 tools/validate_stores.py
 `python3 tools/research_queue.py stat` で内訳が見られる。「要確認」「一部」はメモに理由を書いてあるので、現地で確かめるときの手がかりにする。
 検索ツールには1セッションあたりの回数上限（既定200回）があるので、調べ直すときは数十店ずつにする。
 
+### 食べログの点
+
+食べログの点も同じやり方で1店ずつ調べている（`tools/tabelog_queue.py`、結果は `in/ratings_tabelog.csv`）。
+食べログは Google の星と尺度が違う（3.5で高評価）ので、`rating` ではなく `tabelogRating` に入る。
+
+```sh
+python3 tools/tabelog_queue.py stat 居酒屋 立ち飲み    # 進み具合（業種でしぼれる）
+python3 tools/tabelog_queue.py next 8 居酒屋 立ち飲み  # 次に調べる8店
+python3 tools/tabelog_queue.py add < 結果.json
+python3 tools/tabelog_queue.py apply                  # 「採用」の行だけ stores.json に入る
+```
+
+**進み具合（2026-10-08時点）**: 第1〜第4ビルの居酒屋・立ち飲み148店はすべて調査済み
+（採用112・要確認10・見送り26）。ほかの業種は以前に調べた41店だけ。
+食べログのサイトはこの環境から直接開けないため、検索結果に出た点を使っている。
+ページによって点が違うときは口コミ件数がいちばん多い（＝新しい）ものを採り、差が大きいときは「要確認」にした。
+
 ### 未確認データの扱い
 
 駅前ビルは入れ替わりが激しいので、行ごとに「誰が確認したか」を持たせている

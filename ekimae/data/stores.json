@@ -76,9 +76,9 @@
       "infoNote": "平日の時間。土11:30-23:00/日祝11:30-22:00。検索要約により昼夜分割(11:30-15:00,17:00-24:00)とする版もあり要確認",
       "officialName": "屯食 喜酔",
       "nameNote": "公式フロア案内の「屯食」は誤字。店の表記は「屯舎」",
-      "tabelogRating": 3.42,
-      "tabelogCheckedAt": "2026-10-07",
-      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/"
+      "tabelogRating": 3.09,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/izakaya/"
     },
     {
       "id": "b1-B2-7e4801",
@@ -116,7 +116,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.1bld.com/shopguide/gourmet/10021/index.html",
-      "infoNote": "土16:00-22:00。カウンター14席＋テーブル"
+      "infoNote": "土16:00-22:00。カウンター14席＋テーブル",
+      "tabelogRating": 3.38,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27002013/"
     },
     {
       "id": "b1-B2-623ff3",
@@ -150,7 +153,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001131502/",
-      "infoNote": "要約の表記が「月～金 日13:30～23:30／定休日 土」と崩れていたので要確認"
+      "infoNote": "要約の表記が「月～金 日13:30～23:30／定休日 土」と崩れていたので要確認",
+      "tabelogRating": 3.05,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/izakaya/"
     },
     {
       "id": "b1-B2-fbafdf",
@@ -223,7 +229,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001285927/",
-      "infoNote": "土は不定期営業、不定休あり"
+      "infoNote": "土は不定期営業、不定休あり",
+      "tabelogRating": 3.22,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27127187/"
     },
     {
       "id": "b1-B2-7199de",
@@ -279,7 +288,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://taisyusakaba-sanma.com/store-building/",
-      "infoNote": "2026-07-29開店・11時開店・100席。閉店時刻と定休日は見つからず"
+      "infoNote": "2026-07-29開店・11時開店・100席。閉店時刻と定休日は見つからず",
+      "tabelogRating": 3.24,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27157831/"
     },
     {
       "id": "b1-B2-b3b475",
@@ -448,7 +460,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://butano-kuchi.net/",
-      "infoNote": "公式は「昼から飲める豚酒場」。営業時間・定休日は見つからず"
+      "infoNote": "公式は「昼から飲める豚酒場」。営業時間・定休日は見つからず",
+      "tabelogRating": 3.02,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27156801/"
     },
     {
       "id": "b1-B2-448c7d",
@@ -473,7 +488,10 @@
       "ratingCheckedAt": "",
       "source": "official:1bld",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-20",
+      "tabelogRating": 3.39,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27091746/"
     },
     {
       "id": "b1-B2-971d4b",
@@ -506,7 +524,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003498622/",
-      "infoNote": "毎日11時開店（閉店時刻は見つからず）。休みは12/31〜1/3のみ。ひもの定食あり。お通し220円"
+      "infoNote": "毎日11時開店（閉店時刻は見つからず）。休みは12/31〜1/3のみ。ひもの定食あり。お通し220円",
+      "tabelogRating": 3.41,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/izakaya/"
     },
     {
       "id": "b1-B2-771cc0",
@@ -541,7 +562,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100001221353/",
-      "infoNote": "開店は12:30と13:30で情報源に差。asayama.info はB1と表記（うちのデータはB2-28）。立ち28人・沖縄料理"
+      "infoNote": "開店は12:30と13:30で情報源に差。asayama.info はB1と表記（うちのデータはB2-28）。立ち28人・沖縄料理",
+      "tabelogRating": 3.32,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27086754/"
     },
     {
       "id": "b1-B2-cbb2dc",
@@ -612,7 +636,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://ke8n511.gorp.jp/",
-      "infoNote": "「呑処 大阪梅田ブラウン」(B2-32)の姉妹店。営業時間・定休日は見つからず"
+      "infoNote": "「呑処 大阪梅田ブラウン」(B2-32)の姉妹店。営業時間・定休日は見つからず",
+      "tabelogRating": 3.17,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-71a900",
@@ -685,7 +712,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003763785/",
-      "infoNote": "焼肉「鬼に金棒」系列。営業時間・定休日は見つからず"
+      "infoNote": "焼肉「鬼に金棒」系列。営業時間・定休日は見つからず",
+      "tabelogRating": 3.41,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27141056/"
     },
     {
       "id": "b1-B2-8182c4",
@@ -720,7 +750,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100000057164/",
-      "infoNote": "営業時間・定休日は見つからず。しめ鯖＋酎ハイで720円ほど、ランチ700円ほどという口コミ"
+      "infoNote": "営業時間・定休日は見つからず。しめ鯖＋酎ハイで720円ほど、ランチ700円ほどという口コミ",
+      "tabelogRating": 3.3,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-564412",
@@ -804,7 +837,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.1bld.com/shopguide/gourmet/10191/index.html",
-      "infoNote": "定休日なし。禁煙は英語版グルメサイトの表記なので要確認。おばんざい・焼魚"
+      "infoNote": "定休日なし。禁煙は英語版グルメサイトの表記なので要確認。おばんざい・焼魚",
+      "tabelogRating": 3.04,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/izakaya/"
     },
     {
       "id": "b1-B2-d1ffb4",
@@ -902,7 +938,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100001586861/",
-      "infoNote": "平日の時間。土14:00-21:00。水曜も休みとする情報源あり（要確認）。造り3種盛り500円"
+      "infoNote": "平日の時間。土14:00-21:00。水曜も休みとする情報源あり（要確認）。造り3種盛り500円",
+      "tabelogRating": 3.61,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-8ef2d0",
@@ -996,7 +1035,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27132917/",
-      "infoNote": "月・水〜金の時間。土16:00-21:00、祝16:00-22:00。昼はうどん屋（つるつる庵、同じB2-44）で17時から立ち飲みになる"
+      "infoNote": "月・水〜金の時間。土16:00-21:00、祝16:00-22:00。昼はうどん屋（つるつる庵、同じB2-44）で17時から立ち飲みになる",
+      "tabelogRating": 3.25,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27132917/"
     },
     {
       "id": "b1-B2-918fc9",
@@ -1306,7 +1348,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://map.yahoo.co.jp/v3/place/8BmPwMgzeGo",
-      "infoNote": "平日の時間。土14:00-22:00。赤星（サッポロラガー）の聖地として有名。行列ができる"
+      "infoNote": "平日の時間。土14:00-22:00。赤星（サッポロラガー）の聖地として有名。行列ができる",
+      "tabelogRating": 3.49,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-1685d1",
@@ -1344,7 +1389,10 @@
       "infoUrl": "https://nanpuu.co.jp/store/osaka-daiichi-building/",
       "infoNote": "カウンター13席。昼はどろ焼き&おでん定食1,080円。営業時間は見つからず",
       "officialName": "お好み焼き・どろ焼き酒場 鳴風",
-      "nameNote": "公式フロア案内の「鳴風」は誤字。店の表記は「喃風」"
+      "nameNote": "公式フロア案内の「鳴風」は誤字。店の表記は「喃風」",
+      "tabelogRating": 3.04,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-fd59a9",
@@ -1377,7 +1425,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.1bld.com/shopguide/gourmet/10201/index.html",
-      "infoNote": "「月-金 16:30-22:30」の記載のみ。土日の営業と定休日は不明。中ジョッキ280円"
+      "infoNote": "「月-金 16:30-22:30」の記載のみ。土日の営業と定休日は不明。中ジョッキ280円",
+      "tabelogRating": 3.23,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27031530/"
     },
     {
       "id": "b1-B2-d562f2",
@@ -1445,7 +1496,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.1bld.com/shopguide/gourmet/10631/index.html",
-      "infoNote": "日祝は14:00-22:00。年中無休。全面喫煙可"
+      "infoNote": "日祝は14:00-22:00。年中無休。全面喫煙可",
+      "tabelogRating": 3.22,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-2afad0",
@@ -1572,7 +1626,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://asayama.info/?p=2960",
-      "infoNote": "asayama.infoで区画68と一致。確認できたのは「月曜17:00-22:30・日曜休み」だけなので営業時間は入れていない。市場の青果店がやっている立ち飲み・生しぼりサワー"
+      "infoNote": "asayama.infoで区画68と一致。確認できたのは「月曜17:00-22:30・日曜休み」だけなので営業時間は入れていない。市場の青果店がやっている立ち飲み・生しぼりサワー",
+      "tabelogRating": 3.34,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-822fa9",
@@ -1605,7 +1662,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004213005/",
-      "infoNote": "営業時間・定休日は見つからず。第2ビルにも店あり"
+      "infoNote": "営業時間・定休日は見つからず。第2ビルにも店あり",
+      "tabelogRating": 3.24,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27106887/"
     },
     {
       "id": "b1-B2-351035",
@@ -1707,7 +1767,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001268359/",
-      "infoNote": "平日・祝前日の時間。土日祝16:00-23:00。不定休。18席"
+      "infoNote": "平日・祝前日の時間。土日祝16:00-23:00。不定休。18席",
+      "tabelogRating": 3.44,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27084887/"
     },
     {
       "id": "b1-B2-bcab12",
@@ -1742,7 +1805,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100001688725/",
-      "infoNote": "定休日は「月曜」と「不定休」で情報源が割れるので入れていない。ドリンク250〜300円"
+      "infoNote": "定休日は「月曜」と「不定休」で情報源が割れるので入れていない。ドリンク250〜300円",
+      "tabelogRating": 3.38,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/RC2105/"
     },
     {
       "id": "b1-B2-f1daa8",
@@ -2010,7 +2076,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100000699975/",
-      "infoNote": "ワイン1杯250円〜。19時までハッピーアワー"
+      "infoNote": "ワイン1杯250円〜。19時までハッピーアワー",
+      "tabelogRating": 3.38,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27058984/"
     },
     {
       "id": "b1-B1-55cde7",
@@ -2043,7 +2112,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001034278/",
-      "infoNote": "営業時間は古い時短営業の情報しか出ないので入れていない。飲み放題コース3,850円〜"
+      "infoNote": "営業時間は古い時短営業の情報しか出ないので入れていない。飲み放題コース3,850円〜",
+      "tabelogRating": 3.26,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/izakaya/"
     },
     {
       "id": "b1-B1-9eb20a",
@@ -2212,7 +2284,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27139438/",
-      "infoNote": "駅前ビルの「MAHARAJA」の移転先。70席。ドリンク99円〜。営業時間・定休日は見つからず"
+      "infoNote": "駅前ビルの「MAHARAJA」の移転先。70席。ドリンク99円〜。営業時間・定休日は見つからず",
+      "tabelogRating": 3.27,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P005977/premiseLst/izakaya/"
     },
     {
       "id": "b1-B1-47a4e8",
@@ -2386,7 +2461,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://hitosara.com/0031720872/",
-      "infoNote": "月〜土の時間。日祝11:30-23:00。年中無休"
+      "infoNote": "月〜土の時間。日祝11:30-23:00。年中無休",
+      "tabelogRating": 3.25,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27145970/"
     },
     {
       "id": "b1-B1-676926",
@@ -2463,7 +2541,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.1bld.com/shopguide/gourmet/10562/index.html",
-      "infoNote": "ワンコインランチ（500〜600円）に行列。32席・カウンターなし"
+      "infoNote": "ワンコインランチ（500〜600円）に行列。32席・カウンターなし",
+      "tabelogRating": 3.36,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27042952/"
     },
     {
       "id": "b1-B1-653c51",
@@ -2501,7 +2582,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003599116/",
-      "infoNote": "平日の時間。土17:00-21:00"
+      "infoNote": "平日の時間。土17:00-21:00",
+      "tabelogRating": 3.3,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27045577/"
     },
     {
       "id": "b1-B1-cfe7a7",
@@ -2795,7 +2879,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27091411/",
-      "infoNote": "純米にごり酒専門（約50種）。4名以上は原則お断り。営業時間・定休日は見つからず"
+      "infoNote": "純米にごり酒専門（約50種）。4名以上は原則お断り。営業時間・定休日は見つからず",
+      "tabelogRating": 3.12,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27091411/"
     },
     {
       "id": "b1-B1-2313e2",
@@ -3001,7 +3088,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27134960/",
-      "infoNote": "開店は10:00とする情報もあり。分煙は加熱式たばこのみ。半分立ち飲み"
+      "infoNote": "開店は10:00とする情報もあり。分煙は加熱式たばこのみ。半分立ち飲み",
+      "tabelogRating": 3.09,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/RC2105/"
     },
     {
       "id": "b2-B2-3beb28",
@@ -3206,7 +3296,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://oitakaraage.com/shop/osakaeki.html",
-      "infoNote": "平日の時間。日祝12:00-22:30。不定休。唐揚げ定食780円"
+      "infoNote": "平日の時間。日祝12:00-22:30。不定休。唐揚げ定食780円",
+      "tabelogRating": 3.1,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27114109/"
     },
     {
       "id": "b2-B2-569338",
@@ -3272,7 +3365,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004252585/",
-      "infoNote": "平日の時間。土日祝12:00-23:00。1/1〜1/3以外無休"
+      "infoNote": "平日の時間。土日祝12:00-23:00。1/1〜1/3以外無休",
+      "tabelogRating": 3.45,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27124348/table/"
     },
     {
       "id": "b2-B2-caeb3f",
@@ -3308,7 +3404,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001237936/",
-      "infoNote": "毎日営業"
+      "infoNote": "毎日営業",
+      "tabelogRating": 3.25,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/RC2105/"
     },
     {
       "id": "b2-B2-57ced9",
@@ -3375,7 +3474,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27136715/",
-      "infoNote": "11:30開店（閉店時刻・定休日は見つからず）。ランチはチキン南蛮定食850円"
+      "infoNote": "11:30開店（閉店時刻・定休日は見つからず）。ランチはチキン南蛮定食850円",
+      "tabelogRating": 3.18,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27136715/"
     },
     {
       "id": "b2-B2-e40538",
@@ -3408,7 +3510,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://mrs.living.jp/osaka/town_gourmet/reporter/5111344",
-      "infoNote": "月〜土の時間。日祝11:00-21:00。年中無休。トンテキ定食。食券制。昼は行列"
+      "infoNote": "月〜土の時間。日祝11:00-21:00。年中無休。トンテキ定食。食券制。昼は行列",
+      "tabelogRating": 3.49,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27004722/"
     },
     {
       "id": "b2-B2-59a44f",
@@ -3439,7 +3544,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004025579/",
-      "infoNote": "所在地がB2 27-1で一致。月〜木・土の時間。金16:00-23:30、日祝15:00-22:00。定休日の記載なし"
+      "infoNote": "所在地がB2 27-1で一致。月〜木・土の時間。金16:00-23:30、日祝15:00-22:00。定休日の記載なし",
+      "tabelogRating": 3.61,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27146987/"
     },
     {
       "id": "b2-B2-50663e",
@@ -3660,7 +3768,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.westcoastbrewing.jp/location/wcb-umeda/",
-      "infoNote": "火〜金の時間。土日11:00-22:00。静岡の醸造所 West Coast Brewing の直営ビアバー。所在地B2の32号西側で一致"
+      "infoNote": "火〜金の時間。土日11:00-22:00。静岡の醸造所 West Coast Brewing の直営ビアバー。所在地B2の32号西側で一致",
+      "tabelogRating": 3.19,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/RC2105/"
     },
     {
       "id": "b2-B2-f4ac4f",
@@ -3697,7 +3808,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://y-tayoshi.co.jp/shop_ekimae2/",
-      "infoNote": "15時開店（閉店時刻は見つからず）。ワンコインセット500円"
+      "infoNote": "15時開店（閉店時刻は見つからず）。ワンコインセット500円",
+      "tabelogRating": 3.44,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27015794/"
     },
     {
       "id": "b2-B2-cf9124",
@@ -3763,7 +3877,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004201817/",
-      "infoNote": "B2の店（B1-15にも黒たぬきB1店あり）。ランチ11:30-15:00。65席。定休日の記載なし"
+      "infoNote": "B2の店（B1-15にも黒たぬきB1店あり）。ランチ11:30-15:00。65席。定休日の記載なし",
+      "tabelogRating": 3.38,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27143379/"
     },
     {
       "id": "b2-B2-b52e8a",
@@ -3855,7 +3972,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://r.gnavi.co.jp/cr6v87pe0000/",
-      "infoNote": "B2の店（B1-56にもB1応援団あり）。年中無休。喫煙目的店のため20歳未満は入店不可。125席。生ビール180円"
+      "infoNote": "B2の店（B1-56にもB1応援団あり）。年中無休。喫煙目的店のため20歳未満は入店不可。125席。生ビール180円",
+      "tabelogRating": 3.31,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27142928/dtlrvwlst/"
     },
     {
       "id": "b2-B2-2257df",
@@ -3926,7 +4046,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tachinomi-masa.com/shop.html",
-      "infoNote": "所在地B2-41で一致。平日の時間。土12:00-22:45、日祝12:00-21:00。ドリンク100円台から"
+      "infoNote": "所在地B2-41で一致。平日の時間。土12:00-22:45、日祝12:00-21:00。ドリンク100円台から",
+      "tabelogRating": 3.44,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27128400/"
     },
     {
       "id": "b2-B2-c035db",
@@ -4022,7 +4145,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://epark.jp/shopinfo/hit620320/",
-      "infoNote": "定休日なし"
+      "infoNote": "定休日なし",
+      "tabelogRating": 3.15,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27062406/"
     },
     {
       "id": "b2-B2-a0b846",
@@ -4056,7 +4182,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ000448367/",
-      "infoNote": "炉端のカウンター。昼も営業しランチあり。営業時間・定休日は見つからず"
+      "infoNote": "炉端のカウンター。昼も営業しランチあり。営業時間・定休日は見つからず",
+      "tabelogRating": 3.43,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27014731/"
     },
     {
       "id": "b2-B2-fd9d35",
@@ -4161,7 +4290,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003340262/",
-      "infoNote": "10席ほど。営業時間は見つからず"
+      "infoNote": "10席ほど。営業時間は見つからず",
+      "tabelogRating": 3.25,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27085324/"
     },
     {
       "id": "b2-B2-2251ec",
@@ -4231,7 +4363,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/en/osaka/A2701/A270101/27141735/",
-      "infoNote": "平日の時間。土14:00-22:00。アテ400円前後。2024-04-01開店"
+      "infoNote": "平日の時間。土14:00-22:00。アテ400円前後。2024-04-01開店",
+      "tabelogRating": 3.39,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/RC2105/"
     },
     {
       "id": "b2-B2-bb727d",
@@ -4266,7 +4401,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ002647361/",
-      "infoNote": "平日の時間。土日祝12:00-22:00。定休日の記載なし。飲み放題付きコース1,999円"
+      "infoNote": "平日の時間。土日祝12:00-22:00。定休日の記載なし。飲み放題付きコース1,999円",
+      "tabelogRating": 3.09,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27121897/"
     },
     {
       "id": "b2-B2-d1d621",
@@ -4412,7 +4550,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://chanko-taichiyama.com/info.aspx",
-      "infoNote": "元力士の店。紙巻きは不可・電子タバコは可。予算は3,000〜4,000円と2,000円前後で情報源が割れる。公式は「一人飲み居酒屋」"
+      "infoNote": "元力士の店。紙巻きは不可・電子タバコは可。予算は3,000〜4,000円と2,000円前後で情報源が割れる。公式は「一人飲み居酒屋」",
+      "tabelogRating": 3.1,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/izakaya/2/"
     },
     {
       "id": "b2-B2-284339",
@@ -4581,7 +4722,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003649166/",
-      "infoNote": "全席立ち飲み・焼き鳥。定休日の記載なし"
+      "infoNote": "全席立ち飲み・焼き鳥。定休日の記載なし",
+      "tabelogRating": 3.48,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/matome/27333/"
     },
     {
       "id": "b2-B2-d195f4",
@@ -5027,7 +5171,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.instagram.com/yakitoristando_99",
-      "infoNote": "2026年2月開店。営業時間などは見つからず"
+      "infoNote": "2026年2月開店。営業時間などは見つからず",
+      "tabelogRating": 3.32,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/izakaya/2/"
     },
     {
       "id": "b2-B1-907050",
@@ -5130,7 +5277,10 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae2",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-20",
+      "tabelogRating": 3.21,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27124658/"
     },
     {
       "id": "b2-B1-7d852b",
@@ -5293,7 +5443,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://terumae-official.com/shop/osakaekimaedainibiru/",
-      "infoNote": "毎日営業。蛇口から飲み放題1時間398円・生中190円。2023-09-18開店"
+      "infoNote": "毎日営業。蛇口から飲み放題1時間398円・生中190円。2023-09-18開店",
+      "tabelogRating": 3.09,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27137912/"
     },
     {
       "id": "b2-B1-f1c78e",
@@ -5432,7 +5585,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004316615/",
-      "infoNote": "所在地B1F12で一致。営業時間は2通り（平日11:00-14:00,17:00-23:00／平日16:00-23:00）あり入れていない。日本酒中心"
+      "infoNote": "所在地B1F12で一致。営業時間は2通り（平日11:00-14:00,17:00-23:00／平日16:00-23:00）あり入れていない。日本酒中心",
+      "tabelogRating": 3.35,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/izakaya/2/"
     },
     {
       "id": "b2-B1-965fa4",
@@ -5465,7 +5621,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ000985453/",
-      "infoNote": "月〜土の時間。平均3,000円"
+      "infoNote": "月〜土の時間。平均3,000円",
+      "tabelogRating": 3.41,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/izakaya/2/"
     },
     {
       "id": "b2-B1-b9519b",
@@ -5525,7 +5684,10 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae2",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-20",
+      "tabelogRating": 3.08,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27143379/"
     },
     {
       "id": "b2-B1-0ee1d2",
@@ -5663,7 +5825,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001258862/",
-      "infoNote": "月〜土の時間。日祝12:00-22:30。無休。60席。唐揚げ490円"
+      "infoNote": "月〜土の時間。日祝12:00-22:30。無休。60席。唐揚げ490円",
+      "tabelogRating": 3.44,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27119576/"
     },
     {
       "id": "b2-B1-7073b9",
@@ -5690,7 +5855,10 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae2",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-20",
+      "tabelogRating": 3.07,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27046750/"
     },
     {
       "id": "b2-B1-0415ec",
@@ -5782,7 +5950,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://hitosara.com/0031385364/",
-      "infoNote": "昼から営業。営業時間の詳細は見つからず。隣のB1-33は系列の「どんがめMAX」"
+      "infoNote": "昼から営業。営業時間の詳細は見つからず。隣のB1-33は系列の「どんがめMAX」",
+      "tabelogRating": 3.2,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27114213/"
     },
     {
       "id": "b2-B1-802430",
@@ -5817,7 +5988,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100001703574/",
-      "infoNote": "休みは年末年始のみ。開店は11:00と11:30で情報源に差。2025-06-17から全席喫煙可"
+      "infoNote": "休みは年末年始のみ。開店は11:00と11:30で情報源に差。2025-06-17から全席喫煙可",
+      "tabelogRating": 3.03,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27132799/"
     },
     {
       "id": "b2-B1-5bf614",
@@ -5994,7 +6168,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27004284/dtlrvwlst/B523513243/",
-      "infoNote": "焼き鳥が中心。営業時間・定休日は見つからず。第2ビル中央店・第3ビル店もあり"
+      "infoNote": "焼き鳥が中心。営業時間・定休日は見つからず。第2ビル中央店・第3ビル店もあり",
+      "tabelogRating": 3.18,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/izakaya/2/"
     },
     {
       "id": "b2-B1-809843",
@@ -6154,7 +6331,10 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae2",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-20",
+      "tabelogRating": 3.08,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27086973/"
     },
     {
       "id": "b2-B1-d9df78",
@@ -6241,7 +6421,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003340997/",
-      "infoNote": "月〜土"
+      "infoNote": "月〜土",
+      "tabelogRating": 3.08,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27048100/"
     },
     {
       "id": "b2-B1-98f401",
@@ -6344,7 +6527,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://r.gnavi.co.jp/6m7m9w0x0000/",
-      "infoNote": "平日の時間。土日祝12:00-23:00。休みは年末年始など。日本酒直売所。毎日18時までハッピーアワー"
+      "infoNote": "平日の時間。土日祝12:00-23:00。休みは年末年始など。日本酒直売所。毎日18時までハッピーアワー",
+      "tabelogRating": 3.38,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/RC2105/"
     },
     {
       "id": "b2-B1-c6ed92",
@@ -6378,7 +6564,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003941172/",
-      "infoNote": "平日の時間。土日祝15:30-23:00。定休日の記載なし。串100円〜・飲み放題コース3,000円〜"
+      "infoNote": "平日の時間。土日祝15:30-23:00。定休日の記載なし。串100円〜・飲み放題コース3,000円〜",
+      "tabelogRating": 3.38,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27073950/"
     },
     {
       "id": "b2-B1-097e06",
@@ -6415,7 +6604,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://hitosara.com/0031339217/",
-      "infoNote": "平日の時間。土日祝14:00-23:00。不定休。全席禁煙"
+      "infoNote": "平日の時間。土日祝14:00-23:00。不定休。全席禁煙",
+      "tabelogRating": 3.3,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P012766/premiseLst/izakaya/2/"
     },
     {
       "id": "b2-B1-61e9c5",
@@ -6450,7 +6642,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://r.gnavi.co.jp/f683snwp0000/",
-      "infoNote": "平日の時間。土日祝12:00-23:00。不定休。飲むほど安くなる「どん安」（1杯目290円→3杯目以降100円）。第3ビルにも店あり"
+      "infoNote": "平日の時間。土日祝12:00-23:00。不定休。飲むほど安くなる「どん安」（1杯目290円→3杯目以降100円）。第3ビルにも店あり",
+      "tabelogRating": 3.45,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27119653/"
     },
     {
       "id": "b2-B1-2c1334",
@@ -6481,7 +6676,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003560478/",
-      "infoNote": "月〜木の時間。金〜日・祝・祝前日13:00-23:00。不定休"
+      "infoNote": "月〜木の時間。金〜日・祝・祝前日13:00-23:00。不定休",
+      "tabelogRating": 3.04,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27136745/"
     },
     {
       "id": "b2-B1-6b7486",
@@ -6517,7 +6715,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001006281/",
-      "infoNote": "無休。全面喫煙可。海鮮が中心"
+      "infoNote": "無休。全面喫煙可。海鮮が中心",
+      "tabelogRating": 3.34,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27057595/"
     },
     {
       "id": "b2-B1-0c3c86",
@@ -6550,7 +6751,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004492545/",
-      "infoNote": "平日の時間。土12:00-23:00、日祝12:00-22:00。平日もドリンクのラストオーダーが22:30とあるので、閉店は23:00かもしれない。第3ビルの「おでんと鴨蕎麦 居酒屋じんべえ」は別店"
+      "infoNote": "平日の時間。土12:00-23:00、日祝12:00-22:00。平日もドリンクのラストオーダーが22:30とあるので、閉店は23:00かもしれない。第3ビルの「おでんと鴨蕎麦 居酒屋じんべえ」は別店",
+      "tabelogRating": 3.43,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27137373/"
     },
     {
       "id": "b3-B2-48bb0c",
@@ -6584,7 +6788,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://r.gnavi.co.jp/gs1g50fh0000/",
-      "infoNote": "B2店（B1-41の酒場 おか長とは別店）。定休日の記載なし。平日10〜17時は生中270円"
+      "infoNote": "B2店（B1-41の酒場 おか長とは別店）。定休日の記載なし。平日10〜17時は生中270円",
+      "tabelogRating": 3.34,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27090641/"
     },
     {
       "id": "b3-B2-97e466",
@@ -6930,7 +7137,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://r.gnavi.co.jp/7a3dzu2p0000/",
-      "infoNote": "月〜土の時間。日祝11:00-20:00。不定休。30分500円の生ビール飲み放題あり。焼きスパ800円前後"
+      "infoNote": "月〜土の時間。日祝11:00-20:00。不定休。30分500円の生ビール飲み放題あり。焼きスパ800円前後",
+      "tabelogRating": 3.24,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27088404/"
     },
     {
       "id": "b3-B2-445cf6",
@@ -7071,7 +7281,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100000854684/",
-      "infoNote": "定休日なし。昼はおでん出汁の和カレー"
+      "infoNote": "定休日なし。昼はおでん出汁の和カレー",
+      "tabelogRating": 3.35,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/RC0108/"
     },
     {
       "id": "b3-B2-7d6a7b",
@@ -7208,7 +7421,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004338978/",
-      "infoNote": "平日の時間。土日祝11:00-23:00。不定休"
+      "infoNote": "平日の時間。土日祝11:00-23:00。不定休",
+      "tabelogRating": 3.49,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27126809/"
     },
     {
       "id": "b3-B2-a430e2",
@@ -7344,7 +7560,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://sakaba-ochobo.com/",
-      "infoNote": "定休日はInstagramで告知。完全禁煙。どて煮込み110円〜"
+      "infoNote": "定休日はInstagramで告知。完全禁煙。どて煮込み110円〜",
+      "tabelogRating": 3.44,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B2-893554",
@@ -7380,7 +7599,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://mrs.living.jp/osaka/town_gourmet/reporter/3364124",
-      "infoNote": "平日・祝前日の時間（昼）。夜は全日17:00-23:00。休みは12/31〜1/2。一汁三菜定食700円〜"
+      "infoNote": "平日・祝前日の時間（昼）。夜は全日17:00-23:00。休みは12/31〜1/2。一汁三菜定食700円〜",
+      "tabelogRating": 3.17,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27073269/"
     },
     {
       "id": "b3-B2-2f7a20",
@@ -7619,7 +7841,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.enjoytokyo.jp/spot/g_kek3500/",
-      "infoNote": "毎日同じ時間とされる（定休日は明記なし）。生ビール199円・タコハイ99円など。第4ビルB2の「タイガー」は別店"
+      "infoNote": "毎日同じ時間とされる（定休日は明記なし）。生ビール199円・タコハイ99円など。第4ビルB2の「タイガー」は別店",
+      "tabelogRating": 3.39,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27144938/"
     },
     {
       "id": "b3-B2-f278e4",
@@ -7654,7 +7879,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://hamoni.jp/shop/WYtta8EaolYDMw2kErI5",
-      "infoNote": "不定休。予算は情報源で「1,000円〜／2,000円〜」。19:00までハッピーアワー。席料・お通しなし"
+      "infoNote": "不定休。予算は情報源で「1,000円〜／2,000円〜」。19:00までハッピーアワー。席料・お通しなし",
+      "tabelogRating": 3.42,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27118888/"
     },
     {
       "id": "b3-B2-59b6c1",
@@ -7690,7 +7918,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001205940/",
-      "infoNote": "火〜木・土の時間。金・祝前日は22:30まで、日祝は21:00まで。時間の一覧に月曜が無い（定休日かは未確認）。旧店名は「鉄板焼き とん」"
+      "infoNote": "火〜木・土の時間。金・祝前日は22:30まで、日祝は21:00まで。時間の一覧に月曜が無い（定休日かは未確認）。旧店名は「鉄板焼き とん」",
+      "tabelogRating": 3.4,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27094839/"
     },
     {
       "id": "b3-B2-91917f",
@@ -7721,7 +7952,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001259214/",
-      "infoNote": "営業時間が情報源で食い違うので入れていない（「月〜土16:00-23:00・日曜休み」と「火〜日15:00-22:00・月曜休み」）。生ビール1杯目299円など"
+      "infoNote": "営業時間が情報源で食い違うので入れていない（「月〜土16:00-23:00・日曜休み」と「火〜日15:00-22:00・月曜休み」）。生ビール1杯目299円など",
+      "tabelogRating": 3.37,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B2-7607bc",
@@ -7859,7 +8093,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://prtimes.jp/main/html/rd/p/000000004.000143294.html",
-      "infoNote": "公式の案内で「大人のモダン居酒屋」とあるので業種を「焼肉・ホルモン」から直した（国産牛の創作料理が売り）。火〜金の時間（22:00LO）。土日祝12:00-22:00。月曜が祝日なら火曜休み。2025年8月開店"
+      "infoNote": "公式の案内で「大人のモダン居酒屋」とあるので業種を「焼肉・ホルモン」から直した（国産牛の創作料理が売り）。火〜金の時間（22:00LO）。土日祝12:00-22:00。月曜が祝日なら火曜休み。2025年8月開店",
+      "tabelogRating": 3.2,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27151488/"
     },
     {
       "id": "b3-B2-ee744c",
@@ -7922,7 +8159,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://kea6800.gorp.jp/",
-      "infoNote": "月〜木の時間。金〜日・祝は13:00-23:00（22:30LO）。不定休（ビルの休館日は休み）。B1の「勝男」（第3ビルB1応援団）とは別店。飲み放題つき120分コース2,800円〜、生ビール180円"
+      "infoNote": "月〜木の時間。金〜日・祝は13:00-23:00（22:30LO）。不定休（ビルの休館日は休み）。B1の「勝男」（第3ビルB1応援団）とは別店。飲み放題つき120分コース2,800円〜、生ビール180円",
+      "tabelogRating": 3.04,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27143705/"
     },
     {
       "id": "b3-B2-fd3679",
@@ -8220,7 +8460,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://hitosara.com/0031252673/",
-      "infoNote": "22:00LO。年中無休（12/30〜1/3は休み）。テーブル4つ・カウンター10人ほどの立ち飲み。同じ第3ビルのB1にも徳田酒店が2店あり（別店）"
+      "infoNote": "22:00LO。年中無休（12/30〜1/3は休み）。テーブル4つ・カウンター10人ほどの立ち飲み。同じ第3ビルのB1にも徳田酒店が2店あり（別店）",
+      "tabelogRating": 3.2,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/RC2105/"
     },
     {
       "id": "b3-B2-a2aafc",
@@ -8455,7 +8698,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100000059885/",
-      "infoNote": "年中無休。沖縄の島唄ライブがある居酒屋。泡盛100種以上"
+      "infoNote": "年中無休。沖縄の島唄ライブがある居酒屋。泡盛100種以上",
+      "tabelogRating": 3.43,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27011655/"
     },
     {
       "id": "b3-B2-5a714d",
@@ -8728,7 +8974,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001217975/",
-      "infoNote": "ランチあり。営業時間・定休日は見つからず"
+      "infoNote": "ランチあり。営業時間・定休日は見つからず",
+      "tabelogRating": 3.44,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B1-3d7edd",
@@ -8871,7 +9120,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://ryuseimaru.gorp.jp/",
-      "infoNote": "閉店23:00とされるが開店時刻・定休日は見つからず。夜の予算3,500円ほど、コース〜4,000円"
+      "infoNote": "閉店23:00とされるが開店時刻・定休日は見つからず。夜の予算3,500円ほど、コース〜4,000円",
+      "tabelogRating": 3.43,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B1-885864",
@@ -8932,7 +9184,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://ke7u700.gorp.jp/",
-      "infoNote": "住所表記のB1F21号室で一致。通し営業で毎日営業とされる（定休日は明記なし）。毎日ハッピーアワーあり。ランチメニューあり。第1ビルにも店あり"
+      "infoNote": "住所表記のB1F21号室で一致。通し営業で毎日営業とされる（定休日は明記なし）。毎日ハッピーアワーあり。ランチメニューあり。第1ビルにも店あり",
+      "tabelogRating": 3.17,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27127717/"
     },
     {
       "id": "b3-B1-149b31",
@@ -8964,7 +9219,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003323815/",
-      "infoNote": "月〜土・祝前日の時間（料理22:00LO）。日祝は11:00-21:00。定休日なし。全席喫煙可。生中200円"
+      "infoNote": "月〜土・祝前日の時間（料理22:00LO）。日祝は11:00-21:00。定休日なし。全席喫煙可。生中200円",
+      "tabelogRating": 3.27,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27107222/dtlmenu/"
     },
     {
       "id": "b3-B1-327892",
@@ -9000,7 +9258,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004295940/",
-      "infoNote": "22:30LO。B2の「勝男B2応援団」とは別店。飲み放題コース2,500円〜"
+      "infoNote": "22:30LO。B2の「勝男B2応援団」とは別店。飲み放題コース2,500円〜",
+      "tabelogRating": 3.06,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27122494/"
     },
     {
       "id": "b3-B1-d1d6d2",
@@ -9033,7 +9294,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001269975/",
-      "infoNote": "うちの業種は店名から「定食」になっていたが、どの情報源でもレトロな大衆酒場（居酒屋）なので直した。不定休"
+      "infoNote": "うちの業種は店名から「定食」になっていたが、どの情報源でもレトロな大衆酒場（居酒屋）なので直した。不定休",
+      "tabelogRating": 3.4,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B1-7ea9ba",
@@ -9067,7 +9331,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "http://www.makishitei.jp/",
-      "infoNote": "公式サイトに「昼飲みできる大衆居酒屋」とある。閉店23:30とされるが開店時刻・定休日は見つからず。第2ビルの「まきし亭 2ビル本店」は別店"
+      "infoNote": "公式サイトに「昼飲みできる大衆居酒屋」とある。閉店23:30とされるが開店時刻・定休日は見つからず。第2ビルの「まきし亭 2ビル本店」は別店",
+      "tabelogRating": 3.35,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27084567/"
     },
     {
       "id": "b3-B1-85e20b",
@@ -9101,7 +9368,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://hitosara.com/0031262245/",
-      "infoNote": "B1-66は「徳田酒店 御肉」と分かったので、「第3ビルB1店」はこの店として扱った。営業時間は「月 15:00-22:15」とだけ出る。B2の「徳田酒店 第3ビルB2店」とは別店"
+      "infoNote": "B1-66は「徳田酒店 御肉」と分かったので、「第3ビルB1店」はこの店として扱った。営業時間は「月 15:00-22:15」とだけ出る。B2の「徳田酒店 第3ビルB2店」とは別店",
+      "tabelogRating": 3.35,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/RC2105/"
     },
     {
       "id": "b3-B1-2257df",
@@ -9230,7 +9500,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://joujou.co.jp/shop/tenjindaihall_osakaekimaedaisanbill/",
-      "infoNote": "不定休。全面喫煙可。料理は250〜500円が中心で80種以上"
+      "infoNote": "不定休。全面喫煙可。料理は250〜500円が中心で80種以上",
+      "tabelogRating": 3.39,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/RC21/"
     },
     {
       "id": "b3-B1-5370ed",
@@ -9267,7 +9540,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004373335/",
-      "infoNote": "平日の時間。昼（12:00-14:00）は月〜金だけで、夜は毎日17:00-24:00。定休日なし（不定休あり）。店内は全面禁煙（店の外に喫煙所）。平均予算3,000円"
+      "infoNote": "平日の時間。昼（12:00-14:00）は月〜金だけで、夜は毎日17:00-24:00。定休日なし（不定休あり）。店内は全面禁煙（店の外に喫煙所）。平均予算3,000円",
+      "tabelogRating": 3.16,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27070785/"
     },
     {
       "id": "b3-B1-e81356",
@@ -9429,7 +9705,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ003340121/",
-      "infoNote": "2022年9月開店。B2の「炭火焼鳥 鶏えん」の姉妹店で、各テーブルの小さな囲炉裏で炭焼き・鍋・釜めしなど。バルチカ03にも店あり。営業時間・定休日は見つからず"
+      "infoNote": "2022年9月開店。B2の「炭火焼鳥 鶏えん」の姉妹店で、各テーブルの小さな囲炉裏で炭焼き・鍋・釜めしなど。バルチカ03にも店あり。営業時間・定休日は見つからず",
+      "tabelogRating": 3.43,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B1-443968",
@@ -9521,7 +9800,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://kaj7607.gorp.jp/",
-      "infoNote": "B1店の情報（B2-6にもおか長あり＝海鮮酒場 おか長 B2店）。月〜土の時間。日祝11:00-22:00。定休日なし。串揚げ・海鮮"
+      "infoNote": "B1店の情報（B2-6にもおか長あり＝海鮮酒場 おか長 B2店）。月〜土の時間。日祝11:00-22:00。定休日なし。串揚げ・海鮮",
+      "tabelogRating": 3.18,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27114670/"
     },
     {
       "id": "b3-B1-a68b83",
@@ -9683,7 +9965,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001006323/",
-      "infoNote": "月〜金・祝前日の時間。土・祝は15:00-23:00、日は15:00-22:00。飲み放題つきコース4,500円〜"
+      "infoNote": "月〜金・祝前日の時間。土・祝は15:00-23:00、日は15:00-22:00。飲み放題つきコース4,500円〜",
+      "tabelogRating": 3.38,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B1-206694",
@@ -9830,7 +10115,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://k222600.gorp.jp/",
-      "infoNote": "平日の時間（料理22:00LO）。土・祝は22:30まで。月曜休み（祝日なら営業して翌日休み）。旧店名「麦太郎」。日本酒80種以上"
+      "infoNote": "平日の時間（料理22:00LO）。土・祝は22:30まで。月曜休み（祝日なら営業して翌日休み）。旧店名「麦太郎」。日本酒80種以上",
+      "tabelogRating": 3.32,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B1-d1b9cb",
@@ -9865,7 +10153,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://stores.toridoll.com/910061",
-      "infoNote": "毎日同じ時間。休みはビルの休館日。つまみは100〜300円台。第4ビルB1にも店あり"
+      "infoNote": "毎日同じ時間。休みはビルの休館日。つまみは100〜300円台。第4ビルB1にも店あり",
+      "tabelogRating": 3.16,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27133479/"
     },
     {
       "id": "b3-B1-6c85d2",
@@ -10026,7 +10317,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://r.gnavi.co.jp/3884h6yz0000/",
-      "infoNote": "からあげ酒場なので業種を「焼鳥」から直した。休みは年末年始。ハッピーアワーの生ビール190円。電話番号は同じ番号が別の店（楠木フサヱ おもや）にも出ていて確かでないので入れていない"
+      "infoNote": "からあげ酒場なので業種を「焼鳥」から直した。休みは年末年始。ハッピーアワーの生ビール190円。電話番号は同じ番号が別の店（楠木フサヱ おもや）にも出ていて確かでないので入れていない",
+      "tabelogRating": 3.14,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27140752/"
     },
     {
       "id": "b3-B1-dac1ca",
@@ -10168,7 +10462,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://shop.create-restaurants.co.jp/sfp0001/",
-      "infoNote": "定休日なし（1/1〜1/3はビル休館で休み）。平均予算は昼1,800円・夜2,100円。大阪市の「喫煙可能店」で20歳未満は入れない"
+      "infoNote": "定休日なし（1/1〜1/3はビル休館で休み）。平均予算は昼1,800円・夜2,100円。大阪市の「喫煙可能店」で20歳未満は入れない",
+      "tabelogRating": 3.39,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27135359/"
     },
     {
       "id": "b3-B1-7a37fb",
@@ -10203,7 +10500,10 @@
       "infoUrl": "https://www.hotpepper.jp/strJ004381579/",
       "infoNote": "住所表記の地下1階66号で一致。月〜土の時間。日は13:00-22:00。同じB1-27の「徳田酒店（第3ビルB1店）」とは別店",
       "officialName": "徳田酒店 肉食専科",
-      "nameNote": "今の店名は「徳田酒店 御肉」（公式フロア案内は旧名の「肉食専科」）"
+      "nameNote": "今の店名は「徳田酒店 御肉」（公式フロア案内は旧名の「肉食専科」）",
+      "tabelogRating": 3.14,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27084597/"
     },
     {
       "id": "b3-B1-334180",
@@ -10268,7 +10568,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://kbng811.gorp.jp/",
-      "infoNote": "不定休。平均予算2,500円。住所表記は地下1階68号。すし2貫150円〜・お酒190円〜。B2の「立ちすし酒場さしす」は別店"
+      "infoNote": "不定休。平均予算2,500円。住所表記は地下1階68号。すし2貫150円〜・お酒190円〜。B2の「立ちすし酒場さしす」は別店",
+      "tabelogRating": 3.43,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P002055/premiseLst/izakaya/"
     },
     {
       "id": "b3-B1-efdab9",
@@ -10406,7 +10709,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004182501/",
-      "infoNote": "住所表記のB1F74-2で一致。平日の時間（22:00LO）。土日祝は13:00から。年中無休。つまみ170円〜"
+      "infoNote": "住所表記のB1F74-2で一致。平日の時間（22:00LO）。土日祝は13:00から。年中無休。つまみ170円〜",
+      "tabelogRating": 3.45,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/en/osaka/A2701/A270101/27137386/"
     },
     {
       "id": "b3-B1-0edaec",
@@ -10604,7 +10910,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://tabelog.com/osaka/A2701/A270101/27094278/",
-      "infoNote": "休みは12/31〜1/3"
+      "infoNote": "休みは12/31〜1/3",
+      "tabelogRating": 3.29,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27094278/"
     },
     {
       "id": "b4-B2-c3f924",
@@ -10742,7 +11051,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ004169482/",
-      "infoNote": "平日の時間（料理21:30LO）。土日祝は11:00から。不定休。平日17時までハッピーアワー。第3ビルB2の店とは別店"
+      "infoNote": "平日の時間（料理21:30LO）。土日祝は11:00から。不定休。平日17時までハッピーアワー。第3ビルB2の店とは別店",
+      "tabelogRating": 3.45,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27135864/dtlratings/"
     },
     {
       "id": "b4-B2-f58e55",
@@ -10809,7 +11121,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://retty.me/area/PRE27/ARE89/SUB8901/100001471592/",
-      "infoNote": "15:00開店・ハッピーアワーありとされるが閉店時刻・定休日は見つからず。第2ビルのマルリキは別店"
+      "infoNote": "15:00開店・ハッピーアワーありとされるが閉店時刻・定休日は見つからず。第2ビルのマルリキは別店",
+      "tabelogRating": 3.14,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P006797/premiseLst/izakaya/"
     },
     {
       "id": "b4-B2-571657",
@@ -10876,7 +11191,10 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-23"
+      "updatedAt": "2026-09-23",
+      "tabelogRating": 3.09,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27147497/"
     },
     {
       "id": "b4-B2-2633a6",
@@ -10968,7 +11286,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://katsuo-web.com/shop_list/2192",
-      "infoNote": "毎日同じ時間・年中無休。2026年2月開店"
+      "infoNote": "毎日同じ時間・年中無休。2026年2月開店",
+      "tabelogRating": 3.11,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27154677/"
     },
     {
       "id": "b4-B2-258e2f",
@@ -11001,7 +11322,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://kepd500.gorp.jp/",
-      "infoNote": "毎日同じ時間。2025年10月開店。飲み放題つきコース3,000円。第3ビルB2のタイガーとは別店"
+      "infoNote": "毎日同じ時間。2025年10月開店。飲み放題つきコース3,000円。第3ビルB2のタイガーとは別店",
+      "tabelogRating": 3.18,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27152046/"
     },
     {
       "id": "b4-B2-403df7",
@@ -11430,7 +11754,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://kaj7604.gorp.jp/",
-      "infoNote": "平日の時間（22:15LO）。土は22:00まで、日祝は21:00までとする情報と、日曜休みとする情報があるので日曜は店に確認を。朝から飲める。B2の「七津屋（はなれ）」は別店"
+      "infoNote": "平日の時間（22:15LO）。土は22:00まで、日祝は21:00までとする情報と、日曜休みとする情報があるので日曜は店に確認を。朝から飲める。B2の「七津屋（はなれ）」は別店",
+      "tabelogRating": 3.27,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P006797/premiseLst/RC2105/"
     },
     {
       "id": "b4-B1-e6e688",
@@ -11480,7 +11807,10 @@
       "ratingCheckedAt": "",
       "source": "official:ekimae4",
       "verified": true,
-      "updatedAt": "2026-09-20"
+      "updatedAt": "2026-09-20",
+      "tabelogRating": 3.04,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/A2701/A270101/27158764/"
     },
     {
       "id": "b4-B1-d8669f",
@@ -11864,7 +12194,10 @@
       "infoSource": "websearch",
       "infoCheckedAt": "2026-09-23",
       "infoUrl": "https://www.hotpepper.jp/strJ001117854/",
-      "infoNote": "住所表記のB1-50で一致。平日の時間（22:00LO）。土日祝は15:30から。年中無休"
+      "infoNote": "住所表記のB1-50で一致。平日の時間（22:00LO）。土日祝は15:30から。年中無休",
+      "tabelogRating": 3.33,
+      "tabelogCheckedAt": "2026-10-08",
+      "tabelogUrl": "https://tabelog.com/osaka/P006797/premiseLst/izakaya/"
     },
     {
       "id": "b4-B1-61e7e1",
@@ -14491,5 +14824,5 @@
       "updatedAt": "2026-09-22"
     }
   ],
-  "updatedAt": "2026-10-07"
+  "updatedAt": "2026-10-08"
 }

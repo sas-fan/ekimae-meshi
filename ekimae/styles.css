@@ -1057,6 +1057,47 @@ html.is-embedded .sheet-panel { overflow-y: auto; }
 }
 .navpickitem small { font-size: 11px; color: var(--fg-dim); }
 
+/* ---- 「マップで見る」で開いた店 ---- */
+.planmark.is-target { z-index: 7; }
+.planmark.is-target .planmark-dot {
+  width: 20px; height: 20px; opacity: 1; background: var(--accent); border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--fg), 0 2px 6px rgba(0, 0, 0, .4);
+  animation: targetring 1.6s ease-out 4;
+}
+@keyframes targetring {
+  0% { box-shadow: 0 0 0 2px var(--fg), 0 0 0 2px var(--accent); }
+  100% { box-shadow: 0 0 0 2px var(--fg), 0 0 0 18px rgba(232, 115, 13, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .planmark.is-target .planmark-dot { animation: none; } }
+.planmark-name--target {
+  max-width: 140px; font-size: 12px; padding: 2px 7px;
+  background: var(--fg); color: var(--bg);
+}
+.gridcell.is-target { outline: 3px solid var(--fg); outline-offset: -3px; }
+
+.mapfocus {
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--bg-elev); border: 2px solid var(--fg); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 10px 12px; margin: 4px 0 12px;
+}
+.mapfocus-main {
+  display: flex; align-items: center; gap: 10px; min-width: 0; text-align: left;
+  background: none; border: 0; padding: 0; color: var(--fg); font: inherit; cursor: pointer;
+}
+.mapfocus-dot {
+  flex: 0 0 auto; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--fg);
+}
+.mapfocus-text { display: flex; flex-direction: column; min-width: 0; }
+.mapfocus-text b { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mapfocus-text small { font-size: 12px; color: var(--fg-dim); }
+.mapfocus-btns { display: flex; gap: 6px; }
+.mapfocus-btns .btn { flex: 1 1 auto; width: auto; }
+.mapfocus-btns .btn--ghost { flex: 0 0 auto; }
+
+/* マップから戻ったとき、どの店から飛んだかを見せる */
+.card.is-back { outline: 3px solid var(--accent); outline-offset: 2px; transition: outline-color .4s; }
+
 .planmap-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
 .planmap-foot .btn { flex: 0 0 auto; width: auto; }
 .planmap-note { font-size: 11px; color: var(--fg-dim); }

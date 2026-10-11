@@ -139,6 +139,16 @@ let stores = [];
 // 保存はしない。次に開いたときまで光り続けると邪魔なため。
 let focusId = null;
 
+// 「マップで見る」で開いた店。マップにいるあいだは大きな印と店名を出したままにする
+// （光るのが2秒だけだと、ほかの点にまぎれて見失う）。リストに戻ったら消す
+let mapFocusId = null;
+
+// リストを離れたときのスクロール位置と、そのとき開いていた店。
+// マップから戻ったとき、元の場所に戻すために使う
+let listScroll = null;
+let lastView = null;
+let lastOpenedId = null;
+
 function readJSON(k, fallback) {
   try {
     const v = localStorage.getItem(k);
@@ -1202,7 +1212,7 @@ function storeCard(s) {
     .concat((ud.tags || []).map((t) => el('span', { class: 'tagpill tagpill--mine', text: t })));
   if (!s.verified) tags.unshift(el('span', { class: 'tagpill tagpill--warn', text: '未確認' }));
 
-  return el('button', { class: 'card', type: 'button', onclick: () => openDetail(s.id) }, [
+  return el('button', { class: 'card', type: 'button', 'data-id': s.id, onclick: () => openDetail(s.id) }, [
     el('div', { class: 'card-head' }, [
       el('span', { class: 'card-name', text: s.name }),
       ud.fav ? el('span', { class: 'card-fav', text: '★' }) : null,
@@ -1514,6 +1524,27 @@ function openAtPicker() {
   if (!isEmbedded()) setTimeout(() => input.focus(), 50);
 }
 
+// 「マップで見る」で開いた店の帯。どの店を見ているか、どこにあるかを上に出す
+function mapFocusBar(s) {
+  return el('div', { class: 'mapfocus' }, [
+    el('button', { class: 'mapfocus-main', type: 'button', onclick: () => openDetail(s.id) }, [
+      el('span', { class: 'mapfocus-dot' }),
+      el('span', { class: 'mapfocus-text' }, [el('b', { text: s.name }), el('small', { text: storeWhere(s) })]),
+    ]),
+    el('div', { class: 'mapfocus-btns' }, [
+      el('button', {
+        class: 'btn btn--sm', type: 'button', text: 'リストに戻る',
+        onclick: () => { ui.view = 'list'; saveUI(); render(); },
+      }),
+      el('button', { class: 'btn btn--sm', type: 'button', text: 'ここへ行く', onclick: () => setGoal(s.id) }),
+      el('button', {
+        class: 'btn btn--ghost btn--sm', type: 'button', text: '×', title: '印を消す', 'aria-label': '印を消す',
+        onclick: () => { mapFocusId = null; render(); },
+      }),
+    ]),
+  ]);
+}
+
 // 1フロアぶんの平面図。区画の位置に点を打ち、絞り込みに該当する店だけ
 // 色を付ける。「いまいるフロアの、どこに、条件に合う店があるか」を
 // リストでは出せない形で見せるのが狙い。
@@ -1545,7 +1576,8 @@ function planFloor(key, planned, hitIds) {
       class: 'planmark' + (hit ? ' is-hit' : ' is-dim')
         + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : '')
         + (p.spot.exact ? '' : ' is-near') + (s.id === focusId ? ' is-focus' : '')
-        + (s.id === atId ? ' is-here' : '') + (s.id === goalId ? ' is-goal' : ''),
+        + (s.id === atId ? ' is-here' : '') + (s.id === goalId ? ' is-goal' : '')
+        + (s.id === mapFocusId ? ' is-target' : ''),
       type: 'button',
       'data-id': s.id,
       title: s.name + '（区画' + (s.block || '?') + '）',
@@ -1554,7 +1586,9 @@ function planFloor(key, planned, hitIds) {
       onclick: () => tap(s.id),
     }, [
       el('span', { class: 'planmark-dot' }),
-      s.id === atId ? el('span', { class: 'planmark-name planmark-name--here', text: '現在地' })
+      s.id === mapFocusId && s.id !== atId && s.id !== goalId
+        ? el('span', { class: 'planmark-name planmark-name--target', text: s.name })
+        : s.id === atId ? el('span', { class: 'planmark-name planmark-name--here', text: '現在地' })
         : s.id === goalId ? el('span', { class: 'planmark-name planmark-name--goal', text: s.name })
           : hit && withName ? el('span', { class: 'planmark-name', text: s.name }) : null,
     ]);
@@ -1603,7 +1637,8 @@ function renderMap(hits) {
 
   // フロア絞り込みは効かせつつ、同フロアの非該当店も薄く残して位置関係が分かるようにする
   const at = navStore('at'), goal = navStore('goal');
-  const navKeys = new Set([at, goal].filter(Boolean).map((s) => s.building + '/' + s.floor));
+  const target = mapFocusId ? stores.find((x) => x.id === mapFocusId) || null : null;
+  const navKeys = new Set([at, goal, target].filter(Boolean).map((s) => s.building + '/' + s.floor));
   const inScope = stores.filter((s) => {
     if (navKeys.has(s.building + '/' + s.floor)) return true;
     if (ui.buildings.length && !ui.buildings.includes(String(s.building))) return false;
@@ -1620,7 +1655,11 @@ function renderMap(hits) {
 
   const hereKey = ui.here ? ui.here.building + '/' + ui.here.floor : null;
   const goalKey = goal ? goal.building + '/' + goal.floor : null;
+  const targetKey = target ? target.building + '/' + target.floor : null;
   const keys = [...groups.keys()].sort((a, b) => {
+    // 「マップで見る」で開いた店のフロアを一番上に
+    if (a === targetKey) return -1;
+    if (b === targetKey) return 1;
     // いまいるフロアを一番上に。歩きながら開いたとき、自分の周りがすぐ出る
     if (a === hereKey) return -1;
     if (b === hereKey) return 1;
@@ -1633,6 +1672,7 @@ function renderMap(hits) {
     return venueIndex(ab) - venueIndex(bb) || FLOOR_ORDER.indexOf(af) - FLOOR_ORDER.indexOf(bf);
   });
 
+  if (target) box.appendChild(mapFocusBar(target));
   if (at || goal || pickingAt) box.appendChild(navPanel());
 
   const visible = keys.filter((k) => navKeys.has(k) || groups.get(k).some((s) => hitIds.has(s.id)));
@@ -1672,7 +1712,8 @@ function renderMap(hits) {
       class: 'gridcell' + (hit ? ' is-hit' : ' is-dim') + (provisional ? ' is-provisional' : '')
         + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : '')
         + (s.id === focusId ? ' is-focus' : '')
-        + (ui.at && s.id === ui.at.id ? ' is-here' : '') + (ui.goal && s.id === ui.goal.id ? ' is-goal' : ''),
+        + (ui.at && s.id === ui.at.id ? ' is-here' : '') + (ui.goal && s.id === ui.goal.id ? ' is-goal' : '')
+        + (s.id === mapFocusId ? ' is-target' : ''),
       'data-id': s.id,
       type: 'button',
       style: provisional ? null
@@ -1766,12 +1807,21 @@ function renderMap(hits) {
     const target = focusId;
     focusId = null;
     if (cellEl) {
-      // レイアウト確定後でないと位置がずれる
-      requestAnimationFrame(() => {
-        cellEl.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+      const go = () => {
+        const bar = box.querySelector('.mapfocus');
+        if (cellEl.classList.contains('planmark') && bar && !isEmbedded()) {
+          // 見たい店のフロアは先頭にあるので、上の帯（店名）ごと見えるよう一番上へ
+          window.scrollTo(0, 0);
+        } else {
+          cellEl.scrollIntoView({ block: 'center', inline: 'center' });
+        }
         const wrap = cellEl.closest('.gridwrap, .planmap-scroll');
         if (wrap) wrap.scrollLeft = Math.max(0, cellEl.offsetLeft - wrap.clientWidth / 2 + cellEl.offsetWidth / 2);
-      });
+      };
+      // 平面図は読み込むまで高さが無い。読み込み前に動かすと、点の位置がずれる
+      const img = cellEl.closest('.planmap-stage') && cellEl.closest('.planmap-stage').querySelector('img');
+      if (img && !img.complete) img.addEventListener('load', () => requestAnimationFrame(go), { once: true });
+      else requestAnimationFrame(go);
       setTimeout(() => cellEl.classList.remove('is-focus'), 2400);
     } else {
       const s = stores.find((x) => x.id === target);
@@ -1969,10 +2019,38 @@ function render() {
   if (optM) optM.hidden = !hasMates;
   if (!hasMates && ui.sort === 'mates') { ui.sort = 'default'; $('#sort').value = 'default'; saveUI(); }
   const isList = ui.view === 'list';
+  // リストとマップは同じページの中で入れ替えているので、スクロール位置も共有になる。
+  // リストを離れるときに位置を覚えておき、戻ってきたらそこへ戻す
+  const leaving = lastView === 'list' && !isList;
+  const returning = lastView !== null && lastView !== 'list' && isList;
+  if (leaving) listScroll = { y: window.scrollY, id: lastOpenedId };
+  if (isList) mapFocusId = null;
+  lastView = ui.view;
   $('#view-list').hidden = !isList;
   $('#view-map').hidden = isList;
   for (const t of document.querySelectorAll('.tab')) t.classList.toggle('is-active', t.dataset.view === ui.view);
   if (isList) renderList(hits); else renderMap(hits);
+  if (returning && listScroll) restoreListScroll(listScroll);
+  // マップは先頭から見せる（見たい店のフロアを先頭に置いている）
+  if (leaving && !focusId && !isEmbedded()) window.scrollTo(0, 0);
+}
+
+function restoreListScroll(saved) {
+  const card = saved.id ? $('#view-list').querySelector('.card[data-id="' + saved.id + '"]') : null;
+  requestAnimationFrame(() => {
+    if (isEmbedded()) {
+      // 埋め込みでは外側のページがスクロールしているので、位置の数字では戻せない。
+      // 開いていた店のカードを画面に入れる
+      if (card) card.scrollIntoView({ block: 'center' });
+    } else {
+      window.scrollTo(0, saved.y);
+    }
+    // どの店から飛んだかが分かるよう、少しのあいだ枠を付ける
+    if (card) {
+      card.classList.add('is-back');
+      setTimeout(() => card.classList.remove('is-back'), 1800);
+    }
+  });
 }
 
 /* ---------------- sheet ---------------- */
@@ -2086,6 +2164,7 @@ function crowdBody(storeId) {
 function openDetail(id) {
   const s = stores.find((x) => x.id === id);
   if (!s) return;
+  lastOpenedId = id;
   const ud = u(id);
   ud.seenAt = Date.now();
   saveUser();
@@ -2236,6 +2315,7 @@ function openDetail(id) {
         class: 'btn', type: 'button', text: 'マップで見る',
         onclick: () => {
           focusId = s.id;
+          mapFocusId = s.id;
           ui.view = 'map';
           saveUI();
           closeSheet();

@@ -95,7 +95,14 @@ const UI_DEFAULTS = {
   view: 'list', sort: 'default', q: '',
   buildings: [], floors: [], cats: [], tags: [], misc: [],
   here: null,
+  // 道案内。at = いま目の前にある店、goal = 行きたい店（どちらも { id, t }）。
+  // facing = いま向いている方向（図の 'up' / 'right' / 'down' / 'left'。空なら未指定）
+  at: null, goal: null, facing: '',
 };
+
+// 現在地と行きたい店は、6時間たったら忘れる。翌日に開いたとき、
+// 昨日いた場所が「現在地」のまま残っていると紛らわしいため
+const NAV_TTL = 6 * 3600 * 1000;
 
 // 保存されている値をそのまま信じると、型が違うだけで画面が真っ白になる。
 // 既定値と同じ型のものだけ受け取る
@@ -113,6 +120,11 @@ function sanitizeUI(saved) {
     } else if (k === 'here') {
       if (v && typeof v === 'object' && venueOf(v.building) && typeof v.floor === 'string') {
         out.here = { building: venueKey(v.building), floor: v.floor };
+      }
+    } else if (k === 'at' || k === 'goal') {
+      if (v && typeof v === 'object' && typeof v.id === 'string' && typeof v.t === 'number'
+        && Date.now() - v.t < NAV_TTL) {
+        out[k] = { id: v.id, t: v.t };
       }
     }
   }
@@ -1236,6 +1248,272 @@ function cmpBlock(a, b) {
   return a.name.localeCompare(b.name, 'ja');
 }
 
+/* ---------------- 道案内（目の前の店 → 行きたい店） ----------------
+
+地下は GPS が届かないので、現在地は「いま目の前にある店」を手で選んでもらう。
+店の位置は区画番号から平面図の上で分かるので、行きたい店がどっちにあるかを出せる。
+さらに「いま向いている方向」を選んでもらうと、右・左・前・うしろで言い換える。 */
+
+// 平面図の上下左右の辺がどこへ通じているか。図に書いてある案内だけを入れる。
+// 書いていない辺は「図の上」のように図の向きで呼ぶ（推測で地名を付けない）。
+// toward はその辺から行ける駅前ビル。第1〜第4ビルは西から順に地下でつながっている
+const PLAN_SIDES = {
+  'b1-B1': { left: { label: '地下鉄西梅田' }, right: { label: '第2ビル', toward: ['2', '3', '4'] } },
+  'b1-B2': { left: { label: '地下鉄西梅田' }, right: { label: '第2ビル', toward: ['2', '3', '4'] } },
+  'b2-B1': { left: { label: '第1ビル', toward: ['1'] }, right: { label: '第3ビル', toward: ['3', '4'] } },
+  'b2-B2': {
+    left: { label: '第1ビル', toward: ['1'] }, right: { label: '第3ビル', toward: ['3', '4'] },
+    up: { label: 'ディアモール大阪' }, down: { label: 'JR北新地駅' },
+  },
+};
+const SIDES = ['up', 'right', 'down', 'left'];
+const SIDE_JP = { up: '上', right: '右', down: '下', left: '左' };
+const SIDE_VEC = { up: [0, -1], right: [1, 0], down: [0, 1], left: [-1, 0] };
+
+function sideLabel(key, side) {
+  const s = (PLAN_SIDES[key] || {})[side];
+  return s ? s.label + 'のほう' : '図の' + SIDE_JP[side] + 'のほう';
+}
+
+// 地図の点を押して現在地を選んでいる最中か。保存しない（開き直したら普通の表示に戻す）
+let pickingAt = false;
+
+function navStore(slot) {
+  const v = ui[slot];
+  if (!v) return null;
+  if (Date.now() - v.t >= NAV_TTL) return null;
+  return stores.find((x) => x.id === v.id) || null;
+}
+
+function storeWhere(s) {
+  return venueShort(s.building) + ' ' + s.floor + (s.block ? '・区画' + s.block : '');
+}
+
+function setAt(id) {
+  const s = stores.find((x) => x.id === id);
+  if (!s) return;
+  ui.at = { id: s.id, t: Date.now() };
+  // フロアの「いまここ」も合わせる。マップとリストでこのフロアが先頭に来る
+  ui.here = { building: venueKey(s.building), floor: s.floor };
+  // 向きは前の場所で選んだものなので、店を選び直したら聞き直す
+  ui.facing = '';
+  pickingAt = false;
+  focusId = s.id;
+  saveUI();
+  closeSheet();
+  render();
+  toast('現在地：' + s.name + ' の前');
+}
+
+function setGoal(id) {
+  const s = stores.find((x) => x.id === id);
+  if (!s) return;
+  ui.goal = { id: s.id, t: Date.now() };
+  ui.view = 'map';
+  focusId = s.id;
+  saveUI();
+  closeSheet();
+  render();
+}
+
+function clearNav(slot) {
+  ui[slot] = null;
+  if (slot === 'at') ui.facing = '';
+  pickingAt = false;
+  saveUI();
+  render();
+}
+
+// 平面図の縦横の長さ。点の位置は図の幅・高さに対する割合なので、
+// 向きを正しく出すには縦横比が要る
+const planSizes = {};
+function planSize(key) {
+  if (!planSizes[key]) {
+    planSizes[key] = new Promise((resolve) => {
+      const url = bundledPlanUrl(key);
+      if (!url) { resolve(null); return; }
+      const im = new Image();
+      im.onload = () => resolve(im.naturalWidth && im.naturalHeight ? { w: im.naturalWidth, h: im.naturalHeight } : null);
+      im.onerror = () => resolve(null);
+      im.src = url;
+    });
+  }
+  return planSizes[key];
+}
+
+const BODY8 = ['前', '右前', '右', '右うしろ', 'うしろ', '左うしろ', '左', '左前'];
+const PLAN8 = ['上', '右上', '右', '右下', '下', '左下', '左', '左上'];
+function sector8(deg) { return Math.round((((deg % 360) + 360) % 360) / 45) % 8; }
+
+// 図の上での向きを言葉にする。dx, dy はピクセル（y は下向きが正）。
+// facing を渡すと、その方向を向いて立ったときの前・右・うしろ・左で返す
+function navDirection(dx, dy, facing) {
+  const plan = PLAN8[sector8(Math.atan2(dx, -dy) * 180 / Math.PI)];
+  if (!SIDE_VEC[facing]) return { plan, body: null };
+  const [fx, fy] = SIDE_VEC[facing];
+  const fwd = dx * fx + dy * fy;
+  const right = dx * -fy + dy * fx;
+  return { plan, body: BODY8[sector8(Math.atan2(right, fwd) * 180 / Math.PI)] };
+}
+
+function floorStep(from, to) {
+  const a = FLOOR_ORDER.indexOf(from), b = FLOOR_ORDER.indexOf(to);
+  if (a < 0 || b < 0) return to + ' へ';
+  return to + ' へ' + (b > a ? '上がる' : '下りる');
+}
+
+const EKIMAE = ['1', '2', '3', '4'];
+
+// 現在地と行きたい店から、案内の文を作る。
+// 同じフロアなら向き、違うフロア・ビルなら「まずどこへ行くか」を返す
+function navPlan(at, goal) {
+  if (at.id === goal.id) return { kind: 'same', text: 'いま目の前にある店です' };
+  const ab = String(at.building), gb = String(goal.building);
+  if (ab === gb && at.floor === goal.floor) {
+    const key = planKey(at.building, at.floor);
+    const hasPlan = !!bundledPlanUrl(key) && !!(blockSpots || {})[key];
+    const p = hasPlan ? findBlockSpot(key, at.block) : null;
+    const q = hasPlan ? findBlockSpot(key, goal.block) : null;
+    if (!p || !q) {
+      return { kind: 'noplan', text: '同じフロアにあります', sub: '区画が図に見当たらないので、向きは出せません。下の図で場所を見てください。' };
+    }
+    return { kind: 'floor', key, p, q, near: !p.exact || !q.exact };
+  }
+  if (ab === gb) {
+    return { kind: 'stairs', text: 'まず ' + floorStep(at.floor, goal.floor),
+      sub: '行きたい店は同じ' + venueShort(gb) + 'の ' + goal.floor + ' です。着いたら、目の前の店を選び直すと向きを出します。' };
+  }
+  if (EKIMAE.includes(ab) && EKIMAE.includes(gb)) {
+    const key = planKey(at.building, at.floor);
+    const sides = PLAN_SIDES[key] || {};
+    const side = SIDES.find((k) => sides[k] && (sides[k].toward || []).includes(gb));
+    let how = '';
+    if (side) {
+      const label = sides[side].label;
+      how = label === venueShort(gb)
+        ? 'この図の' + SIDE_JP[side] + '、「' + label + '」と書いてあるほうへ。'
+        : 'この図の' + SIDE_JP[side] + '、「' + label + '」のほうへ進み、その先です。';
+    }
+    return { kind: 'building', text: 'まず ' + venueShort(gb) + ' へ',
+      sub: how + '行きたい店は' + venueShort(gb) + 'の ' + goal.floor + ' です。着いたら、目の前の店を選び直すと向きを出します。' };
+  }
+  return { kind: 'far', text: '行きたい店は ' + venueShort(gb) + ' ' + goal.floor + ' です',
+    sub: '別の場所なので、この図からは道順を出せません。' };
+}
+
+function navPanel() {
+  const at = navStore('at');
+  const goal = navStore('goal');
+  const row = (tagClass, tag, s, empty, btns) => el('div', { class: 'navrow' }, [
+    el('span', { class: 'navtag ' + tagClass, text: tag }),
+    s ? el('button', {
+      class: 'navrow-name', type: 'button', onclick: () => openDetail(s.id),
+    }, [el('b', { text: s.name }), el('small', { text: storeWhere(s) })])
+      : el('span', { class: 'navrow-name navrow-empty', text: empty }),
+    ...btns,
+  ]);
+
+  const panel = el('div', { class: 'navpanel' }, [
+    row('navtag--here', '現在地', at, 'まだ選んでいません', [
+      el('button', { class: 'btn btn--sm', type: 'button', text: at ? '変える' : '目の前の店を選ぶ', onclick: openAtPicker }),
+    ]),
+    row('navtag--goal', '行きたい店', goal, '店の詳細で「ここへ行く」を押す', goal ? [
+      el('button', { class: 'btn btn--ghost btn--sm', type: 'button', text: 'やめる', onclick: () => clearNav('goal') }),
+    ] : []),
+  ]);
+
+  if (pickingAt) {
+    panel.appendChild(el('div', { class: 'navpick-banner' }, [
+      el('span', { text: '目の前にある店の点を押してください' }),
+      el('button', { class: 'btn btn--ghost btn--sm', type: 'button', text: 'やめる', onclick: () => { pickingAt = false; render(); } }),
+    ]));
+  }
+  if (!at || !goal) return panel;
+
+  const plan = navPlan(at, goal);
+  const result = el('div', { class: 'navresult' });
+  const sub = el('div', { class: 'navsub' });
+  panel.appendChild(result);
+  panel.appendChild(sub);
+  if (plan.kind !== 'floor') {
+    result.textContent = plan.text;
+    sub.textContent = plan.sub || '';
+    return panel;
+  }
+
+  // 同じフロア：向きを出す。縦横比は図を読み込んでから分かる
+  result.textContent = '…';
+  planSize(plan.key).then((size) => {
+    if (!size) { result.textContent = '同じフロアにあります'; sub.textContent = '図を読み込めなかったので、向きは出せません。'; return; }
+    const dx = (plan.q.pos[0] - plan.p.pos[0]) * size.w;
+    const dy = (plan.q.pos[1] - plan.p.pos[1]) * size.h;
+    if (Math.hypot(dx, dy) < size.w * 0.025) {
+      result.textContent = 'すぐ近く（隣あたり）';
+      sub.textContent = '区画' + (goal.block || '?') + ' を探してください。';
+      return;
+    }
+    const d = navDirection(dx, dy, ui.facing);
+    result.textContent = d.body ? d.body + 'のほう' : '図で見て' + d.plan + 'のほう';
+    sub.textContent = (d.body ? '図で見ると' + d.plan + '。' : 'いま向いている方向を選ぶと、右・左で言います。')
+      + '行きたい店は区画' + (goal.block || '?') + '。'
+      + (plan.near ? '区画の位置は目安です。' : '');
+  });
+
+  panel.appendChild(el('div', { class: 'navface-label', text: 'いま向いている方向（図の上下左右のどれか）' }));
+  panel.appendChild(el('div', { class: 'navface' }, SIDES.map((side) => el('button', {
+    class: 'qchip' + (ui.facing === side ? ' is-on' : ''), type: 'button',
+    text: sideLabel(plan.key, side),
+    onclick: () => { ui.facing = ui.facing === side ? '' : side; saveUI(); render(); },
+  }))));
+  return panel;
+}
+
+// 看板の店名を打って、目の前の店を選ぶ
+function openAtPicker() {
+  const input = el('input', { type: 'search', class: 'navsearch', placeholder: '看板の店名（一部でOK）', autocomplete: 'off' });
+  const list = el('div', { class: 'navpicklist' });
+  const draw = () => {
+    const q = norm(input.value);
+    let cand;
+    if (q) {
+      cand = stores.filter((s) => norm([s.name, s.kana, ...(s.aliases || [])].join(' ')).includes(q));
+    } else {
+      // 何も打っていないうちは、いまいるフロアの店を区画順に出す
+      cand = ui.here ? stores.filter(isHere).sort(cmpBlock) : [];
+    }
+    list.textContent = '';
+    if (!cand.length) {
+      list.appendChild(el('p', { class: 'sheet-sub', text: q ? '見つかりません。別の書き方でも試してください。' : '店名を打つと候補が出ます。' }));
+      return;
+    }
+    for (const s of cand.slice(0, 40)) {
+      list.appendChild(el('button', { class: 'navpickitem', type: 'button', onclick: () => setAt(s.id) }, [
+        el('b', { text: s.name }), el('small', { text: storeWhere(s) }),
+      ]));
+    }
+  };
+  input.addEventListener('input', draw);
+  draw();
+
+  openSheet([
+    el('h2', { text: '目の前の店を選ぶ' }),
+    el('p', { class: 'sheet-sub', text: '地下は電波が届かないので、いま目の前に見えている店を現在地にします。行きたい店がどっちにあるかを、この店からの向きで出します。' }),
+    el('div', { class: 'field' }, [input]),
+    el('div', { class: 'btnrow' }, [
+      el('button', {
+        class: 'btn', type: 'button', text: '地図の点で選ぶ',
+        onclick: () => { pickingAt = true; ui.view = 'map'; saveUI(); closeSheet(); render(); },
+      }),
+      ui.at ? el('button', { class: 'btn btn--ghost', type: 'button', text: '現在地を消す', onclick: () => { closeSheet(); clearNav('at'); } }) : null,
+    ]),
+    list,
+    el('div', { class: 'btnrow' }, [
+      el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: closeSheet }),
+    ]),
+  ]);
+  if (!isEmbedded()) setTimeout(() => input.focus(), 50);
+}
+
 // 1フロアぶんの平面図。区画の位置に点を打ち、絞り込みに該当する店だけ
 // 色を付ける。「いまいるフロアの、どこに、条件に合う店があるか」を
 // リストでは出せない形で見せるのが狙い。
@@ -1250,6 +1528,9 @@ function planFloor(key, planned, hitIds) {
   const hitCount = planned.filter((p) => hitIds.has(p.store.id)).length;
   // 該当が少ないうちは店名も出す。多いと重なって読めないので点だけにする
   const withName = hitCount > 0 && hitCount <= 8;
+  const atId = ui.at && ui.at.id, goalId = ui.goal && ui.goal.id;
+  // 店を押したときの動き。現在地を選んでいる最中は、押した店を現在地にする
+  const tap = (id) => (pickingAt ? setAt(id) : openDetail(id));
 
   for (const p of planned) {
     const s = p.store;
@@ -1263,18 +1544,39 @@ function planFloor(key, planned, hitIds) {
     const dot = el('button', {
       class: 'planmark' + (hit ? ' is-hit' : ' is-dim')
         + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : '')
-        + (p.spot.exact ? '' : ' is-near') + (s.id === focusId ? ' is-focus' : ''),
+        + (p.spot.exact ? '' : ' is-near') + (s.id === focusId ? ' is-focus' : '')
+        + (s.id === atId ? ' is-here' : '') + (s.id === goalId ? ' is-goal' : ''),
       type: 'button',
       'data-id': s.id,
       title: s.name + '（区画' + (s.block || '?') + '）',
       style: 'left:' + (p.spot.pos[0] * 100) + '%;top:' + (p.spot.pos[1] * 100) + '%;'
         + (n ? 'margin-left:' + (n * 9) + 'px;margin-top:' + (n * 9) + 'px;' : ''),
-      onclick: () => openDetail(s.id),
+      onclick: () => tap(s.id),
     }, [
       el('span', { class: 'planmark-dot' }),
-      hit && withName ? el('span', { class: 'planmark-name', text: s.name }) : null,
+      s.id === atId ? el('span', { class: 'planmark-name planmark-name--here', text: '現在地' })
+        : s.id === goalId ? el('span', { class: 'planmark-name planmark-name--goal', text: s.name })
+          : hit && withName ? el('span', { class: 'planmark-name', text: s.name }) : null,
     ]);
     stage.appendChild(dot);
+  }
+
+  // 現在地と行きたい店が同じ図にあるときは、点線で結ぶ
+  const atP = planned.find((p) => p.store.id === atId);
+  const goalP = planned.find((p) => p.store.id === goalId);
+  if (atP && goalP && atId !== goalId) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'planline');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('aria-hidden', 'true');
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', atP.spot.pos[0] * 100); line.setAttribute('y1', atP.spot.pos[1] * 100);
+    line.setAttribute('x2', goalP.spot.pos[0] * 100); line.setAttribute('y2', goalP.spot.pos[1] * 100);
+    line.setAttribute('vector-effect', 'non-scaling-stroke');
+    svg.appendChild(line);
+    stage.insertBefore(svg, img.nextSibling);
   }
 
   const scroller = el('div', { class: 'planmap-scroll' }, [stage]);
@@ -1288,7 +1590,7 @@ function planFloor(key, planned, hitIds) {
   return el('div', { class: 'planmap' }, [
     scroller,
     el('div', { class: 'planmap-foot' }, [
-      el('span', { class: 'planmap-note', text: '点をタップすると店が開きます' }),
+      el('span', { class: 'planmap-note', text: pickingAt ? '目の前にある店の点を押してください' : '点をタップすると店が開きます' }),
       zoom,
     ]),
   ]);
@@ -1300,7 +1602,10 @@ function renderMap(hits) {
   const hitIds = new Set(hits.map((s) => s.id));
 
   // フロア絞り込みは効かせつつ、同フロアの非該当店も薄く残して位置関係が分かるようにする
+  const at = navStore('at'), goal = navStore('goal');
+  const navKeys = new Set([at, goal].filter(Boolean).map((s) => s.building + '/' + s.floor));
   const inScope = stores.filter((s) => {
+    if (navKeys.has(s.building + '/' + s.floor)) return true;
     if (ui.buildings.length && !ui.buildings.includes(String(s.building))) return false;
     if (ui.floors.length && !ui.floors.includes(s.floor)) return false;
     return true;
@@ -1314,17 +1619,23 @@ function renderMap(hits) {
   }
 
   const hereKey = ui.here ? ui.here.building + '/' + ui.here.floor : null;
+  const goalKey = goal ? goal.building + '/' + goal.floor : null;
   const keys = [...groups.keys()].sort((a, b) => {
     // いまいるフロアを一番上に。歩きながら開いたとき、自分の周りがすぐ出る
     if (a === hereKey) return -1;
     if (b === hereKey) return 1;
+    // その次に、行きたい店のフロア
+    if (a === goalKey) return -1;
+    if (b === goalKey) return 1;
     const [ab, af] = a.split('/'), [bb, bf] = b.split('/');
     // 場所キーは 1〜4 の数字と 'kitte' などの文字列が混ざるので Number() では比べられない
     // （NaN になって並び順が崩れる）。VENUES の並び順で比べる。
     return venueIndex(ab) - venueIndex(bb) || FLOOR_ORDER.indexOf(af) - FLOOR_ORDER.indexOf(bf);
   });
 
-  const visible = keys.filter((k) => groups.get(k).some((s) => hitIds.has(s.id)));
+  if (at || goal || pickingAt) box.appendChild(navPanel());
+
+  const visible = keys.filter((k) => navKeys.has(k) || groups.get(k).some((s) => hitIds.has(s.id)));
   if (!visible.length) {
     // ここで捨てておかないと、あとで絞り込みを緩めた拍子に
     // 押した覚えのないマスが光る
@@ -1360,12 +1671,13 @@ function renderMap(hits) {
     return el('button', {
       class: 'gridcell' + (hit ? ' is-hit' : ' is-dim') + (provisional ? ' is-provisional' : '')
         + (ud.fav ? ' is-fav' : '') + (visited ? ' is-visited' : '')
-        + (s.id === focusId ? ' is-focus' : ''),
+        + (s.id === focusId ? ' is-focus' : '')
+        + (ui.at && s.id === ui.at.id ? ' is-here' : '') + (ui.goal && s.id === ui.goal.id ? ' is-goal' : ''),
       'data-id': s.id,
       type: 'button',
       style: provisional ? null
         : 'grid-column:' + s.pos.x + ' / span ' + (s.w || 1) + ';grid-row:' + s.pos.y + ' / span ' + (s.h || 1) + ';',
-      onclick: () => openDetail(s.id),
+      onclick: () => (pickingAt ? setAt(s.id) : openDetail(s.id)),
     }, [
       marks.length ? el('span', { class: 'gridcell-marks' }, marks) : null,
       el('span', { class: 'gridcell-name' + (marks.length ? ' has-mark' : ''), text: s.name }),
@@ -1404,6 +1716,7 @@ function renderMap(hits) {
     const group = el('div', { class: 'floorgroup' }, [
       el('h2', {}, [
         k === hereKey ? el('span', { class: 'herebadge', text: 'いまここ' }) : null,
+        k === goalKey && k !== hereKey ? el('span', { class: 'herebadge herebadge--goal', text: '行きたい店' }) : null,
         el('span', { text: venueShort(b) + ' ' + f + '　該当 ' + hitCount + ' / ' + list.length + '件' }),
       ]),
     ]);
@@ -1931,6 +2244,18 @@ function openDetail(id) {
       }),
       el('button', { class: 'btn', type: 'button', text: '平面図で見る', onclick: () => openPlanViewer(s) }),
     ]),
+    // 道案内。地下は現在地が取れないので、目の前の店を現在地にする
+    el('div', { class: 'btnrow' }, [
+      el('button', {
+        class: 'btn' + (ui.at && ui.at.id === s.id ? ' btn--primary' : ''), type: 'button',
+        text: ui.at && ui.at.id === s.id ? '現在地（この店の前）' : 'この店の前にいる',
+        onclick: () => setAt(s.id),
+      }),
+      el('button', {
+        class: 'btn' + (ui.goal && ui.goal.id === s.id ? ' btn--primary' : ''), type: 'button',
+        text: 'ここへ行く', onclick: () => setGoal(s.id),
+      }),
+    ]),
     el('div', { class: 'btnrow' }, [
       floorPlanLink(s) ? el('a', {
         class: 'btn btn--ghost', href: floorPlanLink(s), target: '_blank', rel: 'noopener',
@@ -2382,6 +2707,9 @@ function openHerePicker() {
   openSheet([
     el('h2', { text: 'いまここ' }),
     el('p', { class: 'sheet-sub', text: '地下は電波が届かず現在地が取れないので、いる場所を手で選びます。選んだフロアがリストとマップの先頭に来ます。絞り込みではないので、他のフロアも消えません。' }),
+    el('div', { class: 'btnrow' }, [
+      el('button', { class: 'btn btn--primary', type: 'button', text: '目の前の店を選ぶ（道案内）', onclick: openAtPicker }),
+    ]),
     grid,
     el('div', { class: 'btnrow' }, [
       ui.here ? el('button', {

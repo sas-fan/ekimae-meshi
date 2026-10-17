@@ -1,5 +1,5 @@
 /* 梅田地下メシ — オフラインでも開けるようにする最小構成の Service Worker */
-const CACHE = 'ekimae-v2';
+const CACHE = 'ekimae-v3';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'cf-runtime.js', 'icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
@@ -21,6 +21,25 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== self.location.origin) return;
   // 記録の保存先（/api）は、キャッシュを返すと古い記録に戻ってしまう。素通しにする
   if (url.pathname.startsWith('/api/')) return;
+
+  // 画面（HTML）の読み込みは、ネットを先に見に行く。
+  // Cloudflare Access（ログイン）の後ろに置いたとき、控えを先に返すと、ログインが
+  // 切れていてもログインを求められないまま古い画面だけが開き、データが取れなくなる。
+  // ネットにつながらないとき（地下で電波が無いなど）だけ控えを返す
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req).then((hit) => hit || caches.match('./') || caches.match('index.html')))
+    );
+    return;
+  }
 
   // 店データは常に最新を優先し、落ちたらキャッシュを返す
   if (url.pathname.endsWith('/data/stores.json')) {

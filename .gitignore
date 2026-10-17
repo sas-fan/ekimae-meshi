@@ -1,0 +1,4 @@
+# wrangler（Cloudflare の道具）を手元で動かしたときにできる作業用のもの
+.wrangler/
+.dev.vars
+node_modules/

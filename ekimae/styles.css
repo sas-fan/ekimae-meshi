@@ -548,8 +548,12 @@ html.is-embedded main { padding-bottom: 40px; }
 .sheet-panel {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  max-height: 92vh;
+  /* 高さは vh（アドレスバーを隠したときの高さ）ではなく、いま見えている画面の枠（.sheet）に対する割合にする。
+     vh のままだと、スマホでアドレスバーが出ているとき上端が画面の外にはみ出し、
+     シートの上のほう（見出し・×・ログインのボタンなど）に届かなくなる */
+  max-height: 92%;
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--bg-elev);
   border-radius: 22px 22px 0 0;
   border-top: 0;

@@ -1103,7 +1103,7 @@ html.is-embedded .sheet-panel { overflow-y: auto; }
 .planmap-note { font-size: 11px; color: var(--fg-dim); }
 .btn--sm { padding: 4px 10px; font-size: 12px; }
 
-/* ---- 入口（合言葉） ---- */
+/* ---- 入口（名前） ---- */
 html.is-gated body > *:not(.gate) { visibility: hidden; }
 .gate {
   position: fixed; inset: 0; z-index: 90;

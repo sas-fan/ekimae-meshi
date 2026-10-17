@@ -7,7 +7,7 @@ const KEY = {
   custom: NS + '.custom',
   deleted: NS + '.deleted',
   ui: NS + '.ui',
-  me: NS + '.me',       // 自分が誰か（名前と、合言葉を通ったかどうか）
+  me: NS + '.me',       // 自分が誰か（メンバーIDと名前）
 };
 
 /* 店のある場所。もとは大阪駅前第1〜4ビルだけだったので数字1つで足りていたが、
@@ -89,7 +89,7 @@ let deleted = readJSON(KEY.deleted, []);
 let mates = {};
 // メンバーID → 表示名
 let memberNames = {};
-// 自分が誰か。id はメンバーID、name は表示名、ok は通した合言葉の指紋
+// 自分が誰か。id はメンバーID、name は表示名（古い端末には使わなくなった ok が残っていることがある）
 let me = readJSON(KEY.me, null);
 const UI_DEFAULTS = {
   view: 'list', sort: 'default', q: '',
@@ -353,7 +353,7 @@ const cloud = {
   edits: null,      // 店ごとの追加・編集（みんなで共有）
   reviews: null,    // 店ごと・人ごとの星と訪問（みんなで共有）
   members: null,    // メンバーの表示名（みんなで共有）
-  config: null,     // 合言葉の指紋（みんなで共有）
+  config: null,     // 共有領域が読めるかの確認に使う（以前は合言葉の指紋を置いていた）
   shadowUser: {},   // 送信済みの中身（差分だけ送るため）
   shadowCustom: {},
   shadowMine: {},
@@ -376,13 +376,6 @@ function randomId() {
   (window.crypto || {}).getRandomValues ? window.crypto.getRandomValues(a)
     : a.forEach((_, i) => { a[i] = Math.floor(Math.random() * 256); });
   return [...a].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-async function sha256hex(text) {
-  const subtle = (window.crypto || {}).subtle;
-  if (!subtle) return 'plain:' + text;  // 古い端末では素通し（のれん程度の役目なので）
-  const buf = await subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 function saveMe() { writeJSON(KEY.me, me); }
@@ -485,15 +478,15 @@ function applyRemote(fn) {
   try { fn(); } finally { cloud.applying = false; }
 }
 
-/* ---------------- 入口（合言葉） ----------------
+/* ---------------- 入口（名前） ----------------
 
-友だちに URL を渡して使うので、リンクを拾っただけの人が
-そのまま入ってこないように、入口で合言葉を聞く。
+仲間と共有すると「誰が行ったか」「誰の星か」が要るので、
+最初の1回だけ、みんなに見える名前を聞く。一度決めたら端末に覚える。
 
-これは鍵ではなく「のれん」。ページの中身は誰でも読めるので、
-本当の保護は Artifact 側の共有設定（誰に開くか）のほう。
-合言葉は平文では持たず、指紋（SHA-256）だけを共有領域に置く。
-一度通れば端末に覚えるので、次からは聞かない。
+以前はここで合言葉も聞いていたが、やめた（2026-10）。合言葉は鍵ではなく
+「のれん」で、本当に誰が開けるかを決めるのは Artifact の共有設定のほう。
+仲間は共有メニューから招待する。共有領域に残っている合言葉の指紋（config の
+passHash）は、もう読みも書きもしない。
 --------------------------------------------------------------- */
 
 let gateEl = null;
@@ -518,69 +511,42 @@ function hideGate() {
 function gateWaiting() {
   showGate([
     el('h2', { class: 'gate-title', text: '梅田地下メシ' }),
-    el('p', { class: 'gate-note', text: '確認しています…' }),
+    el('p', { class: 'gate-note', text: '読み込んでいます…' }),
   ]);
 }
 
-// 合言葉を決める／聞く画面を出して、通ったら true を返す
-function askGate(opts) {
+// 名前を聞く画面を出して、決まった名前を返す（空なら空のまま返す）
+function askName() {
   return new Promise((resolve) => {
-    const pass = el('input', {
-      type: 'password', class: 'gate-input', autocomplete: 'current-password',
-      placeholder: '合言葉',
-    });
     const name = el('input', {
-      type: 'text', class: 'gate-input', maxlength: '20',
-      placeholder: 'ニックネーム（みんなに見えます）',
+      type: 'text', class: 'gate-input', maxlength: '20', autocomplete: 'nickname',
+      placeholder: 'ニックネーム（仲間に見えます）',
       value: (me && me.name) || '',
     });
-    const err = el('p', { class: 'gate-err', hidden: 'hidden' });
-    const go = el('button', {
-      class: 'btn btn--primary', type: 'submit',
-      text: opts.setup ? 'この合言葉にする' : '入る',
-    });
-
     const form = el('form', { class: 'gate-form' }, [
-      pass, opts.needName ? name : null, err, go,
+      name,
+      el('button', { class: 'btn btn--primary', type: 'submit', text: 'はじめる' }),
     ]);
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const v = pass.value.trim();
-      if (v.length < 4) {
-        err.hidden = false;
-        err.textContent = '合言葉は4文字以上にしてください';
-        return;
-      }
-      go.disabled = true;
-      const hash = await sha256hex(v);
-      if (!opts.setup && hash !== opts.hash) {
-        go.disabled = false;
-        err.hidden = false;
-        err.textContent = '合言葉が違います';
-        pass.value = '';
-        pass.focus();
-        return;
-      }
-      resolve({ hash: hash, name: name.value.trim() });
+      resolve(name.value.trim().slice(0, 20));
     });
 
     showGate([
       el('h2', { class: 'gate-title', text: '梅田地下メシ' }),
-      el('p', { class: 'gate-note', text: opts.setup
-        ? 'まだ合言葉が決まっていません。仲間に伝える合言葉を決めてください。'
-        : '合言葉を入れてください。一度入れたら、この端末では次から聞きません。' }),
+      el('p', { class: 'gate-note', text: '仲間の記録（誰が行ったか・誰の星か）に出す名前を決めてください。'
+        + 'この端末では次から聞きません。あとからメニューで変えられます。' }),
       form,
     ]);
-    setTimeout(() => pass.focus(), 50);
+    setTimeout(() => name.focus(), 50);
   });
 }
 
-// 共有領域が開けたときだけ呼ばれる。通らないかぎり先へ進まない
+// 共有領域が開けたときだけ呼ばれる。名前が決まったら true を返す
 async function runGate(seedId) {
-  let conf = null;
   try {
-    const snap = await cloud.config.get();
-    conf = snap.exists ? snap.data() : null;
+    // 共有領域が本当に読めるかを、小さな文書を1つ読んで確かめる
+    await cloud.config.get();
   } catch (e) {
     // 共有領域が読めない端末。自分の端末の中だけで使う
     cloud.shared = false;
@@ -589,27 +555,14 @@ async function runGate(seedId) {
     return false;
   }
 
-  const hash = conf && typeof conf.passHash === 'string' ? conf.passHash : '';
-  if (!me || !me.id) me = { id: seedId || randomId(), name: '', ok: '' };
+  if (!me || !me.id) me = { id: seedId || randomId(), name: '' };
   if (!me.id) me.id = seedId || randomId();
 
-  if (hash && me.ok === hash && me.name) { saveMe(); return true; }
-
-  const got = await askGate({
-    setup: !hash,
-    hash: hash,
-    needName: !me.name,
-  });
-
-  me.ok = got.hash;
-  if (got.name) me.name = got.name;
-  if (!me.name) me.name = 'ユーザー' + (Object.keys(memberNames).length + 1);
-  saveMe();
-
-  if (!hash) {
-    try { await cloud.config.set({ passHash: got.hash, t: Date.now() }); }
-    catch (e) { toast('合言葉を共有できませんでした（この端末には覚えました）'); }
+  if (!me.name) {
+    me.name = await askName();
+    if (!me.name) me.name = 'ユーザー' + (Object.keys(memberNames).length + 1);
   }
+  saveMe();
   hideGate();
   return true;
 }
@@ -623,7 +576,7 @@ async function publishMe() {
 async function initCloud() {
   // どこで転んでも、のれんが上がったままにならないようにする。
   // 上がったままだと「真っ白で何も出ない」という一番困る状態になる。
-  // 合言葉の入力を出している最中だけは、下ろさない。
+  // 名前の入力を出している最中だけは、下ろさない。
   const dropCurtain = () => {
     if (gateEl && gateEl.querySelector('.gate-form')) return;
     hideGate();
@@ -722,7 +675,7 @@ async function connectCloud() {
   }, onErr));
 
   if (cloud.shared) {
-    // 合言葉を通るまで、みんなの記録には触らない
+    // 名前が決まるまで、みんなの記録には触らない
     const through = await runGate(uid);
     if (!through) { cloudPush(); return; }
     await publishMe();
@@ -3034,7 +2987,7 @@ async function openPlanViewer(store) {
   ]);
 }
 
-// 仲間の一覧と、自分の名前・合言葉の変更
+// 仲間の一覧と、自分の名前の変更
 function groupBox() {
   const ids = Object.keys(memberNames);
   if (myId() && !ids.includes(myId())) ids.push(myId());
@@ -3056,24 +3009,6 @@ function groupBox() {
           await publishMe();
           toast('名前を変えました');
           openMenu();
-        },
-      }),
-      el('button', {
-        class: 'btn btn--ghost', type: 'button', text: '合言葉を変える',
-        onclick: async () => {
-          const v = prompt('新しい合言葉（4文字以上）。今までの合言葉で入った端末も、次から聞かれます。');
-          if (v === null) return;
-          const pass = v.trim();
-          if (pass.length < 4) { toast('4文字以上にしてください'); return; }
-          const hash = await sha256hex(pass);
-          try {
-            await cloud.config.set({ passHash: hash, t: Date.now() });
-            me.ok = hash;
-            saveMe();
-            toast('合言葉を変えました');
-          } catch (e) {
-            toast('変えられませんでした: ' + (e.message || '権限がないようです'));
-          }
         },
       }),
     ]),
@@ -3537,7 +3472,7 @@ async function boot() {
     }
   }
 
-  // Artifact として開いたときは、合言葉の確認が済むまで中身を見せない。
+  // Artifact として開いたときは、共有の準備（名前を聞くかどうか）が済むまで中身を見せない。
   // ローカルや GitHub Pages では claude が無いので、のれんは出さない
   if (typeof window.claude !== 'undefined' && window.claude.use) gateWaiting();
 

@@ -629,11 +629,17 @@ async function connectCloud() {
     cloud.shared = true;
   } catch (e) {
     cloud.shared = false;
+    // 共有の領域が使えない人（ゲスト）は、店の追加・編集・削除も自分の領域に置く
+    try {
+      cloud.edits = db.doc(home + '/edits').collection('s');
+      cloud.meta = db.doc(home + '/meta');
+    } catch (e2) { cloud.status = '同期先を開けませんでした'; return; }
   }
 
   cloud.on = true;
   cloud.status = cloud.shared ? '同期中（端末間 ＋ 仲間と共有）'
-    : '同期中（この端末と他の端末で同じ記録）';
+    : (usr.role === 'guest' ? '同期中（ゲスト：記録はあなただけのもの。仲間との共有はありません）'
+      : '同期中（この端末と他の端末で同じ記録）');
 
   const onErr = (e) => cloudTrouble(e);
 

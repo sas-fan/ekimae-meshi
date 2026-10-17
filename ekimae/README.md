@@ -284,6 +284,24 @@ claude.ai の Artifact として開いたときだけ、記録を**仲間と共�
 手元で動きを確かめるときは `testing/claude-mock.js` を
 `<script>` で先に読み込むと、Artifact ランタイムの代役になる。
 
+## Cloudflare に置く（独自ドメイン・記録のサーバー保存）
+
+`wrangler.jsonc` と `worker/index.js` で、静的なアプリと記録を保存する `/api` を1つの Worker として公開する。
+`main` に push すると Cloudflare が自動で公開する（Workers Builds）。
+
+- 住所: `https://ekimae.sasfans.com/`（`workers.dev` の住所はログインをすり抜けるので止めてある）
+- 入口: Cloudflare Access（Zero Trust）で**メールに届くコードでログイン**。ポリシーは Everyone（メールが届く人なら誰でも）
+- 権限はサーバー側（`worker/index.js`）で分ける
+  - **メンバー**: 秘密の値 `MEMBER_EMAILS`（Cloudflare の Worker 設定 → Variables and secrets に Secret として置く。
+    メールをカンマか改行で区切る。公開リポジトリには書かない）に載っている人。共有（星・訪問・店の編集）も使える
+  - **ゲスト**: それ以外。自分の領域だけ（お気に入り・メモ・自分が足した店）。共有は見えず、書き込めない
+- 保存先は D1（`wrangler.jsonc` の `d1_databases`）。表は最初のアクセスで自動で作る
+- 検証に使う値（ACCESS_TEAM_DOMAIN / ACCESS_AUD）は `wrangler.jsonc` の `vars`。秘密ではない
+- 保存の窓口は `ekimae/cf-runtime.js`。claude.ai の保存機能と同じ形にしてあるので、`app.js` の同期はそのまま使える
+- 変更は20秒ごとに版数（`/api/ver`）を見て、変わったときだけ取り直す（画面が見えているあいだだけ）
+
+手元で試すときは、`wrangler dev --local` に、試験用の鍵（JWKS）を `ACCESS_JWKS_JSON` で渡す。本番では設定しない。
+
 ## データの保存場所
 
 | 種類 | 保存先 | 共有される？ |

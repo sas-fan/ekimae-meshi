@@ -70,7 +70,11 @@ claude.ai の Artifact には最初から window.claude があるので、その
     return () => { listeners.delete(l); };
   }
 
+  let role = 'guest';
+
   function docRef(path) {
+    // ゲストには共有の領域が無い。app.js は、ここで例外になると「共有なし」で動く
+    if (path.startsWith('shared/') && role !== 'member') throw new Error('shared is for members only');
     return {
       collection: (name) => collRef(path + '/' + name),
       get: async () => {
@@ -106,8 +110,9 @@ claude.ai の Artifact には最初から window.claude があるので、その
       me = await res.json();
     } catch (e) { return false; }
     if (!me || !me.uid) return false;
+    role = me.role === 'member' ? 'member' : 'guest';
     const db = { doc: docRef };
-    const user = { id: async () => me.uid, isOwner: () => true, canEdit: () => true };
+    const user = { id: async () => me.uid, role, isOwner: () => true, canEdit: () => true };
     window.claude = { use: async (name) => (name === 'db' ? db : name === 'user' ? user : null) };
     return true;
   })();

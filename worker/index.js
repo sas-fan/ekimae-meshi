@@ -9,7 +9,13 @@
 アプリ側の同期のコードを変えずに使えるようにしてある。
 
   data/users/<自分のID>/...   自分だけが読み書きできる（お気に入り・メモなど）
-  shared/...                   ログインした全員が読み書きできる（星・訪問・店の編集など）
+  shared/...                   メンバーだけが読み書きできる（星・訪問・店の編集など）
+
+入口（Access）は、メールが届く人なら誰でも通す。そこから先を2種類に分ける:
+  メンバー … MEMBER_EMAILS（Cloudflare の画面で設定する秘密の値。メールをカンマか改行で区切る）に
+             載っている人。共有の領域も使える
+  ゲスト   … それ以外の人。自分の領域だけ。共有の記録は見えず、書き込みもできない
+メンバーの名簿はコードに書かない（このリポジトリは公開されているため）。
 
 <自分のID> はメールアドレスから作る（メールそのものは保存しない）。
 */
@@ -91,12 +97,17 @@ function ensureTables(env) {
   return ready;
 }
 
-// どのパスを触れるか。自分の領域と共有の領域だけ。
+export function roleOf(email, env) {
+  const members = String(env.MEMBER_EMAILS || '').toLowerCase().split(/[\s,;]+/).filter(Boolean);
+  return members.includes(email) ? 'member' : 'guest';
+}
+
+// どのパスを触れるか。自分の領域と、メンバーなら共有の領域。
 // 戻り値は「どの版数を進めるか」（自分の領域なら uid、共有なら 'shared'）
-function scopeOf(path, uid) {
+function scopeOf(path, uid, role) {
   if (!PATH_RE.test(path) || path.includes('..') || path.includes('//') || path.startsWith('/') || path.endsWith('/')) return null;
   if (path.startsWith('data/users/' + uid + '/')) return uid;
-  if (path.startsWith('shared/')) return 'shared';
+  if (path.startsWith('shared/') && role === 'member') return 'shared';
   return null;
 }
 
@@ -112,8 +123,9 @@ export async function handleApi(request, env, ctx) {
   if (!env.DB) return json({ error: 'no_database' }, 503);
   await ensureTables(env);
   const uid = await uidOf(email);
+  const role = roleOf(email, env);
 
-  if (url.pathname === '/api/me') return json({ uid, email });
+  if (url.pathname === '/api/me') return json({ uid, email, role });
 
   // 版数。自分の領域と共有の領域のどちらかが変わったかだけを安く調べる
   if (url.pathname === '/api/ver') {
@@ -130,7 +142,7 @@ export async function handleApi(request, env, ctx) {
   if (request.method === 'GET') {
     const coll = url.searchParams.get('coll');
     if (coll !== null) {
-      if (!scopeOf(coll + '/x', uid)) return json({ error: 'forbidden' }, 403);
+      if (!scopeOf(coll + '/x', uid, role)) return json({ error: 'forbidden' }, 403);
       const rows = await env.DB.prepare('SELECT path, body FROM docs WHERE path >= ?1 AND path < ?2')
         .bind(coll + '/', coll + '0').all();
       const docs = [];
@@ -142,7 +154,7 @@ export async function handleApi(request, env, ctx) {
       return json({ docs });
     }
     const path = url.searchParams.get('path') || '';
-    if (!scopeOf(path, uid)) return json({ error: 'forbidden' }, 403);
+    if (!scopeOf(path, uid, role)) return json({ error: 'forbidden' }, 403);
     const row = await env.DB.prepare('SELECT body FROM docs WHERE path = ?1').bind(path).first();
     return json(row ? { exists: true, data: JSON.parse(row.body) } : { exists: false });
   }
@@ -153,7 +165,7 @@ export async function handleApi(request, env, ctx) {
     let req;
     try { req = JSON.parse(text); } catch (e) { return json({ error: 'bad_json' }, 400); }
     const path = String(req.path || '');
-    const scope = scopeOf(path, uid);
+    const scope = scopeOf(path, uid, role);
     if (!scope) return json({ error: 'forbidden' }, 403);
     if (request.method === 'PUT') {
       if (req.data === undefined || req.data === null) return json({ error: 'no_data' }, 400);

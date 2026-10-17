@@ -8,6 +8,7 @@ const KEY = {
   deleted: NS + '.deleted',
   ui: NS + '.ui',
   me: NS + '.me',       // 自分が誰か（メンバーIDと名前）
+  backup: NS + '.backup', // 最後にバックアップを取った日時と、催促を後回しにした日時
 };
 
 /* 店のある場所。もとは大阪駅前第1〜4ビルだけだったので数字1つで足りていたが、
@@ -1185,6 +1186,8 @@ function storeCard(s) {
 function renderList(hits) {
   const box = $('#view-list');
   box.textContent = '';
+  const nag = backupNag();
+  if (nag) box.appendChild(nag);
   if (!hits.length) {
     box.appendChild(el('p', { class: 'empty', text: '条件に合う店がありません。フィルタを緩めるか、＋から店を登録してください。' }));
     return;
@@ -3015,6 +3018,102 @@ function groupBox() {
   ]);
 }
 
+/* ---------------- バックアップ ----------------
+
+GitHub Pages などで開いたときは、記録はこの端末のブラウザの中にしかない。
+ブラウザのデータを消すと一緒に消えるので、書き出しを忘れないよう促す。
+Web版（claude.ai）では自分のアカウントに同期されるので、催促しない。 */
+
+function backupText() {
+  return JSON.stringify({ kind: 'ekimae-backup', version: 1, savedAt: new Date().toISOString(), user, custom, deleted }, null, 2);
+}
+
+function backupState() { return readJSON(KEY.backup, {}) || {}; }
+function markBackedUp() { writeJSON(KEY.backup, Object.assign(backupState(), { at: Date.now() })); }
+
+// 何か記録が入っている店の数（お気に入り・メモ・訪問・星・タグ・ピン）
+function recordCount() {
+  let n = 0;
+  for (const id in user) {
+    const d = user[id] || {};
+    if (d.fav || (d.memo && d.memo.trim()) || (d.visits && d.visits.length) || d.rating
+        || (d.tags && d.tags.length) || d.pin) n++;
+  }
+  return n + custom.length;
+}
+
+function isArtifact() { return typeof window.claude !== 'undefined' && !!window.claude.use; }
+
+async function copyBackup() {
+  const text = backupText();
+  try {
+    await navigator.clipboard.writeText(text);
+    markBackedUp();
+    toast('バックアップをコピーしました。メモ帳などに貼って保存してください');
+    render();
+    return;
+  } catch (e) {
+    // コピーが許されていない画面では、選択した状態で見せて手でコピーしてもらう
+  }
+  const area = el('textarea', { class: 'backup-text', readonly: 'readonly', rows: '8' });
+  area.value = text;
+  openSheet([
+    el('h2', { text: 'バックアップ' }),
+    el('p', { class: 'sheet-sub', text: '自動でコピーできませんでした。下の文字を長押しして「すべてを選択」→「コピー」し、メモ帳などに貼って保存してください。' }),
+    area,
+    el('div', { class: 'btnrow' }, [
+      el('button', { class: 'btn btn--primary', type: 'button', text: 'コピーした', onclick: () => { markBackedUp(); closeSheet(); render(); } }),
+      el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: closeSheet }),
+    ]),
+  ]);
+  setTimeout(() => { area.focus(); area.select(); }, 50);
+}
+
+function openPasteImport() {
+  const area = el('textarea', { class: 'backup-text', rows: '8', placeholder: 'ここにバックアップを貼り付け' });
+  openSheet([
+    el('h2', { text: '貼り付けて読み込む' }),
+    el('p', { class: 'sheet-sub', text: '「バックアップをコピー」で写したものを貼り付けてください。いまの記録は消さず、足し合わせます。' }),
+    area,
+    el('div', { class: 'btnrow' }, [
+      el('button', {
+        class: 'btn btn--primary', type: 'button', text: '読み込む',
+        onclick: () => {
+          let data;
+          try { data = JSON.parse(area.value); } catch (e) { toast('バックアップの形になっていません。全部貼れているか確かめてください'); return; }
+          if (!data || data.kind !== 'ekimae-backup') { toast('このアプリのバックアップではないようです'); return; }
+          importPayload(data);
+        },
+      }),
+      el('button', { class: 'btn btn--ghost', type: 'button', text: '閉じる', onclick: closeSheet }),
+    ]),
+  ]);
+}
+
+// リストの上に出す催促。端末の中にしか記録が無く、しばらく書き出していないときだけ
+const BACKUP_EVERY = 7 * 24 * 3600 * 1000;
+function backupNag() {
+  if (isArtifact()) return null;
+  const n = recordCount();
+  if (!n) return null;
+  const st = backupState();
+  const now = Date.now();
+  if (st.at && now - st.at < BACKUP_EVERY) return null;
+  if (st.snooze && now - st.snooze < 3 * 24 * 3600 * 1000) return null;
+  const days = st.at ? Math.floor((now - st.at) / (24 * 3600 * 1000)) : null;
+  return el('div', { class: 'backupnag' }, [
+    el('p', { text: (days === null ? 'まだ一度もバックアップしていません。' : '最後のバックアップから' + days + '日たちました。')
+      + n + '店ぶんの記録はこのスマホの中だけにあり、ブラウザのデータを消すと一緒に消えます。' }),
+    el('div', { class: 'btnrow' }, [
+      el('button', { class: 'btn btn--primary btn--sm', type: 'button', text: 'バックアップをコピー', onclick: copyBackup }),
+      el('button', {
+        class: 'btn btn--ghost btn--sm', type: 'button', text: 'あとで',
+        onclick: () => { writeJSON(KEY.backup, Object.assign(backupState(), { snooze: Date.now() })); render(); },
+      }),
+    ]),
+  ]);
+}
+
 function openMenu() {
   const fileInput = el('input', { type: 'file', accept: '.json,application/json', style: 'display:none' });
   fileInput.addEventListener('change', () => {
@@ -3035,7 +3134,11 @@ function openMenu() {
 
   openSheet([
     el('h2', { text: 'メニュー' }),
-    el('p', { class: 'sheet-sub', text: 'お気に入り・メモ・追加した店は、この端末のブラウザに保存されています。バックアップには取り込んだ平面図は含まれません（画像が大きいため）。' }),
+    el('p', { class: 'sheet-sub', text: (cloud.on
+      ? 'お気に入り・メモ・追加した店は、この端末と claude.ai のあなたのアカウントに保存されています。'
+      : 'お気に入り・メモ・追加した店は、この端末のブラウザの中だけに保存されています。ブラウザのデータを消すと一緒に消えるので、ときどき「バックアップをコピー」してメモ帳などに貼っておいてください。')
+      + (backupState().at ? '（最後のバックアップ：' + new Date(backupState().at).toLocaleDateString('ja-JP') + '）' : '')
+      + 'バックアップには取り込んだ平面図は含まれません（画像が大きいため）。' }),
     el('div', { class: 'syncline' + (cloud.on ? ' is-on' : '') }, [
       el('span', { class: 'syncdot' }),
       el('span', { text: cloud.on
@@ -3068,14 +3171,18 @@ function openMenu() {
       }),
     ]),
     el('div', { class: 'btnrow' }, [
+      el('button', { class: 'btn', type: 'button', text: 'バックアップをコピー', onclick: copyBackup }),
+      el('button', { class: 'btn', type: 'button', text: '貼り付けて読み込む', onclick: openPasteImport }),
+    ]),
+    el('div', { class: 'btnrow' }, [
       el('button', {
-        class: 'btn', type: 'button', text: 'バックアップを書き出す',
+        class: 'btn btn--ghost', type: 'button', text: 'ファイルに書き出す',
         onclick: () => {
-          download('ekimae-backup-' + todayStr() + '.json',
-            JSON.stringify({ kind: 'ekimae-backup', version: 1, user, custom, deleted }, null, 2));
+          download('ekimae-backup-' + todayStr() + '.json', backupText());
+          markBackedUp();
         },
       }),
-      el('button', { class: 'btn', type: 'button', text: '読み込む', onclick: () => fileInput.click() }),
+      el('button', { class: 'btn btn--ghost', type: 'button', text: 'ファイルから読み込む', onclick: () => fileInput.click() }),
     ]),
     el('div', { class: 'btnrow' }, [
       el('button', {
@@ -3325,23 +3432,51 @@ function applyCSV(items) {
   return { added: added, updated: updated };
 }
 
+// バックアップを、いまの記録に足し合わせる。
+// 以前は丸ごと置き換えていたが、別の端末（Web版など）へ引っ越すときに、
+// そちらに入れてあった記録が消えてしまうので、足す形にした
+function mergeBackup(data) {
+  const union = (a, b) => [...new Set([].concat(a || [], b || []))];
+  for (const id in data.user || {}) {
+    const inc = data.user[id];
+    if (!inc || typeof inc !== 'object') continue;
+    const cur = user[id];
+    if (!cur) { user[id] = Object.assign({}, inc); continue; }
+    const merged = Object.assign({}, cur, inc);
+    merged.visits = union(cur.visits, inc.visits).filter((d) => typeof d === 'string').sort();
+    merged.tags = union(cur.tags, inc.tags).filter((t) => typeof t === 'string');
+    merged.fav = !!(cur.fav || inc.fav);
+    if (!inc.memo && cur.memo) merged.memo = cur.memo;
+    if (!inc.rating && cur.rating) merged.rating = cur.rating;
+    if (!inc.pin && cur.pin) merged.pin = cur.pin;
+    user[id] = merged;
+  }
+  for (const c of data.custom || []) {
+    if (!c || !c.id) continue;
+    const i = custom.findIndex((x) => x.id === c.id);
+    if (i < 0) custom.push(c); else custom[i] = Object.assign({}, custom[i], c);
+  }
+  deleted = union(deleted, (data.deleted || []).filter((x) => typeof x === 'string'));
+}
+
 function importPayload(data) {
   if (data && data.kind === 'ekimae-backup') {
-    if (!confirm('バックアップを読み込みます。現在の記録は置き換わります。')) return;
     // 中身を検めずに保存すると、壊れた値が端末に残って次回起動から開けなくなる
-    if ((data.user && typeof data.user !== 'object') || (data.custom && !Array.isArray(data.custom))
+    if ((data.user && (typeof data.user !== 'object' || Array.isArray(data.user)))
+        || (data.custom && !Array.isArray(data.custom))
         || (data.deleted && !Array.isArray(data.deleted))) {
       toast('バックアップの中身が壊れています');
       return;
     }
-    user = data.user || {};
-    custom = (data.custom || []).filter((c) => c && c.id);
-    deleted = (data.deleted || []).filter((x) => typeof x === 'string');
+    const n = Object.keys(data.user || {}).length;
+    if (!confirm('バックアップ（' + n + '店ぶんの記録）を、いまの記録に足します。\n'
+        + '同じ店に両方の記録があるときは、訪問履歴とタグは合わせ、それ以外はバックアップのほうを使います。')) return;
+    mergeBackup(data);
     saveUser(); saveCustom(); saveDeleted();
     rebuild();
     render();
     closeSheet();
-    toast('バックアップを読み込みました');
+    toast('バックアップを読み込みました（' + n + '店）');
     return;
   }
   if (data && Array.isArray(data.stores)) {
@@ -3482,6 +3617,12 @@ async function boot() {
 
   // 同期は画面が出たあとに静かに始める。使えない場所では何も起きない
   initCloud().catch(() => {});
+
+  // 記録が端末の中にしか無い場所では、ブラウザに「容量が足りなくなっても
+  // このサイトのデータは自動で消さないで」と頼んでおく（手で消したときは消える）
+  if (!isArtifact() && navigator.storage && navigator.storage.persist) {
+    navigator.storage.persisted().then((ok) => ok || navigator.storage.persist()).catch(() => {});
+  }
 
   // manifest を宣言しているページ（=デプロイ版）でだけ Service Worker を使う。
   // 埋め込み表示などでは古いキャッシュが残って更新が届かなくなるため登録しない。

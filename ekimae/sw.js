@@ -1,6 +1,6 @@
 /* 梅田地下メシ — オフラインでも開けるようにする最小構成の Service Worker */
-const CACHE = 'ekimae-v1';
-const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'icon.svg', 'manifest.webmanifest'];
+const CACHE = 'ekimae-v2';
+const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'cf-runtime.js', 'icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -19,6 +19,8 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  // 記録の保存先（/api）は、キャッシュを返すと古い記録に戻ってしまう。素通しにする
+  if (url.pathname.startsWith('/api/')) return;
 
   // 店データは常に最新を優先し、落ちたらキャッシュを返す
   if (url.pathname.endsWith('/data/stores.json')) {

@@ -1,0 +1,18 @@
+{
+  // 梅田地下メシ: 静的なアプリ（ekimae/）と、記録を保存する /api だけを受けるWorker。
+  // main に push すると Cloudflare が自動でここの設定どおりに公開する。
+  "name": "ekimae-meshi",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./ekimae",
+    "binding": "ASSETS",
+    // /api/* だけ Worker が受ける。それ以外は静的ファイルをそのまま返す
+    "run_worker_first": ["/api/*"]
+  },
+  // 住所は独自ドメインだけにする。workers.dev の住所は Access（ログイン）を
+  // すり抜けてしまうので止める
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "ekimae.sasfans.com", "custom_domain": true }]
+}

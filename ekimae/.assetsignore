@@ -1,0 +1,6 @@
+# 公開しなくてよいもの（作業用の道具・調査メモ・試験用）
+tools
+in
+testing
+*.md
+artifact.html

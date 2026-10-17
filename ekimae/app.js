@@ -559,6 +559,15 @@ async function runGate(seedId) {
   if (!me || !me.id) me = { id: seedId || randomId(), name: '' };
   if (!me.id) me.id = seedId || randomId();
 
+  // ブラウザのデータを消したあとでも、前に決めた名前は共有領域に残っている。
+  // メンバーIDは同じ人なら同じ値になるので、それで引いて聞き直さずに済ませる
+  if (!me.name && cloud.members) {
+    try {
+      const snap = await cloud.members.doc(me.id).get();
+      const d = snap.exists ? snap.data() : null;
+      if (d && typeof d.name === 'string' && d.name.trim()) me.name = d.name.trim().slice(0, 20);
+    } catch (e) { /* 読めなければ聞く */ }
+  }
   if (!me.name) {
     me.name = await askName();
     if (!me.name) me.name = 'ユーザー' + (Object.keys(memberNames).length + 1);
@@ -3135,7 +3144,7 @@ function openMenu() {
   openSheet([
     el('h2', { text: 'メニュー' }),
     el('p', { class: 'sheet-sub', text: (cloud.on
-      ? 'お気に入り・メモ・追加した店は、この端末と claude.ai のあなたのアカウントに保存されています。'
+      ? 'お気に入り・メモ・追加した店は、この端末と、ログインしたあなたのアカウント（ネット上）に保存されています。'
       : 'お気に入り・メモ・追加した店は、この端末のブラウザの中だけに保存されています。ブラウザのデータを消すと一緒に消えるので、ときどき「バックアップをコピー」してメモ帳などに貼っておいてください。')
       + (backupState().at ? '（最後のバックアップ：' + new Date(backupState().at).toLocaleDateString('ja-JP') + '）' : '')
       + 'バックアップには取り込んだ平面図は含まれません（画像が大きいため）。' }),
@@ -3575,6 +3584,9 @@ function bind() {
 
 async function boot() {
   bind();
+  // Cloudflare に置いたときは、記録の保存先（/api）につながるか確かめてから先へ進む。
+  // それ以外の場所では、すぐ false で返る
+  if (window.__cfReady) { try { await window.__cfReady; } catch (e) { /* 端末の中だけで動く */ } }
   try {
     const res = await fetch('data/stores.json', { cache: 'no-cache' });
     if (!res.ok) throw new Error('HTTP ' + res.status);

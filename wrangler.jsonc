@@ -14,5 +14,18 @@
   // すり抜けてしまうので止める
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [{ "pattern": "ekimae.sasfans.com", "custom_domain": true }]
+  "routes": [{ "pattern": "ekimae.sasfans.com", "custom_domain": true }],
+
+  // 記録の保存先（D1）。表は最初のアクセスで自動で作る
+  "d1_databases": [
+    { "binding": "DB", "database_name": "ekimae-db", "database_id": "4dac0726-9f38-42c7-9577-c3326018342e" }
+  ],
+
+  // ログイン（Cloudflare Access）の証明を検証するための値。どちらも秘密ではない。
+  // メンバーのメール名簿は公開リポジトリに置けないので、ここには書かない
+  // （Cloudflare の画面で Secret の MEMBER_EMAILS として置く。README 参照）
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "bitter-morning-b6b0.cloudflareaccess.com",
+    "ACCESS_AUD": "cd729a3f7216129572db7760a1ccc1b122ec2f10333f760501b5f28e4abb5e00"
+  }
 }

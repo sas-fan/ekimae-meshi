@@ -290,7 +290,11 @@ claude.ai の Artifact として開いたときだけ、記録を**仲間と共�
 `main` に push すると Cloudflare が自動で公開する（Workers Builds）。
 
 - 住所: `https://ekimae.sasfans.com/`（`workers.dev` の住所はログインをすり抜けるので止めてある）
-- 入口: Cloudflare Access（Zero Trust）で**メールに届くコードでログイン**。ポリシーは Everyone（メールが届く人なら誰でも）
+- **アプリ本体はログインなしで誰でも開ける**。ログインは任意で、「ログインして保存」を押した人だけ、
+  記録がネット側に保存される（押さない人は、これまでどおりスマホの中だけ）
+- Cloudflare Access（Zero Trust）が守るのは **`/api/*` と `/login` の2つだけ**（アプリ `ekimae` の対象）。
+  ログインは**メールに届くコード**。ポリシーは Everyone（メールが届く人なら誰でも）
+- ログインボタンの行き先は `/login`。ログインが済むと入口 `/` に戻り、スマホにあった記録がネットに上がる
 - 権限はサーバー側（`worker/index.js`）で分ける
   - **メンバー**: 秘密の値 `MEMBER_EMAILS`（Cloudflare の Worker 設定 → Variables and secrets に Secret として置く。
     メールをカンマか改行で区切る。公開リポジトリには書かない）に載っている人。共有（星・訪問・店の編集）も使える

@@ -1201,6 +1201,8 @@ function storeCard(s) {
 function renderList(hits) {
   const box = $('#view-list');
   box.textContent = '';
+  const moved = movedNote();
+  if (moved) box.appendChild(moved);
   const nag = backupNag();
   if (nag) box.appendChild(nag);
   if (!hits.length) {
@@ -3107,20 +3109,47 @@ function openPasteImport() {
 
 // リストの上に出す催促。端末の中にしか記録が無く、しばらく書き出していないときだけ
 const BACKUP_EVERY = 7 * 24 * 3600 * 1000;
+// ログインすればネットに保存できる場所か（ekimae.sasfans.com）。ログイン済みなら cloud.on
+function canLogin() { return !!window.__cfCanLogin && !cloud.on; }
+
+// 古い住所（GitHub Pages）には、新しい住所を案内する
+const NEW_HOME = 'https://ekimae.sasfans.com/';
+function movedNote() {
+  if (!/github\.io$/.test(location.hostname)) return null;
+  const st = backupState();
+  if (st.movedSnooze && Date.now() - st.movedSnooze < 7 * 24 * 3600 * 1000) return null;
+  return el('div', { class: 'backupnag' }, [
+    el('p', { text: 'このページは古い版です。新しい住所では、ログインして保存すると、ブラウザのデータを消しても記録が残ります。'
+      + '記録は「バックアップをコピー」で新しい住所へ移せます。' }),
+    el('div', { class: 'btnrow' }, [
+      el('a', { class: 'btn btn--primary btn--sm', href: NEW_HOME, text: '新しい住所を開く' }),
+      el('button', {
+        class: 'btn btn--ghost btn--sm', type: 'button', text: 'あとで',
+        onclick: () => { writeJSON(KEY.backup, Object.assign(backupState(), { movedSnooze: Date.now() })); render(); },
+      }),
+    ]),
+  ]);
+}
+
 function backupNag() {
   if (isArtifact()) return null;
   const n = recordCount();
   if (!n) return null;
   const st = backupState();
   const now = Date.now();
-  if (st.at && now - st.at < BACKUP_EVERY) return null;
+  const login = canLogin();
+  // ログインして保存できる場所では、バックアップを取ってあっても勧める（ネットに残るほうが確か）
+  if (!login && st.at && now - st.at < BACKUP_EVERY) return null;
   if (st.snooze && now - st.snooze < 3 * 24 * 3600 * 1000) return null;
   const days = st.at ? Math.floor((now - st.at) / (24 * 3600 * 1000)) : null;
   return el('div', { class: 'backupnag' }, [
-    el('p', { text: (days === null ? 'まだ一度もバックアップしていません。' : '最後のバックアップから' + days + '日たちました。')
-      + n + '店ぶんの記録はこのスマホの中だけにあり、ブラウザのデータを消すと一緒に消えます。' }),
+    el('p', { text: login
+      ? n + '店ぶんの記録はこのスマホの中だけにあり、ブラウザのデータを消すと一緒に消えます。ログインして保存すると、ネットに残ります。'
+      : (days === null ? 'まだ一度もバックアップしていません。' : '最後のバックアップから' + days + '日たちました。')
+        + n + '店ぶんの記録はこのスマホの中だけにあり、ブラウザのデータを消すと一緒に消えます。' }),
     el('div', { class: 'btnrow' }, [
-      el('button', { class: 'btn btn--primary btn--sm', type: 'button', text: 'バックアップをコピー', onclick: copyBackup }),
+      login ? el('button', { class: 'btn btn--primary btn--sm', type: 'button', text: 'ログインして保存', onclick: goLogin }) : null,
+      el('button', { class: login ? 'btn btn--sm' : 'btn btn--primary btn--sm', type: 'button', text: 'バックアップをコピー', onclick: copyBackup }),
       el('button', {
         class: 'btn btn--ghost btn--sm', type: 'button', text: 'あとで',
         onclick: () => { writeJSON(KEY.backup, Object.assign(backupState(), { snooze: Date.now() })); render(); },
@@ -3128,6 +3157,9 @@ function backupNag() {
     ]),
   ]);
 }
+
+// ログイン画面（メールにコードが届く）へ。済んだらこの画面に戻り、いまの記録がネットに上がる
+function goLogin() { location.href = '/login'; }
 
 function openMenu() {
   const fileInput = el('input', { type: 'file', accept: '.json,application/json', style: 'display:none' });
@@ -3160,6 +3192,11 @@ function openMenu() {
         ? (cloud.shared ? '同期中 — PC・スマホ・仲間と共有しています' : '同期中 — PCとスマホで同じ記録になります')
         : (cloud.status || 'この端末だけに保存中（同期していません）') }),
     ]),
+    canLogin() ? el('div', { class: 'field' }, [
+      el('label', { text: 'ネットに保存する' }),
+      el('p', { class: 'sheet-sub', text: 'ログインすると、お気に入り・メモ・訪問履歴がネットに残ります。機種変更やブラウザのデータ消去でも戻せます。メールに届く数字を入れるだけで、パスワードは要りません。いまの記録はそのまま引き継がれます。使わなくても、ふつうに使えます。' }),
+      el('div', { class: 'btnrow' }, [el('button', { class: 'btn btn--primary', type: 'button', text: 'ログインして保存', onclick: goLogin })]),
+    ]) : null,
     cloud.shared ? groupBox() : null,
     unverified ? el('div', { class: 'banner' }, [
       '未確認の店が ' + unverified + ' 件あります。階や区画の裏が取れていないので、現地で確認したら詳細画面のボタンを押してください。',

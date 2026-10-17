@@ -20,7 +20,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   // 記録の保存先（/api）は、キャッシュを返すと古い記録に戻ってしまう。素通しにする
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith('/api/') || url.pathname === '/login') return;
 
   // 画面（HTML）の読み込みは、ネットを先に見に行く。
   // Cloudflare Access（ログイン）の後ろに置いたとき、控えを先に返すと、ログインが

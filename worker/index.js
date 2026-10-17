@@ -11,6 +11,8 @@
   data/users/<自分のID>/...   自分だけが読み書きできる（お気に入り・メモなど）
   shared/...                   メンバーだけが読み書きできる（星・訪問・店の編集など）
 
+アプリそのもの（静的ファイル）はログインなしで誰でも開ける。Access が守るのは
+/api/* と /login だけ。ログインしたい人が /login を開くと、ログイン後に入口へ戻る。
 入口（Access）は、メールが届く人なら誰でも通す。そこから先を2種類に分ける:
   メンバー … MEMBER_EMAILS（Cloudflare の画面で設定する秘密の値。メールをカンマか改行で区切る）に
              載っている人。共有の領域も使える
@@ -118,6 +120,12 @@ function bump(env, scope) {
 
 export async function handleApi(request, env, ctx) {
   const url = new URL(request.url);
+
+  // 「ログインして保存」のボタンの行き先。この住所だけを Cloudflare Access が守っているので、
+  // ここに着いた時点でログインは済んでいる。入口に戻すだけ（戻り先は固定。自由に指せると悪用される）
+  if (url.pathname === '/login') {
+    return new Response(null, { status: 302, headers: { location: '/', 'cache-control': 'no-store' } });
+  }
   const email = await verifyAccess(request, env);
   if (!email) return json({ error: 'unauthorized' }, 401);
   if (!env.DB) return json({ error: 'no_database' }, 503);

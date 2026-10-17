@@ -100,12 +100,18 @@ claude.ai の Artifact には最初から window.claude があるので、その
     };
   }
 
+  // ログインすれば保存できる場所か。ログインしていないと /api は Access に止められる
+  // （ログイン画面への転送か 401）。Pages やローカルには /api 自体が無い（404）
+  window.__cfCanLogin = false;
+
   window.__cfReady = (async () => {
     // Artifact には最初から窓口がある。Pages やローカルでは /api が無い
     if (typeof window.claude !== 'undefined') return false;
     let me;
     try {
-      const res = await fetch('/api/me', { credentials: 'same-origin', cache: 'no-store', headers: { accept: 'application/json' } });
+      // 転送は追わない。ログイン画面へ飛ばされるのは「未ログイン」の印で、追うと別ドメインで失敗するだけ
+      const res = await fetch('/api/me', { redirect: 'manual', credentials: 'same-origin', cache: 'no-store', headers: { accept: 'application/json' } });
+      if (res.type === 'opaqueredirect' || res.status === 401 || res.status === 403) { window.__cfCanLogin = true; return false; }
       if (!res.ok || !/json/.test(res.headers.get('content-type') || '')) return false;
       me = await res.json();
     } catch (e) { return false; }

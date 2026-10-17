@@ -7,8 +7,9 @@
   "assets": {
     "directory": "./ekimae",
     "binding": "ASSETS",
-    // /api/* だけ Worker が受ける。それ以外は静的ファイルをそのまま返す
-    "run_worker_first": ["/api/*"]
+    // /api/* と /login だけ Worker が受ける。それ以外は静的ファイルをそのまま返す
+    // （この2つだけを Cloudflare Access が守る。アプリ本体はログインなしで開ける）
+    "run_worker_first": ["/api/*", "/login"]
   },
   // 住所は独自ドメインだけにする。workers.dev の住所は Access（ログイン）を
   // すり抜けてしまうので止める
